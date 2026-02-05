@@ -1,1 +1,1 @@
-arghub is live
+arghub is dead.
