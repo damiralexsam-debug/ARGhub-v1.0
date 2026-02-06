@@ -76,10 +76,63 @@
 <br>
 <h1 style="text-align:center;">ARGhub is live!</h1>
 <h2 style="text-align: center;">The hub for solving, discussing, creating and learning. Join the ARG space today.</h2>
-<button id="DiscussButton" onclick="hideButton()">Discuss and Promote ARGs</button>
+<br>
+<!-- BUTTONS -->
+<div style="text-align:center; margin-top:40px;">
+
+  <button id="DiscussButton" onclick="showBox('Discuss')">
+    Discuss & Create ARGs
+  </button>
+
+  <button id="JoinButton" onclick="showBox('Join')">
+    Join active Communities
+  </button>
+
+  <button id="LearnButton" onclick="showBox('Learn')">
+    Learn new ciphers
+  </button>
+
+</div>
+
+
+<!-- DISCUSS BOX -->
+<div id="DiscussBox" class="infoBox">
+  <h2>Discuss & Create</h2>
+  <p>Talk about ARGs and build your own.</p>
+  <img src="images and logos/ARGhub_3.png" width="150">
+</div>
+
+
+<!-- JOIN BOX -->
+<div id="JoinBox" class="infoBox">
+  <h2>Join Communities</h2>
+  <p>Find live ARGs and solve together.</p>
+  <img src="images and logos/ARGhub_3.png" width="150">
+</div>
+
+
+<!-- LEARN BOX -->
+<div id="LearnBox" class="infoBox">
+  <h2>Learn Ciphers</h2>
+  <p>Master puzzle-solving skills.</p>
+  <img src="images and logos/ARGhub_3.png" width="150">
+</div>
 <script>
-function hideButton() {
-  document.getElementById("DiscussButton").style.display = "none";
+function showBox(type) {
+
+  // hide all buttons
+  document.getElementById("DiscussButton").style.display="none";
+  document.getElementById("JoinButton").style.display="none";
+  document.getElementById("LearnButton").style.display="none";
+
+  // pick correct box
+  let box = document.getElementById(type + "Box");
+
+  box.style.display="block";
+
+  setTimeout(() => {
+    box.style.opacity="1";
+  }, 10);
 }
 </script>
 </body>
