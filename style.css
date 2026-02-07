@@ -3,6 +3,7 @@ body {background:black;
   margin:0;
 font-family: 'Roboto Slab', serif;
 }
+/* HOME PAGE BUTTONS & INFO BOXES */
 .buttonRow{
   display:flex;
   justify-content:space-around;
@@ -34,7 +35,7 @@ button:hover{
   box-shadow:0 0 10px rgb(134, 15, 170);
   cursor:pointer;
 }
-
+/* TOOLTIPS */
 .tooltip{
   position:relative;
   display:inline-block;
@@ -73,7 +74,7 @@ button:hover{
   font-weight:bold;
 }
 
-/* COLORS */
+/* COLORS FOR TOOLTIPS */
 .tooltip.green{ color:#4CAF50; }
 .tooltip.orange{ color:#ff9800; }
 .tooltip.red{ color:#f44336; }
@@ -101,4 +102,12 @@ button:hover{
 .tooltip:hover .tooltiptext{
   visibility:visible;
   opacity:1;
+}
+.boxTips {
+  display:flex;
+  justify-content:space-around;
+  margin-top:30px;
+}
+.boxTips.tooltip.green .tooltiptext {
+  width:250px;
 }
