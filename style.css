@@ -119,7 +119,7 @@ button:hover{
 .featuredRow{
   display:flex;
   justify-content:center;
-  gap:30px;
+  gap:100px;
   margin-top:50px;
 }
 
