@@ -24,3 +24,12 @@ font-family: 'Roboto Slab', serif;
   border-radius:12px;
   margin-top:15px;
 }
+.section button{
+  padding:15px 30px;
+  font-size:18px;
+  border-radius:8px;
+}
+button:hover{
+  box-shadow:0 0 10px rgb(134, 15, 170);
+  cursor:pointer;
+}
