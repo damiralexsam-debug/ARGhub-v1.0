@@ -12,7 +12,7 @@ font-family: 'Roboto Slab', serif;
 
 .section{
   text-align:center;
-  width:50%;
+  width:45%;
 }
 
 .infoBox{
@@ -115,7 +115,7 @@ button:hover{
   justify-content:space-around;
   margin-top:0;
 }
-
+/* FEATURED ARG CARDS */
 .featuredRow{
   display:flex;
   justify-content:center;
@@ -151,4 +151,24 @@ button:hover{
   box-shadow:0 0 10px rgb(170, 15, 15);
   transition: 0.3s;
   cursor:pointer;
+}
+#board{
+  width:800px;
+  height:500px;
+  border:2px solid white;
+  margin-top:20px;
+  position:relative;
+  background:#111;
+  overflow:hidden;
+}
+
+.thought{
+  position:absolute;
+  background:#222;
+  color:white;
+  padding:10px;
+  border:1px solid white;
+  border-radius:8px;
+  cursor:grab;
+  user-select:none;
 }
