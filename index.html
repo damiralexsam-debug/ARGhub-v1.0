@@ -77,62 +77,60 @@
 <h1 style="text-align:center;">ARGhub is live!</h1>
 <h2 style="text-align: center;">The hub for solving, discussing, creating and learning. Join the ARG space today.</h2>
 <br>
-<!-- BUTTONS -->
-<div style="text-align:center; margin-top:40px;">
+<div class="buttonRow">
+  <!-- DISCUSS -->
+  <div class="section">
+    <button id="DiscussButton" onclick="toggleBox('Discuss')">
+      Discuss & Create ARGs
+    </button>
 
-  <button id="DiscussButton" onclick="showBox('Discuss')">
-    Discuss & Create ARGs
-  </button>
+    <div id="DiscussBox" class="infoBox">
+      <h2>Discuss & Create</h2>
+      <p>Talk about ARGs and build your own.</p>
+      <img src="logo.png" width="120">
+    </div>
+  </div>
 
-  <button id="JoinButton" onclick="showBox('Join')">
-    Join active Communities
-  </button>
+  <!-- JOIN -->
+  <div class="section">
+    <button id="JoinButton" onclick="toggleBox('Join')">
+      Join Communities
+    </button>
 
-  <button id="LearnButton" onclick="showBox('Learn')">
-    Learn new ciphers
-  </button>
+    <div id="JoinBox" class="infoBox">
+      <h2>Join Communities</h2>
+      <p>Find active ARGs and solve together.</p>
+      <img src="logo.png" width="120">
+    </div>
+  </div>
 
-</div>
+  <!-- LEARN -->
+  <div class="section">
+    <button id="LearnButton" onclick="toggleBox('Learn')">
+      Learn Ciphers
+    </button>
 
+    <div id="LearnBox" class="infoBox">
+      <h2>Learn Ciphers</h2>
+      <p>Master puzzle-solving.</p>
+      <img src="logo.png" width="120">
+    </div>
+  </div>
 
-<!-- DISCUSS BOX -->
-<div id="DiscussBox" class="infoBox">
-  <h2>Discuss & Create</h2>
-  <p>Talk about ARGs and build your own.</p>
-  <img src="images and logos/ARGhub_3.png" width="150">
-</div>
-
-
-<!-- JOIN BOX -->
-<div id="JoinBox" class="infoBox">
-  <h2>Join Communities</h2>
-  <p>Find live ARGs and solve together.</p>
-  <img src="images and logos/ARGhub_3.png" width="150">
-</div>
-
-
-<!-- LEARN BOX -->
-<div id="LearnBox" class="infoBox">
-  <h2>Learn Ciphers</h2>
-  <p>Master puzzle-solving skills.</p>
-  <img src="images and logos/ARGhub_3.png" width="150">
 </div>
 <script>
-function showBox(type) {
+function toggleBox(type){
 
-  // hide all buttons
-  document.getElementById("DiscussButton").style.display="none";
-  document.getElementById("JoinButton").style.display="none";
-  document.getElementById("LearnButton").style.display="none";
+  let button = document.getElementById(type+"Button");
+  let box = document.getElementById(type+"Box");
 
-  // pick correct box
-  let box = document.getElementById(type + "Box");
+  button.style.display="none";
 
   box.style.display="block";
 
-  setTimeout(() => {
+  setTimeout(()=>{
     box.style.opacity="1";
-  }, 10);
+  },10);
 }
 </script>
 </body>
