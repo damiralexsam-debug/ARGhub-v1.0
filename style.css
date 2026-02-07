@@ -102,15 +102,3 @@ button:hover{
   visibility:visible;
   opacity:1;
 }
-
-.colorBox{
-  background:blue;
-  color:white;
-  padding:20px;
-  margin:20px;
-  border-radius:10px;
-.greenBox{ background:#4CAF50; }
-.orangeBox{ background:#ff9800; }
-.redBox{ background:#f44336; }
-
-}
