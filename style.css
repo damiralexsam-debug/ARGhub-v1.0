@@ -115,6 +115,10 @@ button:hover{
   justify-content:space-around;
   margin-top:0;
 }
-.boxTips.tooltip.green .tooltiptext {
-  width:250px;
+
+@media only screen and (max-width: 600px) {
+  .buttonRow {
+    flex-direction: column;
+    gap: 15px;
+  }
 }
