@@ -31,7 +31,6 @@ font-family: 'Roboto Slab', serif;
   border-radius:8px;
 }
 button:hover{
-  background-color: 10px 10px 10px rgb(134, 15, 170);
   box-shadow:0 0 10px rgb(134, 15, 170);
   cursor:pointer;
 }
@@ -102,4 +101,16 @@ button:hover{
 .tooltip:hover .tooltiptext{
   visibility:visible;
   opacity:1;
+}
+
+.colorBox{
+  background:blue;
+  color:white;
+  padding:20px;
+  margin:20px;
+  border-radius:10px;
+.greenBox{ background:#4CAF50; }
+.orangeBox{ background:#ff9800; }
+.redBox{ background:#f44336; }
+
 }
