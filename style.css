@@ -157,6 +157,7 @@ button:hover{
   height:500px;
   border:2px solid white;
   margin-top:20px;
+  margin-left: 10px;
   position:relative;
   background:#111;
   overflow:hidden;

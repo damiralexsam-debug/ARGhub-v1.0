@@ -77,17 +77,16 @@
 <br>
 <h1 style="text-align: center;">This is your Dashboard, for all your ARGs.</h1>
 <br>
-<h2>ARG Brainstorm Board</h2>
+<h2 style="margin-left: 10px;">ARG Brainstorm Board</h2>
 
 <input id="thoughtInput" placeholder="Write a thought...">
-<button onclick="addThought()">Add Thought</button>
-<button onclick="toggleDelete()">Delete Mode</button>
+<button onclick="addThought()" style="margin-left: 10px;">Add Thought</button>
+<button onclick="toggleDelete()" style="margin-left: 10px;">Delete Mode</button>
 
 <div id="board"></div>
 <br>
-<h2>This website is building, more coming soon.</h2>
+<h2 style="text-align: center;">This website is building, more coming soon.</h2>
 <script>
-
 let deleteMode = false;
 
 function toggleDelete(){
