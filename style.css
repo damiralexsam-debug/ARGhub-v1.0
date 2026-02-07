@@ -105,8 +105,9 @@ button:hover{
 }
 .boxTips {
   width: 350px;
-  height: 50px;
+  height: 10px;
   padding-top: 10px;
+  padding-left: 10px;
   margin-left: auto;
   margin-right: 100px;
   border: 2px solid white;
