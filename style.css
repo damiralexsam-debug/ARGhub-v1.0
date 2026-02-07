@@ -133,14 +133,14 @@ button:hover{
 }
 .argCard.card1:hover{
   background-color: rgb(134, 15, 170);
-  color: black;
+  color: solid white;
   box-shadow:0 0 10px rgb(134, 15, 170);
   transition: 0.3s;
   cursor:pointer;
 }
 .argCard.card2:hover{
   background-color: aquamarine;
-  color: black;
+  color: solid white;
   box-shadow:0 0 10px rgb(15, 170, 136);
   transition: 0.3s;
   cursor:pointer;
