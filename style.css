@@ -119,7 +119,7 @@ button:hover{
 .featuredRow{
   display:flex;
   justify-content:center;
-  gap:200px;
+  gap:100px;
   margin-top:50px;
 }
 
@@ -127,7 +127,7 @@ button:hover{
   background:#111;
   border:1px solid white;
   padding:20px;
-  width: 600px;
+  width: 700px;
   border-radius:12px;
   text-align:center;
 }
