@@ -15,6 +15,7 @@ font-family: 'Roboto Slab', serif;
 }
 
 .infoBox{
+  overflow:visible;
   display:none;
   opacity:0;
   transition:0.5s;
@@ -32,4 +33,72 @@ font-family: 'Roboto Slab', serif;
 button:hover{
   box-shadow:0 0 10px rgb(134, 15, 170);
   cursor:pointer;
+}
+
+.tooltip{
+  position:relative;
+  display:inline-block;
+  cursor:help;
+}
+
+.tooltip .tooltiptext{
+  visibility:hidden;
+  width:200px;
+  background:black;
+  color:white;
+  text-align:center;
+  padding:8px;
+  border-radius:6px;
+  border:1px solid white;
+
+  position:absolute;
+  bottom:125%;
+  left:50%;
+  transform:translateX(-50%);
+
+  opacity:0;
+  transition:0.3s;
+  z-index:1;
+}
+
+.tooltip:hover .tooltiptext{
+  visibility:visible;
+  opacity:1;
+}
+
+.tooltip{
+  position:relative;
+  display:inline-block;
+  cursor:help;
+  font-weight:bold;
+}
+
+/* COLORS */
+.tooltip.green{ color:#4CAF50; }
+.tooltip.orange{ color:#ff9800; }
+.tooltip.red{ color:#f44336; }
+
+.tooltip .tooltiptext{
+  visibility:hidden;
+  width:220px;
+  background:black;
+  color:white;
+  text-align:center;
+  padding:8px;
+  border-radius:6px;
+  border:1px solid white;
+
+  position:absolute;
+  bottom:125%;
+  left:50%;
+  transform:translateX(-50%);
+
+  opacity:0;
+  transition:0.25s;
+  z-index:999;
+}
+
+.tooltip:hover .tooltiptext{
+  visibility:visible;
+  opacity:1;
 }
