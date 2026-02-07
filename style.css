@@ -140,7 +140,7 @@ button:hover{
 }
 .argCard.card2:hover{
   background-color: aquamarine;
-  color: solid white;
+  color:  black;
   box-shadow:0 0 10px rgb(15, 170, 136);
   transition: 0.3s;
   cursor:pointer;
