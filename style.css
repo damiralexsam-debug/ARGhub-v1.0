@@ -45,7 +45,7 @@ button:hover{
 .tooltip .tooltiptext{
   visibility:hidden;
   width:200px;
-  background:black;
+  background:rgb(14, 14, 14);
   color:white;
   text-align:center;
   padding:8px;
@@ -132,6 +132,8 @@ button:hover{
   text-align:center;
 }
 .argCard:hover{
+  background-color: aquamarine;
+  color: black;
   box-shadow:0 0 10px rgb(15, 170, 136);
   transition: 0.3s;
   cursor:pointer;
