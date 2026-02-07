@@ -116,9 +116,23 @@ button:hover{
   margin-top:0;
 }
 
-@media only screen and (max-width: 600px) {
-  .buttonRow {
-    flex-direction: column;
-    gap: 15px;
-  }
+.featuredRow{
+  display:flex;
+  justify-content:center;
+  gap:30px;
+  margin-top:50px;
+}
+
+.argCard{
+  background:#111;
+  border:1px solid white;
+  padding:20px;
+  width:250px;
+  border-radius:12px;
+  text-align:center;
+}
+.argCard:hover{
+  box-shadow:0 0 10px rgb(15, 170, 136);
+  transition: 0.3s;
+  cursor:pointer;
 }
