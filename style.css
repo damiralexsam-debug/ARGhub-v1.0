@@ -104,9 +104,9 @@ button:hover{
   opacity:1;
 }
 .boxTips {
-  width: 200px;
+  width: 300px;
   margin-left: auto;
-  margin-right: 20px;
+  margin-right: 100px;
   border: 2px solid white;
   display:flex;
   justify-content:space-around;
