@@ -152,24 +152,32 @@ button:hover{
   transition: 0.3s;
   cursor:pointer;
 }
+/* ARG MAP DASHBOARD */
 #board{
   width:800px;
   height:500px;
   border:2px solid white;
-  margin-top:20px;
-  margin-left: 20px;
   position:relative;
   background:#111;
   overflow:hidden;
+  margin-top:20px;
+}
+
+#lines{
+  position:absolute;
+  width:100%;
+  height:100%;
+  pointer-events:none;
 }
 
 .thought{
   position:absolute;
   background:#222;
-  color:white;
   padding:10px;
   border:1px solid white;
   border-radius:8px;
   cursor:grab;
+  color:white;
   user-select:none;
 }
+

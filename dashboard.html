@@ -77,65 +77,21 @@
 <br>
 <h1 style="text-align: center;">This is your Dashboard, for all your ARGs.</h1>
 <br>
-<h2 style="margin-left: 20px;">ARG Brainstorm Board</h2>
-<div style="margin: 20px;">
-<input id="thoughtInput" placeholder="Write a thought...">
+<h2>Brainstorm Board</h2>
+
+<input id="thoughtInput" placeholder="Write a thought">
 <button onclick="addThought()">Add Thought</button>
-<button onclick="toggleDelete()"">Delete Mode</button>
+<button onclick="toggleDelete()">Delete Mode</button>
+<button onclick="toggleLine()">Line Mode</button>
+
+<div id="board">
+  <svg id="lines"></svg>
 </div>
-<div id="board"></div>
+
+<!-- link JS file -->
+<script src="dashboard.js"></script>
+
 <br>
 <h2 style="text-align: center;">This website is building, more coming soon.</h2>
-<script>
-let deleteMode = false;
-
-function toggleDelete(){
-  deleteMode = !deleteMode;
-  alert(deleteMode ? "Delete mode ON" : "Delete mode OFF");
-}
-
-function addThought(){
-
-  let text = document.getElementById("thoughtInput").value;
-  if(text=="") return;
-
-  let div = document.createElement("div");
-  div.className = "thought";
-  div.innerText = text;
-
-  div.style.left = "50px";
-  div.style.top = "50px";
-
-  makeDraggable(div);
-
-  div.onclick = function(){
-    if(deleteMode){
-      div.remove();
-    }
-  }
-
-  document.getElementById("board").appendChild(div);
-}
-
-function makeDraggable(el){
-
-  let offsetX, offsetY;
-
-  el.onmousedown = function(e){
-    offsetX = e.offsetX;
-    offsetY = e.offsetY;
-
-    document.onmousemove = function(e){
-      el.style.left = (e.pageX - board.offsetLeft - offsetX) + "px";
-      el.style.top = (e.pageY - board.offsetTop - offsetY) + "px";
-    }
-
-    document.onmouseup = function(){
-      document.onmousemove = null;
-    }
-  }
-}
-
-</script>
 </body>
 </html>
