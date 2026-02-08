@@ -18,6 +18,16 @@ function toggleLine(){
   firstNode=null;
 }
 
+function toggleDelete(){
+  deleteMode = !deleteMode;
+  alert(deleteMode ? "Delete mode ON" : "Delete mode OFF");
+}
+
+function toggleLine(){
+  lineMode = !lineMode;
+  alert(lineMode ? "Line mode ON" : "Line mode OFF");
+}
+
 function addThought(){
   let text=document.getElementById("thoughtInput").value;
   if(!text) return;
