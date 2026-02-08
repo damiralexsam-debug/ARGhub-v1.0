@@ -77,13 +77,14 @@
 <br>
 <h1 style="text-align: center;">This is your Dashboard, for all your ARGs.</h1>
 <br>
-<h2 style="margin-left: 20px;">ARG Brainstorm Board</h2>
-<div style="margin: 20px;">
-<input id="thoughtInput" placeholder="Write a thought...">
+<h2>Brainstorm Board</h2>
+
+<input id="thoughtInput" placeholder="Write a thought">
 <button onclick="addThought()">Add Thought</button>
-<button onclick="toggleDelete()"">Delete Mode</button>
-</div>
-<div id="board" style="margin-left: 20px;">
+<button onclick="toggleDelete()">Delete Mode</button>
+<button onclick="toggleLine()">Line Mode</button>
+
+<div id="board">
   <svg id="lines"></svg>
 </div>
 
