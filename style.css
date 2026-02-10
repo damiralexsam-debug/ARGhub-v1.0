@@ -154,8 +154,8 @@ button:hover{
 }
 /* ARG MAP DASHBOARD */
 #board{
-  width:800px;
-  height:500px;
+  width:1000px;
+  height:700px;
   border:2px solid white;
   position:relative;
   background:#111;
