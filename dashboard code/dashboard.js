@@ -2,6 +2,7 @@ let deleteMode=false;
 let lineMode=false;
 let firstNode=null;
 let connections=[];
+let dragged=false;
 
 const board=document.getElementById("board");
 const svg=document.getElementById("lines");
@@ -10,22 +11,22 @@ function toggleDelete(){
   deleteMode=!deleteMode;
   lineMode=false;
   firstNode=null;
+
+  document.querySelector("button[onclick='toggleDelete()']").style.background = deleteMode ? "red" : "";
+  document.querySelector("button[onclick='toggleDelete()']").style.color = deleteMode ? "white" : "";
+  document.querySelector("button[onclick='toggleLine()']").style.background = "";
+  document.querySelector("button[onclick='toggleLine()']").style.color = "";
 }
 
 function toggleLine(){
   lineMode=!lineMode;
   deleteMode=false;
   firstNode=null;
-}
 
-function toggleDelete(){
-  deleteMode = !deleteMode;
-  alert(deleteMode ? "Delete mode ON" : "Delete mode OFF");
-}
-
-function toggleLine(){
-  lineMode = !lineMode;
-  alert(lineMode ? "Line mode ON" : "Line mode OFF");
+  document.querySelector("button[onclick='toggleLine()']").style.background = lineMode ? "cyan" : "";
+  document.querySelector("button[onclick='toggleLine()']").style.color = lineMode ? "black" : "";
+  document.querySelector("button[onclick='toggleDelete()']").style.background = "";
+  document.querySelector("button[onclick='toggleDelete()']").style.color = "";
 }
 
 function addThought(){
@@ -42,6 +43,7 @@ function addThought(){
   makeDrag(div);
 
   div.onclick=()=>{
+    if(dragged) return; // don't fire click if the user was dragging
     if(deleteMode){
       removeConnections(div);
       div.remove();
@@ -52,6 +54,7 @@ function addThought(){
   };
 
   board.appendChild(div);
+  document.getElementById("thoughtInput").value="";
 }
 
 function makeDrag(el){
@@ -60,8 +63,10 @@ function makeDrag(el){
   el.onmousedown=(e)=>{
     offsetX=e.offsetX;
     offsetY=e.offsetY;
+    dragged=false;
 
     document.onmousemove=(e)=>{
+      dragged=true;
       let x=e.pageX-board.offsetLeft-offsetX;
       let y=e.pageY-board.offsetTop-offsetY;
 
@@ -83,13 +88,20 @@ function makeDrag(el){
 function handleLine(node){
   if(!firstNode){
     firstNode=node;
+    node.style.outline="2px solid cyan";
   }else{
+    if(firstNode===node){
+      firstNode.style.outline="";
+      firstNode=null;
+      return;
+    }
     let line=document.createElementNS("http://www.w3.org/2000/svg","line");
     line.setAttribute("stroke","white");
     line.setAttribute("stroke-width","2");
     svg.appendChild(line);
 
     connections.push({a:firstNode,b:node,line});
+    firstNode.style.outline="";
     firstNode=null;
     updateLines();
   }
