@@ -4,6 +4,276 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── SEARCH & FILTER BAR ── */
+    .discover-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      margin: 30px auto 20px;
+      flex-wrap: wrap;
+      max-width: 900px;
+    }
+
+    #searchBar {
+      padding: 12px 20px;
+      border-radius: 8px;
+      border: 1px solid white;
+      background: #111;
+      color: white;
+      font-family: 'Roboto Slab', serif;
+      font-size: 15px;
+      width: 340px;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    #searchBar:focus {
+      border-color: orange;
+      box-shadow: 0 0 10px orange;
+    }
+
+    /* ── FILTER DROPDOWN ── */
+    .filter-wrapper {
+      position: relative;
+    }
+
+    .filter-btn {
+      padding: 12px 22px;
+      border-radius: 8px;
+      border: 1px solid white;
+      background: #1a1a1a;
+      color: white;
+      font-family: 'Roboto Slab', serif;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.3s;
+      box-shadow: none !important;
+    }
+
+    .filter-btn:hover          { border-color: orange; color: orange; box-shadow: none !important; }
+    .filter-btn.active-all     { background: #2a2a2a; color: white;  border-color: white; }
+    .filter-btn.active-vip     { background: #2a2a2a; color: yellow; border-color: yellow; box-shadow: 0 0 10px yellow !important; }
+    .filter-btn.active-pub     { background: #2a2a2a; color: lime;   border-color: lime;   box-shadow: 0 0 10px lime   !important; }
+    .filter-btn.active-inv     { background: #2a2a2a; color: violet; border-color: violet; box-shadow: 0 0 10px violet !important; }
+
+    .filter-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      background: #1a1a1a;
+      border: 1px solid #444;
+      border-radius: 10px;
+      overflow: hidden;
+      z-index: 999;
+      min-width: 160px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    }
+
+    .filter-dropdown.open {
+      display: block;
+      animation: fadeUp 0.2s ease both;
+    }
+
+    .filter-option {
+      padding: 12px 18px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #ccc;
+      transition: 0.2s;
+      border-left: 3px solid transparent;
+    }
+
+    .filter-option:hover           { background: #2a2a2a; color: white; }
+    .filter-option.active-all      { color: white;  border-left-color: white; }
+    .filter-option.active-vip      { color: yellow; border-left-color: yellow; }
+    .filter-option.active-pub      { color: lime;   border-left-color: lime; }
+    .filter-option.active-inv      { color: violet; border-left-color: violet; }
+
+    /* ── COMMUNITY GRID ── */
+    .community-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+      min-height: 400px;
+      padding: 0 20px;
+    }
+
+    .community-card {
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 14px;
+      padding: 24px 20px;
+      width: 320px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: 0.3s;
+      animation: fadeUp 0.4s ease both;
+      cursor: pointer;
+    }
+
+    .community-card:hover {
+      transform: translateY(-5px);
+      border-color: white;
+      box-shadow: 0 0 18px rgba(255,255,255,0.1);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .community-name {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 0;
+      color: white;
+    }
+
+    .community-type {
+      font-size: 11px;
+      font-weight: bold;
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+
+    .type-vip    { background: yellow;  color: black; }
+    .type-public { background: lime;    color: black; }
+    .type-invite { background: violet;  color: white; }
+
+    .community-desc {
+      font-size: 13px;
+      color: #aaa;
+      line-height: 1.5;
+      flex-grow: 1;
+    }
+
+    .card-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: #666;
+      border-top: 1px solid #222;
+      padding-top: 10px;
+    }
+
+    .join-btn {
+      padding: 7px 18px;
+      border-radius: 6px;
+      border: 1px solid white;
+      background: transparent;
+      color: white;
+      font-family: 'Roboto Slab', serif;
+      font-size: 13px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .join-btn:hover { background: white; color: black; }
+
+    /* ── PAGINATION ── */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin: 36px 0 20px;
+    }
+
+    .page-btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: 1px solid #555;
+      background: #1a1a1a;
+      color: #ccc;
+      font-family: 'Roboto Slab', serif;
+      font-size: 14px;
+      cursor: pointer;
+      transition: 0.3s;
+      box-shadow: none !important;
+    }
+
+    .page-btn:hover:not(:disabled) { background: orange; border-color: orange; color: black; box-shadow: 0 0 10px orange !important; }
+    .page-btn:disabled { opacity: 0.3; cursor: default; }
+    .page-btn.current  { background: orange; border-color: orange; color: black; box-shadow: 0 0 10px orange !important; }
+
+    .no-results {
+      color: #aaa;
+      text-align: center;
+      font-size: 16px;
+      margin: 60px auto;
+      width: 100%;
+    }
+
+    /* ── VIP SCROLL STRIP ── */
+    .vip-strip-wrapper {
+      margin-top: 50px;
+      border-top: 1px solid #333;
+      border-bottom: 1px solid #333;
+      padding: 18px 0;
+      overflow: hidden;
+      background: #0a0a0a;
+    }
+
+    .vip-strip-label {
+      text-align: center;
+      font-size: 11px;
+      color: yellow;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .vip-strip-track {
+      display: flex;
+      gap: 20px;
+      width: max-content;
+      animation: scrollRight 35s linear infinite;
+    }
+
+    .vip-strip-track:hover {
+      animation-play-state: paused;
+    }
+
+    @keyframes scrollRight {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    .vip-pill {
+      background: #111;
+      border: 1px solid yellow;
+      border-radius: 30px;
+      padding: 10px 22px;
+      white-space: nowrap;
+      font-size: 14px;
+      color: yellow;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .vip-pill:hover {
+      background: yellow;
+      color: black;
+      box-shadow: 0 0 12px yellow;
+    }
+
+    /* ── FADE IN ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
 
@@ -11,18 +281,208 @@
 <h2 class="tagline">This is not a game. This is a website.</h2>
 
 <nav class="navbar">
-  <a                         class="navbtn discover-active">Discover</a>
-  <a href="pricing.html"     class="navbtn pricing">Pricing</a>
-  <a href="featured.html"    class="navbtn featured">Featured</a>
-  <a href="dashboard.html"   class="navbtn dashboard">Dashboard</a>
-  <a href="recting.html"     class="navbtn recting">Recting</a>
+  <a                          class="navbtn discover-active">Discover</a>
+  <a href="pricing.html"      class="navbtn pricing">Pricing</a>
+  <a href="featured.html"     class="navbtn featured">Featured</a>
+  <a href="dashboard.html"    class="navbtn dashboard">Dashboard</a>
+  <a href="recting.html"      class="navbtn recting">Recting</a>
   <a href="contextslips.html" class="navbtn context">Context Slips</a>
 </nav>
 
 <br>
-<h1 style="text-align:center;">Welcome to the Discover Page!</h1>
-<br>
-<h2>This website is building, more coming soon.</h2>
+<h1 style="text-align:center;">Discover Communities</h1>
+
+<!-- SEARCH & FILTER -->
+<div class="discover-controls">
+  <input id="searchBar" type="text" placeholder="Search communities..." oninput="renderPage(1)">
+  <div class="filter-wrapper">
+    <button class="filter-btn active-all" id="filterBtn" onclick="toggleDropdown()">Filter ▾</button>
+    <div class="filter-dropdown" id="filterDropdown">
+      <div class="filter-option active-all" id="opt-all"    onclick="setFilter('all',    'All')">All</div>
+      <div class="filter-option"            id="opt-vip"    onclick="setFilter('VIP',    'VIP ▾')">⭐ VIP</div>
+      <div class="filter-option"            id="opt-public" onclick="setFilter('Public', 'Public ▾')">🌐 Public</div>
+      <div class="filter-option"            id="opt-invite" onclick="setFilter('Invite', 'Invite Only ▾')">🔒 Invite Only</div>
+    </div>
+  </div>
+</div>
+
+<!-- COMMUNITY GRID -->
+<div class="community-grid" id="communityGrid"></div>
+
+<!-- PAGINATION -->
+<div class="pagination" id="pagination"></div>
+
+<!-- VIP SCROLL STRIP -->
+<div class="vip-strip-wrapper" id="vipStrip">
+  <div class="vip-strip-label">✦ VIP Communities ✦</div>
+  <div class="vip-strip-track" id="vipTrack"></div>
+</div>
+
+<script>
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// COMMUNITY DATA — edit names, types, members, and descriptions here!
+// type must be exactly: "VIP", "Public", or "Invite"
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const communities = [
+  { name: "Marble Hornets Archive",    type: "Public", members: 4821, desc: "The definitive community for Marble Hornets discussion, evidence boards, and lore deep-dives." },
+  { name: "Cicada 3301 Solvers",       type: "VIP",    members: 1203, desc: "An elite group dedicated to cracking the remaining unsolved layers of Cicada 3301." },
+  { name: "Petscop Research Lab",      type: "Public", members: 3302, desc: "Documenting every frame, sound, and symbol hidden inside Petscop's fictional game world." },
+  { name: "IloveBees Revival",         type: "Invite", members:  874, desc: "A private community revisiting the Halo 2 ARG that defined a generation of puzzle solving." },
+  { name: "Project: Astra",            type: "VIP",    members:  512, desc: "Active ARG currently in progress. VIP solvers only — high clearance puzzles inside." },
+  { name: "Unfiction Refugees",        type: "Public", members: 6741, desc: "The spiritual successor to the old Unfiction forums. Come discuss everything ARG-related." },
+  { name: "The Black Watchmen",        type: "Invite", members:  388, desc: "Closed community for veterans of The Black Watchmen ARG. Ongoing case files shared here." },
+  { name: "Deus Ex Machina",           type: "VIP",    members:  299, desc: "An original ARG community run by a PM collective. Puzzles drop weekly. Join to keep up." },
+  { name: "Analog Horror Hub",         type: "Public", members: 5190, desc: "Where ARG meets analog horror. Discuss Local 58, Gemini Home Entertainment, and more." },
+  { name: "Cipher Academy",            type: "Public", members: 2874, desc: "Learn every cipher used in ARGs — Caesar, Vigenere, Playfair, and beyond. All skill levels welcome." },
+  { name: "Haunted PS1 Community",     type: "Public", members: 1654, desc: "Connecting fans of lo-fi horror ARGs with the aesthetic of old PlayStation games." },
+  { name: "Operation Stormwatch",      type: "Invite", members:  210, desc: "Invite-only operation currently in Act II. Do not discuss details outside this community." },
+  { name: "Steganography Specialists", type: "VIP",    members:  743, desc: "Advanced image and audio analysis for ARG solvers. Tooling, techniques, and live cases." },
+  { name: "The Wayward Files",         type: "Public", members: 3021, desc: "An ARG set across 12 fictional websites. Follow the breadcrumbs together." },
+  { name: "Signal Lost",               type: "VIP",    members:  601, desc: "Radio-frequency ARG community. Decode shortwave broadcasts and share findings here." },
+  { name: "Puzzle Collective",         type: "Public", members: 4403, desc: "General puzzle-solving hangout for ARG newcomers and veterans alike. No ARG too small." },
+  { name: "Rabbit Hole Runners",       type: "Public", members: 1987, desc: "For those who love the chase more than the answer. Share your latest rabbit holes here." },
+  { name: "Archive: LYST",            type: "Invite", members:  155, desc: "Documentation community for the now-concluded LYST ARG. Preserving the full timeline." },
+  { name: "The Trailhead Network",     type: "VIP",    members:  889, desc: "A curated space for Puppetmasters to share early-stage ARG trailheads and get feedback." },
+  { name: "Cryptic Coordinates",       type: "Public", members: 2210, desc: "Real-world location drops, geocaching meets ARG. Share coordinates and physical find logs." },
+  { name: "Frequency Nine",            type: "Invite", members:  334, desc: "An ongoing original ARG. New chapters release on the 9th of each month. Invite required." },
+  { name: "Dreamscape Detectives",     type: "VIP",    members:  467, desc: "Surreal, narrative-heavy ARG community. Current case: The Sleeper Transmission." },
+  { name: "Meta-ARG Watch",            type: "Public", members: 3788, desc: "Tracking ARGs that are hidden inside other ARGs. Down the rabbit hole, together." },
+];
+
+const PER_PAGE = 9;
+let currentFilter = "all";
+let currentPage   = 1;
+
+function toggleDropdown() {
+  document.getElementById("filterDropdown").classList.toggle("open");
+}
+
+// Close dropdown if user clicks anywhere outside it
+document.addEventListener("click", function(e) {
+  const wrapper = document.querySelector(".filter-wrapper");
+  if (!wrapper.contains(e.target)) {
+    document.getElementById("filterDropdown").classList.remove("open");
+  }
+});
+
+function setFilter(f, label) {
+  currentFilter = f;
+
+  // Update button label to show active filter
+  document.getElementById("filterBtn").textContent = label === "All" ? "Filter ▾" : label;
+
+  // Reset all button/option active classes
+  const btn = document.getElementById("filterBtn");
+  btn.className = "filter-btn";
+  if (f === "all")    btn.classList.add("active-all");
+  if (f === "VIP")    btn.classList.add("active-vip");
+  if (f === "Public") btn.classList.add("active-pub");
+  if (f === "Invite") btn.classList.add("active-inv");
+
+  // Highlight the active option inside the dropdown
+  document.querySelectorAll(".filter-option").forEach(o => {
+    o.className = "filter-option";
+  });
+  const optMap = { all: "opt-all", VIP: "opt-vip", Public: "opt-public", Invite: "opt-invite" };
+  const activeClass = { all: "active-all", VIP: "active-vip", Public: "active-pub", Invite: "active-inv" };
+  document.getElementById(optMap[f]).classList.add(activeClass[f]);
+
+  // Close dropdown
+  document.getElementById("filterDropdown").classList.remove("open");
+
+  renderPage(1);
+}
+
+function getFiltered() {
+  const query = document.getElementById("searchBar").value.toLowerCase();
+  return communities.filter(c => {
+    const matchType   = currentFilter === "all" || c.type === currentFilter;
+    const matchSearch = c.name.toLowerCase().includes(query);
+    return matchType && matchSearch;
+  });
+}
+
+function renderPage(page) {
+  currentPage = page;
+  const filtered   = getFiltered();
+  const totalPages = Math.ceil(filtered.length / PER_PAGE);
+  const slice      = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+
+  // ── Cards ──
+  const grid = document.getElementById("communityGrid");
+  grid.innerHTML = "";
+
+  if (slice.length === 0) {
+    grid.innerHTML = `<p class="no-results">No communities found. Try a different search or filter.</p>`;
+  } else {
+    slice.forEach((c, i) => {
+      const typeClass = c.type === "VIP" ? "type-vip" : c.type === "Public" ? "type-public" : "type-invite";
+      const typeLabel = c.type === "Invite" ? "INVITE ONLY" : c.type.toUpperCase();
+      const card = document.createElement("div");
+      card.className = "community-card";
+      card.style.animationDelay = (i * 0.06) + "s";
+      card.innerHTML = `
+        <div class="card-top">
+          <h3 class="community-name">${c.name}</h3>
+          <span class="community-type ${typeClass}">${typeLabel}</span>
+        </div>
+        <p class="community-desc">${c.desc}</p>
+        <div class="card-bottom">
+          <span>👥 ${c.members.toLocaleString()} members</span>
+          <button class="join-btn">Join</button>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  // ── Pagination ──
+  const pag = document.getElementById("pagination");
+  pag.innerHTML = "";
+
+  if (totalPages > 1) {
+    const prev = document.createElement("button");
+    prev.className = "page-btn";
+    prev.textContent = "← Prev";
+    prev.disabled = page === 1;
+    prev.onclick = () => renderPage(page - 1);
+    pag.appendChild(prev);
+
+    for (let p = 1; p <= totalPages; p++) {
+      const btn = document.createElement("button");
+      btn.className = "page-btn" + (p === page ? " current" : "");
+      btn.textContent = p;
+      btn.onclick = () => renderPage(p);
+      pag.appendChild(btn);
+    }
+
+    const next = document.createElement("button");
+    next.className = "page-btn";
+    next.textContent = "Next →";
+    next.disabled = page === totalPages;
+    next.onclick = () => renderPage(page + 1);
+    pag.appendChild(next);
+  }
+
+  // ── VIP strip: hide when filtering by VIP already ──
+  document.getElementById("vipStrip").style.display = currentFilter === "VIP" ? "none" : "block";
+}
+
+function buildVIPStrip() {
+  const vipList = communities.filter(c => c.type === "VIP");
+  const track   = document.getElementById("vipTrack");
+  // Duplicate for seamless loop
+  [...vipList, ...vipList].forEach(c => {
+    const pill = document.createElement("div");
+    pill.className = "vip-pill";
+    pill.textContent = "★ " + c.name + "  ·  " + c.members.toLocaleString() + " members";
+    track.appendChild(pill);
+  });
+}
+
+buildVIPStrip();
+renderPage(1);
+</script>
 
 </body>
 </html>
