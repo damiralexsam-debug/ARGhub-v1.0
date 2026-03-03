@@ -4,6 +4,312 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── TOGGLE ── */
+    .billing-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin: 30px 0 10px;
+      font-size: 16px;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 56px;
+      height: 28px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      inset: 0;
+      background: #333;
+      border-radius: 28px;
+      cursor: pointer;
+      transition: 0.3s;
+      border: 1px solid white;
+    }
+
+    .slider::before {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      left: 4px;
+      top: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+
+    .toggle-switch input:checked + .slider::before {
+      transform: translateX(27px);
+      background: yellow;
+    }
+
+    .save-badge {
+      background: yellow;
+      color: black;
+      font-size: 11px;
+      font-weight: bold;
+      padding: 2px 8px;
+      border-radius: 20px;
+      opacity: 0;
+      transition: 0.3s;
+    }
+
+    .save-badge.visible {
+      opacity: 1;
+    }
+
+    /* ── PLAN GRID ── */
+    .plans-grid {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin: 40px auto;
+      max-width: 1400px;
+      padding: 0 20px;
+      flex-wrap: wrap;
+    }
+
+    .plan-card {
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 16px;
+      padding: 32px 28px;
+      width: 260px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .plan-card:hover {
+      transform: translateY(-6px);
+      border-color: white;
+    }
+
+    .plan-card.freemium:hover     { box-shadow: 0 0 24px rgba(255,255,255,0.15); }
+    .plan-card.premium            { border-color: cyan; }
+    .plan-card.premium:hover      { box-shadow: 0 0 24px rgba(0,200,255,0.3); border-color: cyan; }
+    .plan-card.puppetmaster       { border-color: rgb(134,15,170); }
+    .plan-card.puppetmaster:hover { box-shadow: 0 0 24px rgba(134,15,170,0.5); border-color: rgb(134,15,170); }
+
+    /* POPULAR badge */
+    .popular-badge {
+      position: absolute;
+      top: 14px;
+      right: -28px;
+      background: cyan;
+      color: black;
+      font-size: 11px;
+      font-weight: bold;
+      padding: 4px 36px;
+      transform: rotate(45deg);
+      letter-spacing: 1px;
+    }
+
+    .plan-name {
+      font-size: 22px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .plan-card.freemium     .plan-name { color: white; }
+    .plan-card.premium      .plan-name { color: cyan; }
+    .plan-card.puppetmaster .plan-name { color: rgb(180,80,220); }
+
+    .plan-price {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+
+    .price-amount {
+      font-size: 36px;
+      font-weight: 900;
+      transition: 0.3s;
+    }
+
+    .price-period {
+      font-size: 13px;
+      color: #aaa;
+    }
+
+    .plan-divider {
+      border: none;
+      border-top: 1px solid #333;
+      margin: 0;
+    }
+
+    .plan-features {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex-grow: 1;
+    }
+
+    .plan-features li {
+      font-size: 14px;
+      color: #ccc;
+      padding-left: 20px;
+      position: relative;
+      line-height: 1.4;
+    }
+
+    .plan-features li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #555;
+    }
+
+    .plan-card.premium      .plan-features li::before { color: cyan; }
+    .plan-card.puppetmaster .plan-features li::before { color: rgb(180,80,220); }
+
+    .plan-btn {
+      margin-top: auto;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid white;
+      background: transparent;
+      color: white;
+      font-family: 'Roboto Slab', serif;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.3s;
+      text-align: center;
+    }
+
+    .plan-card.freemium     .plan-btn:hover { background: white;              color: black; box-shadow: 0 0 12px white; }
+    .plan-card.premium      .plan-btn:hover { background: cyan;               color: black; box-shadow: 0 0 12px cyan;  border-color: cyan; }
+    .plan-card.puppetmaster .plan-btn:hover { background: rgb(134,15,170);    color: white; box-shadow: 0 0 12px rgb(134,15,170); border-color: rgb(134,15,170); }
+
+    .plan-card.premium      .plan-btn { border-color: cyan;          color: cyan; }
+    .plan-card.puppetmaster .plan-btn { border-color: rgb(180,80,220); color: rgb(180,80,220); }
+
+    /* ── FEATURED ADD-ON CARD ── */
+    .featured-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 20px auto 60px;
+    }
+
+    .featured-label {
+      font-size: 13px;
+      color: #aaa;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .featured-card {
+      background: #111;
+      border: 1px solid yellow;
+      border-radius: 16px;
+      padding: 32px 40px;
+      width: 600px;
+      display: flex;
+      gap: 40px;
+      align-items: center;
+      transition: 0.3s;
+    }
+
+    .featured-card:hover {
+      box-shadow: 0 0 30px rgba(255,220,0,0.3);
+      transform: translateY(-4px);
+    }
+
+    .featured-left { flex: 1; }
+
+    .featured-left h2 {
+      color: yellow;
+      margin: 0 0 8px;
+      font-size: 24px;
+    }
+
+    .featured-left p {
+      color: #ccc;
+      font-size: 14px;
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    .featured-right {
+      text-align: center;
+      min-width: 140px;
+    }
+
+    .featured-price {
+      font-size: 38px;
+      font-weight: 900;
+      color: yellow;
+    }
+
+    .featured-period {
+      font-size: 13px;
+      color: #aaa;
+      display: block;
+      margin-bottom: 16px;
+    }
+
+    .featured-btn {
+      padding: 12px 24px;
+      border-radius: 8px;
+      border: 1px solid yellow;
+      background: transparent;
+      color: yellow;
+      font-family: 'Roboto Slab', serif;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.3s;
+      white-space: nowrap;
+    }
+
+    .featured-btn:hover {
+      background: yellow;
+      color: black;
+      box-shadow: 0 0 15px yellow;
+    }
+
+    /* ── FADE-IN ANIMATION ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .plan-card:nth-child(1) { animation: fadeUp 0.5s ease 0.05s both; }
+    .plan-card:nth-child(2) { animation: fadeUp 0.5s ease 0.15s both; }
+    .plan-card:nth-child(3) { animation: fadeUp 0.5s ease 0.25s both; }
+    .featured-card          { animation: fadeUp 0.5s ease 0.35s both; }
+
+    .current-plan-note {
+      text-align: center;
+      color: #aaa;
+      font-size: 14px;
+      margin-top: -10px;
+      margin-bottom: 10px;
+    }
+
+    .current-plan-note span {
+      color: white;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
 
@@ -11,18 +317,135 @@
 <h2 class="tagline">This is not a game. This is a website.</h2>
 
 <nav class="navbar">
-  <a href="discover.html"    class="navbtn discover">Discover</a>
-  <a                         class="navbtn pricing-active">Pricing</a>
-  <a href="featured.html"    class="navbtn featured">Featured</a>
-  <a href="dashboard.html"   class="navbtn dashboard">Dashboard</a>
-  <a href="recting.html"     class="navbtn recting">Recting</a>
+  <a href="discover.html"     class="navbtn discover">Discover</a>
+  <a                          class="navbtn pricing-active">Pricing</a>
+  <a href="featured.html"     class="navbtn featured">Featured</a>
+  <a href="dashboard.html"    class="navbtn dashboard">Dashboard</a>
+  <a href="recting.html"      class="navbtn recting">Recting</a>
   <a href="contextslips.html" class="navbtn context">Context Slips</a>
 </nav>
 
 <br>
-<h1 style="text-align:center;">Welcome to the Pricing page!</h1>
-<br>
-<h2 style="text-align:center;">Your subscription plan is: Freemium</h2>
+<h1 style="text-align:center;">Plans &amp; Pricing</h1>
+<p class="current-plan-note">Your current plan: <span>Freemium</span></p>
+
+<!-- BILLING TOGGLE -->
+<div class="billing-toggle">
+  <span>Monthly</span>
+  <label class="toggle-switch">
+    <input type="checkbox" id="billingToggle" onchange="switchBilling()">
+    <span class="slider"></span>
+  </label>
+  <span>Yearly <span class="save-badge" id="saveBadge">SAVE 20%</span></span>
+</div>
+
+<!-- MAIN 3 PLAN CARDS -->
+<div class="plans-grid">
+
+  <!-- FREEMIUM -->
+  <div class="plan-card freemium">
+    <h3 class="plan-name">Freemium</h3>
+    <div class="plan-price">
+      <span class="price-amount" id="price-freemium">$0</span>
+      <span class="price-period" id="period-freemium">forever</span>
+    </div>
+    <hr class="plan-divider">
+    <ul class="plan-features">
+      <li>Text in public &amp; invited communities</li>
+      <li>Create up to 2 communities</li>
+      <li>Post unlimited ARGs</li>
+      <li>1 GB storage</li>
+      <li>Purchase Featured add-on anytime</li>
+    </ul>
+    <button class="plan-btn">Current Plan</button>
+  </div>
+
+  <!-- PREMIUM -->
+  <div class="plan-card premium">
+    <div class="popular-badge">POPULAR</div>
+    <h3 class="plan-name">Premium</h3>
+    <div class="plan-price">
+      <span class="price-amount" id="price-premium">$7.50</span>
+      <span class="price-period" id="period-premium">/ month</span>
+    </div>
+    <hr class="plan-divider">
+    <ul class="plan-features">
+      <li>Everything in Freemium</li>
+      <li>Evidence Board &amp; improved Dashboard tools</li>
+      <li>Access VIP public communities</li>
+      <li>Preferred feedback ranking</li>
+      <li>Create up to 5 communities</li>
+      <li>Post unlimited ARGs</li>
+      <li>10 GB storage</li>
+      <li>Purchase Featured add-on anytime</li>
+    </ul>
+    <button class="plan-btn">Upgrade to Premium</button>
+  </div>
+
+  <!-- PUPPETMASTER -->
+  <div class="plan-card puppetmaster">
+    <h3 class="plan-name">Puppetmaster</h3>
+    <div class="plan-price">
+      <span class="price-amount" id="price-puppetmaster">$15</span>
+      <span class="price-period" id="period-puppetmaster">/ month</span>
+    </div>
+    <hr class="plan-divider">
+    <ul class="plan-features">
+      <li>Everything in Premium</li>
+      <li>Enhanced Creator Dashboard</li>
+      <li>Auto-manage your ARG's communities</li>
+      <li>Post unlimited ARGs</li>
+      <li>50 GB storage (base)</li>
+      <li>Expandable up to 500 GB via one-time payments</li>
+      <li>Purchase Featured add-on anytime</li>
+    </ul>
+    <button class="plan-btn">Upgrade to Puppetmaster</button>
+  </div>
+
+</div>
+
+<!-- FEATURED ADD-ON CARD -->
+<div class="featured-section">
+  <p class="featured-label">— Add-on · Available on any plan —</p>
+  <div class="featured-card">
+    <div class="featured-left">
+      <h2>Featured</h2>
+      <p>Advertise your ARG across the entire ARGhub platform. Your ARG gets pinned to the Trending tab for the full duration of the week — maximum visibility, minimum effort. Available on any plan.</p>
+    </div>
+    <div class="featured-right">
+      <div class="featured-price">$20</div>
+      <span class="featured-period">per week</span>
+      <button class="featured-btn">Get Featured</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const monthly = {
+    freemium:     { amount: "$0",    period: "forever" },
+    premium:      { amount: "$7.50", period: "/ month" },
+    puppetmaster: { amount: "$15",   period: "/ month" }
+  };
+
+  const yearly = {
+    freemium:     { amount: "$0",    period: "forever" },
+    premium:      { amount: "$6.00", period: "/ month, billed yearly" },
+    puppetmaster: { amount: "$12",   period: "/ month, billed yearly" }
+  };
+
+  function switchBilling() {
+    const isYearly = document.getElementById("billingToggle").checked;
+    const data = isYearly ? yearly : monthly;
+    const badge = document.getElementById("saveBadge");
+
+    badge.classList.toggle("visible", isYearly);
+
+    for (const [plan, vals] of Object.entries(data)) {
+      document.getElementById("price-" + plan).textContent  = vals.amount;
+      document.getElementById("period-" + plan).textContent = vals.period;
+    }
+  }
+</script>
 
 </body>
 </html>
