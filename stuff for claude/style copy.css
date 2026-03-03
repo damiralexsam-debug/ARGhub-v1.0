@@ -1,0 +1,184 @@
+body {background:black;
+  color:white;
+  margin:0;
+font-family: 'Roboto Slab', serif;
+}
+/* HOME PAGE BUTTONS & INFO BOXES */
+.buttonRow{
+  display:flex;
+  justify-content:space-around;
+  margin-top:50px;
+}
+
+.section{
+  text-align:center;
+  width:45%;
+}
+
+.infoBox{
+  overflow:visible;
+  display:none;
+  opacity:0;
+  transition:0.5s;
+  border:2px solid white;
+  padding:20px;
+  background:#111;
+  border-radius:12px;
+  margin-top:15px;
+}
+.section button{
+  padding:15px 30px;
+  font-size:18px;
+  border-radius:8px;
+}
+button:hover{
+  box-shadow:0 0 10px rgb(134, 15, 170);
+  cursor:pointer;
+}
+/* TOOLTIPS */
+.tooltip{
+  position:relative;
+  display:inline-block;
+  cursor:help;
+}
+
+.tooltip .tooltiptext{
+  visibility:hidden;
+  width:200px;
+  background:rgb(14, 14, 14);
+  color:white;
+  text-align:center;
+  padding:8px;
+  border-radius:6px;
+  border:1px solid white;
+
+  position:absolute;
+  bottom:125%;
+  left:50%;
+  transform:translateX(-50%);
+
+  opacity:0;
+  transition:0.3s;
+  z-index:1;
+}
+
+.tooltip:hover .tooltiptext{
+  visibility:visible;
+  opacity:1;
+}
+
+.tooltip{
+  position:relative;
+  display:inline-block;
+  cursor:help;
+  font-weight:bold;
+}
+
+/* COLORS FOR TOOLTIPS */
+.tooltip.green{ color:#4CAF50; }
+.tooltip.orange{ color:#ff9800; }
+.tooltip.red{ color:#f44336; }
+
+.tooltip .tooltiptext{
+  visibility:hidden;
+  width:220px;
+  background:black;
+  color:white;
+  text-align:center;
+  padding:8px;
+  border-radius:6px;
+  border:1px solid white;
+
+  position:absolute;
+  bottom:125%;
+  left:50%;
+  transform:translateX(-50%);
+
+  opacity:0;
+  transition:0.25s;
+  z-index:999;
+}
+
+.tooltip:hover .tooltiptext{
+  visibility:visible;
+  opacity:1;
+}
+.boxTips {
+  width: 375px;
+  height: 35px;
+  padding-top: 10px;
+  padding-left: 10px;
+  margin-left: auto;
+  margin-right: 100px;
+  border: 2px solid white;
+  display:flex;
+  justify-content:space-around;
+  margin-top:0;
+}
+/* FEATURED ARG CARDS */
+.featuredRow{
+  display:flex;
+  justify-content:center;
+  gap:100px;
+  margin-top:50px;
+}
+
+.argCard{
+  background:#111;
+  border:1px solid white;
+  padding:20px;
+  width: 700px;
+  border-radius:12px;
+  text-align:center;
+}
+.argCard.card1:hover{
+  background-color: rgb(134, 15, 170);
+  color: solid white;
+  box-shadow:0 0 10px rgb(134, 15, 170);
+  transition: 0.3s;
+  cursor:pointer;
+}
+.argCard.card2:hover{
+  background-color: aquamarine;
+  color:  black;
+  box-shadow:0 0 10px rgb(15, 170, 136);
+  transition: 0.3s;
+  cursor:pointer;
+}
+.argCard.card3:hover{
+  background-color: rgb(170, 15, 15);
+  color: solid white;
+  box-shadow:0 0 10px rgb(170, 15, 15);
+  transition: 0.3s;
+  cursor:pointer;
+}
+/* ARG MAP DASHBOARD */
+#board{
+  width:1000px;
+  height:700px;
+  border:2px solid white;
+  position:relative;
+  background:#111;
+  overflow:hidden;
+  margin-left: 20px;
+  margin-top:20px;
+}
+
+#lines{
+  position:absolute;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+}
+
+.thought{
+  position:absolute;
+  background:#222;
+  padding:10px;
+  border:1px solid white;
+  border-radius:8px;
+  cursor:grab;
+  color:white;
+  user-select:none;
+}
+

@@ -1,226 +1,155 @@
 <html>
 <head>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<br>
-<a href="index.html"><img src="images and logos/ARGhub_3.png" width="200" style="display:block; margin:auto;"></a><div class="boxTips"><span class="tooltip green">
-Green Tooltip
-  <span class="tooltiptext">
-    If the tooltipped word is green, it means that everyone in the ARG community is familiar with it, and it is a common term used in the ARG space.
-  </span>
-</span> <span class="tooltip orange">
-Orange Tooltip
-  <span class="tooltiptext">
-    If the tooltipped word is orange, it means that it is a term that is known by most of the ARG community, but it may not be as common as the green tooltipped words.
-  </span>
-</span> <span class="tooltip red">
-Red Tooltip
-  <span class="tooltiptext">
-    If the tooltipped word is red, it means that it is a term that is not widely known in the ARG community, and it may be a more obscure or niche term.
-  </span>
-</span></div>
-<h2 style="text-align: center;">Solve, Together.</h2>
-<div style="
-  background:rgb(0, 0, 0);
-  padding:15px 0;
-  display:flex;
-  justify-content:center;
-  gap:150px;
-  border-bottom:1px solid white;
-">
 
-  <a href="discover.html" class="navbtn discover">Discover</a>
-  <a href="pricing.html" class="navbtn pricing">Pricing</a>
-  <a href="featured.html" class="navbtn featured">Featured</a>
-  <a href="dashboard.html" class="navbtn dashboard">Dashboard</a>
-  <a href="recting.html" class="navbtn recting">Recting</a>
-  <a href="contextslips.html" class="navbtn context">Context Slips</a>
+<a href="index.html"><img src="images and logos/ARGhub_3.png" width="200" class="site-logo"></a>
 
+<div class="boxTips">
+  <span class="tooltip green">Green Tooltip
+    <span class="tooltiptext">If the tooltipped word is green, it means that everyone in the ARG community is familiar with it, and it is a common term used in the ARG space.</span>
+  </span>
+  <span class="tooltip orange">Orange Tooltip
+    <span class="tooltiptext">If the tooltipped word is orange, it means that it is a term that is known by most of the ARG community, but it may not be as common as the green tooltipped words.</span>
+  </span>
+  <span class="tooltip red">Red Tooltip
+    <span class="tooltiptext">If the tooltipped word is red, it means that it is a term that is not widely known in the ARG community, and it may be a more obscure or niche term.</span>
+  </span>
 </div>
 
-<style>
-.navbtn{
-  color:white;
-  text-decoration:none;
-  padding:20px 36px;
-  border:1px solid white;
-  border-radius:8px;
-  font-size:16px;
-  transition:0.3s;
-}
+<h2 class="tagline">Solve, Together.</h2>
 
-/* Glow colors */
-.discover:hover{
-  background:orange;
-  box-shadow:0 0 15px orange;
-}
+<nav class="navbar">
+  <a href="discover.html"    class="navbtn discover">Discover</a>
+  <a href="pricing.html"     class="navbtn pricing">Pricing</a>
+  <a href="featured.html"    class="navbtn featured">Featured</a>
+  <a href="dashboard.html"   class="navbtn dashboard">Dashboard</a>
+  <a href="recting.html"     class="navbtn recting">Recting</a>
+  <a href="contextslips.html" class="navbtn context">Context Slips</a>
+</nav>
 
-.pricing:hover{
-  background:yellow;
-  color:black;
-  box-shadow:0 0 15px yellow;
-}
-
-.featured:hover{
-  background:lime;
-  color:black;
-  box-shadow:0 0 15px lime;
-}
-
-.dashboard:hover{
-  background:cyan;
-  color:black;
-  box-shadow:0 0 15px cyan;
-}
-
-.recting:hover{
-  background:pink;
-  color:black;
-  box-shadow:0 0 15px pink;
-}
-
-.context:hover{
-  background:violet;
-  box-shadow:0 0 15px violet;
-}
-</style>
 <br>
 <h1 style="text-align:center;">ARGhub is live!</h1>
-<h2 style="text-align: center;">The hub for solving, discussing, creating and learning. Join the <span class="tooltip green">
-ARG
-  <span class="tooltiptext">
-    Alternate Reality Game. A game that uses the real world as a platform, often involving multiple media and game elements to tell a story that may be affected by players' ideas or actions.
+<h2 style="text-align:center;">The hub for solving, discussing, creating and learning. Join the
+  <span class="tooltip green">ARG
+    <span class="tooltiptext">Alternate Reality Game. A game that uses the real world as a platform, often involving multiple media and game elements to tell a story that may be affected by players' ideas or actions.</span>
   </span>
-</span> space today.</h2>
-<div class="buttonRow">
-  <!-- DISCUSS -->
-  <div class="section">
-    <button id="DiscussButton" onclick="toggleBox('Discuss')">
-      Discuss & Create ARGs
-    </button>
+  space today.
+</h2>
 
+<div class="buttonRow">
+
+  <div class="section">
+    <button id="DiscussButton" onclick="toggleBox('Discuss')">Discuss & Create ARGs</button>
     <div id="DiscussBox" class="infoBox">
       <h2>Discuss & Create</h2>
-      <p>Talk about ARGs and build your own; while learning from other <span class="tooltip green">
-Puppetmasters
-  <span class="tooltiptext">
-    The person controlling/creating the ARG.
-  </span>
-</span>
-. Share videos, pictures, codes, most files with your peers in the Communities. 
-        Or create your own ARG using the Dashboard, which has better functionality when upgraded to a new plan. 
-        The Premium plan adds the Evidence Board to your Dashboard, allowing you to organize all your saved files and documentations in File Stacks, allowing for a better organized space.</p>
+      <p>Talk about ARGs and build your own; while learning from other
+        <span class="tooltip green">Puppetmasters
+          <span class="tooltiptext">The person controlling/creating the ARG.</span>
+        </span>.
+        Share videos, pictures, codes, most files with your peers in the Communities.
+        Or create your own ARG using the Dashboard, which has better functionality when upgraded to a new plan.
+        The Premium plan adds the Evidence Board to your Dashboard, allowing you to organize all your saved files and documentations in File Stacks, allowing for a better organized space.
+      </p>
       <button><a href="dashboard.html">Create your ARG now!</a></button>
     </div>
   </div>
 
-  <!-- JOIN -->
   <div class="section">
-    <button id="JoinButton" onclick="toggleBox('Join')">
-      Join Communities
-    </button>
-
+    <button id="JoinButton" onclick="toggleBox('Join')">Join Communities</button>
     <div id="JoinBox" class="infoBox">
       <h2>Join Communities</h2>
-      <p>Find active ARGs and solve together. 
-        Create communities dedicated to your favourite ARG, or join one and be apart of the completion. Share files, have in-community polls, and solve the ARG you love. 
-      While solving, moderators will grant you <span class="tooltip orange">
-Promotion Tickets
-  <span class="tooltiptext">
-    Tickets that promote your ARG to the top of the Featured Page, increasing visibility and player count. They are only temporary, but they are a great boost to the early stages of an ARG. Feature created only in ARGhub.
-  </span>
-</span>, that clear the algorithm of the Featured Page, so that your ARG shows up on the top charts. 
-      These tickets grant one day of visiblity per ticket.</p>
+      <p>Find active ARGs and solve together.
+        Create communities dedicated to your favourite ARG, or join one and be a part of the completion. Share files, have in-community polls, and solve the ARG you love.
+        While solving, moderators will grant you
+        <span class="tooltip orange">Promotion Tickets
+          <span class="tooltiptext">Tickets that promote your ARG to the top of the Featured Page, increasing visibility and player count. They are only temporary, but they are a great boost to the early stages of an ARG. Feature created only in ARGhub.</span>
+        </span>,
+        that clear the algorithm of the Featured Page, so that your ARG shows up on the top charts.
+        These tickets grant one day of visibility per ticket.
+      </p>
       <button><a href="discover.html">Join other Solvers</a></button>
     </div>
   </div>
 
-  <!-- LEARN -->
   <div class="section">
-    <button id="LearnButton" onclick="toggleBox('Learn')">
-      Learn Ciphers
-    </button>
-
+    <button id="LearnButton" onclick="toggleBox('Learn')">Learn Ciphers</button>
     <div id="LearnBox" class="infoBox">
-      <h2>Learn <span class="tooltip green">
-Ciphers
-  <span class="tooltiptext">
-    A method of transforming a message to conceal its meaning. They are often used in ARGs to hide clues and information, and they can range from simple substitution ciphers to complex encryption methods.
-  </span>
-</span></h2>
-      <p>Master puzzle-solving with the never-thought-of invention: the Context Slips. 
-        Containing most completed ARGs with detailed instructions on how they were solved and what was the story, the Archive is for the newcomers wanting to educate themselves to be apart of the ARG community.
-        But the Dictionary contains all known terms and definitions of these terms, which are all related to the ARG space.</p>
+      <h2>Learn
+        <span class="tooltip green">Ciphers
+          <span class="tooltiptext">A method of transforming a message to conceal its meaning. They are often used in ARGs to hide clues and information, and they can range from simple substitution ciphers to complex encryption methods.</span>
+        </span>
+      </h2>
+      <p>Master puzzle-solving with the never-thought-of invention: the Context Slips.
+        Containing most completed ARGs with detailed instructions on how they were solved and what was the story, the Archive is for the newcomers wanting to educate themselves to be a part of the ARG community.
+        But the Dictionary contains all known terms and definitions of these terms, which are all related to the ARG space.
+      </p>
       <button><a href="contextslips.html">Enter the Vault of Knowledge</a></button>
     </div>
   </div>
 
 </div>
+
 <br>
-<h2 style="text-align: center;">Some of the Classics</h2>
+<h2 style="text-align:center;">Some of the Classics</h2>
+
 <div class="featuredRow">
 
   <div class="argCard card1">
     <img src="images and logos/OperatorSymbol.webp" width="75%">
     <h3>Marble Hornets</h3>
-    <p>Marble Hornets is an American found footage web series created by Troy Wagner, Joseph DeLage, and Tim Sutton. 
-      It is a pseudo-documentary based on the Slender Man online mythos. 
-      While there is some participation from the solver community, Marble Hornets is mostly <span class="tooltip orange">
-Analog Horror
-  <span class="tooltiptext">
-    A genre of horror that uses the aesthetics and technology of the past, often with a focus on VHS tapes, old television broadcasts, and other analog media. 
-    It is often used in ARGs to create a sense of nostalgia and unease, and it can be a powerful storytelling tool.
-  </span>
-</span>. But ARGs and Analog Horror can overlap, and that is a good thing.</p>
+    <p>Marble Hornets is an American found footage web series created by Troy Wagner, Joseph DeLage, and Tim Sutton.
+      It is a pseudo-documentary based on the Slender Man online mythos.
+      While there is some participation from the solver community, Marble Hornets is mostly
+      <span class="tooltip orange">Analog Horror
+        <span class="tooltiptext">A genre of horror that uses the aesthetics and technology of the past, often with a focus on VHS tapes, old television broadcasts, and other analog media. It is often used in ARGs to create a sense of nostalgia and unease, and it can be a powerful storytelling tool.</span>
+      </span>. But ARGs and Analog Horror can overlap, and that is a good thing.
+    </p>
     <button>View ARG</button>
   </div>
 
   <div class="argCard card2">
     <img src="images and logos/post-image2.png" width="100%">
     <h3>CICADA 3301</h3>
-    <p>Cicada 3301 refers to a series of highly complex, cryptic, and unsolved, or partially solved internet puzzles posted between 2012 and 2014, designed to recruit "intelligent individuals". 
-      Using <span class="tooltip orange">
-Steganography
-  <span class="tooltiptext">
-    The practice of hiding messages or information within other non-secret text or data. It is often used in ARGs to conceal clues and information.
-  </span>
-</span>, cryptography, and various riddles, the challenges, which originated on 4chan, demanded advanced technical skills and knowledge of data security, privacy, and literature.</p>
+    <p>Cicada 3301 refers to a series of highly complex, cryptic, and unsolved, or partially solved internet puzzles posted between 2012 and 2014, designed to recruit "intelligent individuals".
+      Using
+      <span class="tooltip orange">Steganography
+        <span class="tooltiptext">The practice of hiding messages or information within other non-secret text or data. It is often used in ARGs to conceal clues and information.</span>
+      </span>,
+      cryptography, and various riddles, the challenges, which originated on 4chan, demanded advanced technical skills and knowledge of data security, privacy, and literature.
+    </p>
     <button>View ARG</button>
   </div>
 
   <div class="argCard card3">
     <img src="images and logos/MV5BZDA1MDEyYmUtZjMwYi00YzliLWI3YzktOTc3NmQwNGVmOGJkXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" width="60%">
     <h3>Petscop</h3>
-    <p>Petscop is a YouTube horror web series (analog horror) by Tony Domenico, made to resemble a YouTube Let's Play series. 
-      The videos follow "Paul", the <span class="tooltip green">
-protagonist
-  <span class="tooltiptext">
-    The main character in a story, often the one who drives the plot forward and with whom the audience is meant to identify.
-  </span>
-</span>, exploring and documenting a supposedly "long-lost PlayStation video game" titled Petscop. 
-      The 24-episode series ran from March 12, 2017, to September 2, 2019.</p>
+    <p>Petscop is a YouTube horror web series (analog horror) by Tony Domenico, made to resemble a YouTube Let's Play series.
+      The videos follow "Paul", the
+      <span class="tooltip green">protagonist
+        <span class="tooltiptext">The main character in a story, often the one who drives the plot forward and with whom the audience is meant to identify.</span>
+      </span>,
+      exploring and documenting a supposedly "long-lost PlayStation video game" titled Petscop.
+      The 24-episode series ran from March 12, 2017, to September 2, 2019.
+    </p>
     <button>View ARG</button>
   </div>
 
 </div>
+
 <script>
-function toggleBox(type){
-
-  let button = document.getElementById(type+"Button");
-  let box = document.getElementById(type+"Box");
-
-  button.style.display="none";
-
-  box.style.display="block";
-
-  setTimeout(()=>{
-    box.style.opacity="1";
-  },10);
+function toggleBox(type) {
+  let button = document.getElementById(type + "Button");
+  let box = document.getElementById(type + "Box");
+  button.style.display = "none";
+  box.style.display = "block";
+  setTimeout(() => { box.style.opacity = "1"; }, 10);
 }
 </script>
+
 </body>
 </html>
