@@ -4,6 +4,191 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── POST BUTTON ── */
+    .post-arg-btn {
+      display: block;
+      margin: 40px auto 10px;
+      padding: 16px 40px;
+      font-size: 17px;
+      font-family: 'Roboto Slab', serif;
+      border-radius: 10px;
+      border: 1px solid lime;
+      background: transparent;
+      color: lime;
+      cursor: pointer;
+      transition: 0.3s;
+      letter-spacing: 1px;
+    }
+    .post-arg-btn:hover {
+      background: lime;
+      color: black;
+      box-shadow: 0 0 18px lime !important;
+    }
+
+    /* ── MODAL OVERLAY ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.88);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    /* ── MODAL BOX ── */
+    .modal-box {
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 16px;
+      padding: 36px 40px;
+      width: 580px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      animation: fadeUp 0.3s ease both;
+      scrollbar-width: thin;
+      scrollbar-color: #333 transparent;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-box h2 {
+      margin: 0 0 24px;
+      font-size: 20px;
+      letter-spacing: 1px;
+      color: lime;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      background: none;
+      border: none;
+      color: #666;
+      font-size: 22px;
+      cursor: pointer;
+      transition: 0.2s;
+      font-family: 'Roboto Slab', serif;
+    }
+    .modal-close:hover { color: white; box-shadow: none !important; }
+
+    /* ── FORM FIELDS ── */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      font-size: 13px;
+      color: #aaa;
+      letter-spacing: 1px;
+    }
+
+    .form-group .required-star {
+      color: red;
+      margin-left: 3px;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      padding: 11px 14px;
+      border-radius: 8px;
+      border: 1px solid #333;
+      background: #1a1a1a;
+      color: white;
+      font-family: 'Roboto Slab', serif;
+      font-size: 14px;
+      outline: none;
+      transition: 0.3s;
+      resize: vertical;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      border-color: lime;
+      box-shadow: 0 0 8px rgba(0,255,0,0.2);
+    }
+
+    .form-group select option {
+      background: #1a1a1a;
+    }
+
+    .url-hint {
+      font-size: 11px;
+      color: #555;
+      margin-top: 2px;
+    }
+
+    .form-divider {
+      border: none;
+      border-top: 1px solid #222;
+      margin: 24px 0;
+    }
+
+    .form-section-title {
+      font-size: 12px;
+      color: #666;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    /* ── SUBMIT BUTTON ── */
+    .modal-submit {
+      width: 100%;
+      padding: 14px;
+      border-radius: 10px;
+      border: 1px solid lime;
+      background: transparent;
+      color: lime;
+      font-family: 'Roboto Slab', serif;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-top: 8px;
+    }
+    .modal-submit:hover {
+      background: lime;
+      color: black;
+      box-shadow: 0 0 16px lime !important;
+    }
+
+    /* ── SUCCESS MESSAGE ── */
+    .modal-success {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .modal-success h3 {
+      color: lime;
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+    .modal-success p {
+      color: #aaa;
+      font-size: 14px;
+    }
+
+    /* ── ERROR TEXT ── */
+    .field-error {
+      color: red;
+      font-size: 12px;
+      display: none;
+    }
+  </style>
 </head>
 <body>
 
@@ -11,11 +196,11 @@
 <h2 class="tagline">This is not a game. This is a website.</h2>
 
 <nav class="navbar">
-  <a href="discover.html"    class="navbtn discover">Discover</a>
-  <a href="pricing.html"     class="navbtn pricing">Pricing</a>
-  <a href="featured.html"    class="navbtn featured">Featured</a>
-  <a                         class="navbtn dashboard-active">Dashboard</a>
-  <a href="recting.html"     class="navbtn recting">Recting</a>
+  <a href="discover.html"     class="navbtn discover">Discover</a>
+  <a href="pricing.html"      class="navbtn pricing">Pricing</a>
+  <a href="featured.html"     class="navbtn featured">Featured</a>
+  <a                          class="navbtn dashboard-active">Dashboard</a>
+  <a href="recting.html"      class="navbtn recting">Recting</a>
   <a href="contextslips.html" class="navbtn context">Context Slips</a>
 </nav>
 
@@ -37,7 +222,212 @@
 
 <br>
 <div style="margin-left:100px; border-color:white; border-width:2px; padding-right:20px;">Your contribution thus far...</div>
+
+<br>
+<button class="post-arg-btn" onclick="openPostModal()">+ Post New ARG</button>
+
+<!-- ════════════════════════════════
+     POST ARG MODAL
+════════════════════════════════ -->
+<div class="modal-overlay" id="postModal" onclick="handleOverlayClick(event)">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closePostModal()">✕</button>
+
+    <!-- FORM VIEW -->
+    <div id="formView">
+      <h2>Post Your ARG</h2>
+
+      <!-- NAME -->
+      <div class="form-group">
+        <label>ARG Name <span class="required-star">*</span></label>
+        <input type="text" id="argName" placeholder="e.g. The Oslo Files">
+        <span class="field-error" id="errName">Please enter a name.</span>
+      </div>
+
+      <!-- TRAILHEAD URLS -->
+      <hr class="form-divider">
+      <p class="form-section-title">Trailhead Links — at least one required</p>
+
+      <div class="form-group">
+        <label>YouTube URL</label>
+        <input type="url" id="argYoutube" placeholder="https://youtube.com/...">
+        <span class="url-hint">A YouTube channel, video, or playlist.</span>
+      </div>
+
+      <div class="form-group">
+        <label>Website URL</label>
+        <input type="url" id="argWebsite" placeholder="https://...">
+        <span class="url-hint">Your ARG's main website or trailhead page.</span>
+      </div>
+
+      <div class="form-group">
+        <label>Game URL</label>
+        <input type="url" id="argGame" placeholder="https://store.steampowered.com/... or other">
+        <span class="url-hint">Steam, itch.io, or any approved game platform.</span>
+      </div>
+      <span class="field-error" id="errUrl">At least one URL is required.</span>
+
+      <!-- IMAGE -->
+      <hr class="form-divider">
+      <p class="form-section-title">Appearance</p>
+
+      <div class="form-group">
+        <label>Image Filename <span style="color:#555;">(optional)</span></label>
+        <input type="text" id="argImg" placeholder="e.g. myarg_banner.jpg">
+        <span class="url-hint">Place the image in your "images and logos" folder, then type the filename here.</span>
+      </div>
+
+      <div class="form-group">
+        <label>Description <span style="color:#555;">(optional)</span></label>
+        <textarea id="argDesc" rows="3" placeholder="A short description of your ARG..."></textarea>
+      </div>
+
+      <!-- TAGS -->
+      <hr class="form-divider">
+      <p class="form-section-title">Tags — all four required for Browse filters</p>
+
+      <div class="form-group">
+        <label>Genre <span class="required-star">*</span></label>
+        <select id="argGenre">
+          <option value="">Select genre...</option>
+          <option value="Horror">Horror</option>
+          <option value="Puzzle">Puzzle</option>
+          <option value="Sci-Fi">Sci-Fi</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Status <span class="required-star">*</span></label>
+        <select id="argStatus">
+          <option value="">Select status...</option>
+          <option value="Active">Active</option>
+          <option value="Concluded">Concluded</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Difficulty <span class="required-star">*</span></label>
+        <select id="argDifficulty">
+          <option value="">Select difficulty...</option>
+          <option value="Beginner">Beginner</option>
+          <option value="Medium">Medium</option>
+          <option value="Hard">Hard</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Platform <span class="required-star">*</span></label>
+        <select id="argPlatform">
+          <option value="">Select platform...</option>
+          <option value="YouTube">YouTube</option>
+          <option value="Web">Web</option>
+          <option value="IRL">IRL</option>
+        </select>
+      </div>
+      <span class="field-error" id="errTags">Please fill in all four tag fields.</span>
+
+      <button class="modal-submit" onclick="submitARG()">Submit ARG →</button>
+    </div>
+
+    <!-- SUCCESS VIEW (shown after submit) -->
+    <div class="modal-success" id="successView">
+      <h3>✓ ARG Posted!</h3>
+      <p>Your ARG has been submitted and is now visible in the Browse tab on the Featured page.</p>
+      <br>
+      <button class="modal-submit" onclick="closePostModal()" style="width:auto; padding: 12px 32px;">
+        Back to Dashboard
+      </button>
+    </div>
+
+  </div>
+</div>
+
 <h2 style="text-align:center;">This website is building, more coming soon.</h2>
+
+<script>
+  function openPostModal() {
+    // Reset form each time it opens
+    document.getElementById("formView").style.display    = "block";
+    document.getElementById("successView").style.display = "none";
+    document.querySelectorAll(".field-error").forEach(e => e.style.display = "none");
+    ["argName","argYoutube","argWebsite","argGame","argImg","argDesc"].forEach(id => {
+      document.getElementById(id).value = "";
+    });
+    ["argGenre","argStatus","argDifficulty","argPlatform"].forEach(id => {
+      document.getElementById(id).selectedIndex = 0;
+    });
+    document.getElementById("postModal").classList.add("open");
+  }
+
+  function closePostModal() {
+    document.getElementById("postModal").classList.remove("open");
+  }
+
+  // Close if user clicks the dark overlay behind the box
+  function handleOverlayClick(e) {
+    if (e.target === document.getElementById("postModal")) closePostModal();
+  }
+
+  function submitARG() {
+    // Clear previous errors
+    document.querySelectorAll(".field-error").forEach(e => e.style.display = "none");
+
+    const name       = document.getElementById("argName").value.trim();
+    const youtube    = document.getElementById("argYoutube").value.trim();
+    const website    = document.getElementById("argWebsite").value.trim();
+    const game       = document.getElementById("argGame").value.trim();
+    const img        = document.getElementById("argImg").value.trim();
+    const desc       = document.getElementById("argDesc").value.trim();
+    const genre      = document.getElementById("argGenre").value;
+    const status     = document.getElementById("argStatus").value;
+    const difficulty = document.getElementById("argDifficulty").value;
+    const platform   = document.getElementById("argPlatform").value;
+
+    // ── Validation ──
+    let valid = true;
+
+    if (!name) {
+      document.getElementById("errName").style.display = "block";
+      valid = false;
+    }
+
+    if (!youtube && !website && !game) {
+      document.getElementById("errUrl").style.display = "block";
+      valid = false;
+    }
+
+    if (!genre || !status || !difficulty || !platform) {
+      document.getElementById("errTags").style.display = "block";
+      valid = false;
+    }
+
+    if (!valid) return;
+
+    // ── Build ARG object ──
+    const newARG = {
+      name, youtube, website, game,
+      img:        img || "placeholder",
+      color:      "#0a0a0a",
+      desc:       desc || "No description provided.",
+      genre, status, difficulty, platform,
+      trending:    false,
+      newForYou:   false,
+      recommended: false,
+      posted:      true   // marks it as a user-posted ARG
+    };
+
+    // ── Save to localStorage ──
+    // localStorage stores text only, so we use JSON.stringify to convert the object to text
+    // and JSON.parse to convert it back when reading
+    const existing = JSON.parse(localStorage.getItem("postedARGs") || "[]");
+    existing.push(newARG);
+    localStorage.setItem("postedARGs", JSON.stringify(existing));
+
+    // ── Show success ──
+    document.getElementById("formView").style.display    = "none";
+    document.getElementById("successView").style.display = "block";
+  }
+</script>
 
 </body>
 </html>

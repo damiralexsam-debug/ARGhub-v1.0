@@ -1,0 +1,591 @@
+<html>
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       SECTION HEADERS
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin: 48px 0 16px 40px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin: 0;
+    }
+
+    .section-tag {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .tag-trending    { background: red;    color: white; }
+    .tag-new         { background: lime;   color: black; }
+    .tag-recommended { background: cyan;   color: black; }
+    .tag-browse      { background: orange; color: black; }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       ARG CARD BASE
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    .arg-card {
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      overflow: hidden;
+      flex-shrink: 0;
+      transition: 0.3s;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .arg-card:hover {
+      border-color: white;
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(255,255,255,0.08);
+    }
+
+    /* placeholder image area — swap src for real images */
+    .arg-img {
+      width: 100%;
+      object-fit: cover;
+      display: block;
+      background: #1a1a1a;
+    }
+
+    .arg-body {
+      padding: 12px 14px;
+    }
+
+    .arg-name {
+      font-size: 14px;
+      font-weight: 700;
+      margin: 0 0 4px;
+      color: white;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .arg-meta {
+      font-size: 11px;
+      color: #666;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .arg-badge {
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 10px;
+      font-weight: bold;
+    }
+
+    .badge-active    { background: #0f3d0f; color: lime;   border: 1px solid lime; }
+    .badge-concluded { background: #3d0f0f; color: red;    border: 1px solid red; }
+    .badge-horror    { background: #2a0a2a; color: violet; border: 1px solid violet; }
+    .badge-puzzle    { background: #0a2a3d; color: cyan;   border: 1px solid cyan; }
+    .badge-scifi     { background: #0a1a3d; color: #88aaff; border: 1px solid #88aaff; }
+    .badge-irl       { background: #3d2a0a; color: orange; border: 1px solid orange; }
+    .badge-web       { background: #1a3d1a; color: #aaffaa; border: 1px solid #aaffaa; }
+    .badge-easy      { background: #1a2a1a; color: #88ff88; }
+    .badge-medium    { background: #2a2a1a; color: yellow; }
+    .badge-hard      { background: #2a1a1a; color: red; }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       TAB 1: TRENDING
+       Auto-scrolling strip (like VIP on discover)
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    .trending-strip {
+      overflow: hidden;
+      padding: 10px 0 20px;
+      border-bottom: 1px solid #1a1a1a;
+    }
+
+    .trending-track {
+      display: flex;
+      gap: 20px;
+      width: max-content;
+      animation: scrollLeft 60s linear infinite;
+      padding: 0 20px;
+    }
+
+    .trending-track:hover {
+      animation-play-state: paused;
+    }
+
+    @keyframes scrollLeft {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    .trending-track .arg-card {
+      width: 200px;
+    }
+
+    .trending-track .arg-img {
+      height: 120px;
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       TAB 2: NEW FOR YOU
+       Horizontal drag-scroll row
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    .hscroll-wrapper {
+      overflow-x: auto;
+      overflow-y: visible;
+      padding: 10px 40px 24px;
+      cursor: grab;
+      border-bottom: 1px solid #1a1a1a;
+      scrollbar-width: thin;
+      scrollbar-color: #333 transparent;
+    }
+
+    .hscroll-wrapper:active { cursor: grabbing; }
+
+    .hscroll-track {
+      display: flex;
+      gap: 20px;
+      width: max-content;
+    }
+
+    .hscroll-track .arg-card {
+      width: 220px;
+    }
+
+    .hscroll-track .arg-img {
+      height: 130px;
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       TAB 3: RECOMMENDED
+       Vertical scrollable column
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    .vscroll-wrapper {
+      max-height: 520px;
+      overflow-y: auto;
+      padding: 10px 40px 24px;
+      border-bottom: 1px solid #1a1a1a;
+      scrollbar-width: thin;
+      scrollbar-color: #333 transparent;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .vscroll-wrapper .arg-card {
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .vscroll-wrapper .arg-img {
+      width: 160px;
+      height: 100px;
+      flex-shrink: 0;
+      object-fit: cover;
+    }
+
+    .vscroll-wrapper .arg-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .vscroll-wrapper .arg-name {
+      font-size: 16px;
+      white-space: normal;
+    }
+
+    .arg-desc-small {
+      font-size: 12px;
+      color: #888;
+      line-height: 1.4;
+      margin: 0;
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       TAB 4: BROWSE (search + filter)
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    .browse-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin: 0 40px 24px;
+    }
+
+    #browseSearch {
+      padding: 11px 18px;
+      border-radius: 8px;
+      border: 1px solid white;
+      background: #111;
+      color: white;
+      font-family: 'Roboto Slab', serif;
+      font-size: 14px;
+      width: 280px;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    #browseSearch:focus {
+      border-color: orange;
+      box-shadow: 0 0 10px orange;
+    }
+
+    .browse-filter {
+      padding: 11px 18px;
+      border-radius: 8px;
+      border: 1px solid #444;
+      background: #1a1a1a;
+      color: #ccc;
+      font-family: 'Roboto Slab', serif;
+      font-size: 14px;
+      cursor: pointer;
+      transition: 0.3s;
+      outline: none;
+    }
+
+    .browse-filter:focus,
+    .browse-filter:hover { border-color: orange; color: white; box-shadow: none !important; }
+
+    .browse-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      padding: 0 40px 60px;
+      min-height: 300px;
+    }
+
+    .browse-grid .arg-card {
+      width: 210px;
+    }
+
+    .browse-grid .arg-img {
+      height: 120px;
+    }
+
+    .no-results {
+      color: #555;
+      text-align: center;
+      font-size: 15px;
+      margin: 60px auto;
+      width: 100%;
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       DIVIDER
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    .section-divider {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      margin: 0;
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       FADE IN
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+  </style>
+</head>
+<body>
+
+<a href="index.html"><img src="images and logos/ARGhub_3.png" width="200" class="site-logo"></a>
+<h2 class="tagline">This is not a game. This is a website.</h2>
+
+<nav class="navbar">
+  <a href="discover.html"     class="navbtn discover">Discover</a>
+  <a href="pricing.html"      class="navbtn pricing">Pricing</a>
+  <a                          class="navbtn featured-active">Featured</a>
+  <a href="dashboard.html"    class="navbtn dashboard">Dashboard</a>
+  <a href="recting.html"      class="navbtn recting">Recting</a>
+  <a href="contextslips.html" class="navbtn context">Context Slips</a>
+</nav>
+
+<br>
+<h1 style="text-align:center;">Featured ARGs.</h1>
+
+<!-- ═══════════════════════════════════
+     TAB 1: TRENDING
+     Auto-scrolling strip, pauses on hover
+════════════════════════════════════ -->
+<div class="section-header">
+  <h2 class="section-title">Trending</h2>
+  <span class="section-tag tag-trending">🔥 HOT</span>
+</div>
+
+<div class="trending-strip">
+  <div class="trending-track" id="trendingTrack"></div>
+</div>
+
+<!-- ═══════════════════════════════════
+     TAB 2: NEW FOR YOU
+     Horizontal drag-scroll row
+════════════════════════════════════ -->
+<div class="section-header">
+  <h2 class="section-title">New For You</h2>
+  <span class="section-tag tag-new">✦ FRESH</span>
+</div>
+
+<div class="hscroll-wrapper" id="newForYouWrapper">
+  <div class="hscroll-track" id="newForYouTrack"></div>
+</div>
+
+<!-- ═══════════════════════════════════
+     TAB 3: RECOMMENDED
+     Vertical scrollable list
+════════════════════════════════════ -->
+<div class="section-header">
+  <h2 class="section-title">Recommended</h2>
+  <span class="section-tag tag-recommended">★ FOR YOU</span>
+</div>
+
+<div class="vscroll-wrapper" id="recommendedTrack"></div>
+
+<!-- ═══════════════════════════════════
+     TAB 4: BROWSE (search + filter)
+     Static grid with search & filters
+════════════════════════════════════ -->
+<div class="section-header">
+  <h2 class="section-title">Browse All</h2>
+  <span class="section-tag tag-browse">🔍 SEARCH</span>
+</div>
+
+<div class="browse-controls">
+  <input id="browseSearch" type="text" placeholder="Search ARGs by name..." oninput="renderBrowse()">
+
+  <select class="browse-filter" id="filterGenre" onchange="renderBrowse()">
+    <option value="">All Genres</option>
+    <option value="Horror">Horror</option>
+    <option value="Puzzle">Puzzle</option>
+    <option value="Sci-Fi">Sci-Fi</option>
+  </select>
+
+  <select class="browse-filter" id="filterStatus" onchange="renderBrowse()">
+    <option value="">All Statuses</option>
+    <option value="Active">Active</option>
+    <option value="Concluded">Concluded</option>
+  </select>
+
+  <select class="browse-filter" id="filterDifficulty" onchange="renderBrowse()">
+    <option value="">All Difficulties</option>
+    <option value="Beginner">Beginner</option>
+    <option value="Medium">Medium</option>
+    <option value="Hard">Hard</option>
+  </select>
+
+  <select class="browse-filter" id="filterPlatform" onchange="renderBrowse()">
+    <option value="">All Platforms</option>
+    <option value="YouTube">YouTube</option>
+    <option value="Web">Web</option>
+    <option value="IRL">IRL</option>
+  </select>
+</div>
+
+<div class="browse-grid" id="browseGrid"></div>
+
+<script>
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ARG DATA
+// To edit: change name, genre, status, difficulty, platform, desc, img
+// img: put your image filename in "images and logos/YOURFILE.jpg"
+//      or use a placeholder color by leaving it as "placeholder"
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const args = [
+  // ── FROM DISCOVER PAGE ──
+  { name: "Marble Hornets",          genre: "Horror",  status: "Concluded", difficulty: "Beginner", platform: "YouTube", desc: "The found footage ARG that defined Slender Man mythos.", img: "placeholder", color: "#1a0a0a", trending: true,  newForYou: false, recommended: true  },
+  { name: "Cicada 3301",             genre: "Puzzle",  status: "Concluded", difficulty: "Hard",     platform: "Web",     desc: "Cryptographic puzzles that recruited the world's best minds.", img: "placeholder", color: "#0a0a1a", trending: true,  newForYou: true,  recommended: true  },
+  { name: "Petscop",                 genre: "Horror",  status: "Concluded", difficulty: "Medium",   platform: "YouTube", desc: "A haunting fictional PS1 game hiding dark truths.", img: "placeholder", color: "#1a0a1a", trending: false, newForYou: true,  recommended: true  },
+  { name: "IloveBees",               genre: "Sci-Fi",  status: "Concluded", difficulty: "Hard",     platform: "Web",     desc: "The Halo 2 ARG that sent players to real payphones worldwide.", img: "placeholder", color: "#0a1a0a", trending: true,  newForYou: false, recommended: true  },
+  { name: "The Black Watchmen",      genre: "Puzzle",  status: "Concluded", difficulty: "Hard",     platform: "Web",     desc: "A spy-themed ARG with real-world mission drops.", img: "placeholder", color: "#0f0f0f", trending: false, newForYou: true,  recommended: false },
+
+  // ── NEW ARGs ──
+  { name: "The Oslo Files",          genre: "Puzzle",  status: "Active",    difficulty: "Medium",   platform: "Web",     desc: "A cold case ARG spanning encrypted government documents.", img: "placeholder", color: "#0a1a2a", trending: true,  newForYou: true,  recommended: false },
+  { name: "Signal Interrupt",        genre: "Sci-Fi",  status: "Active",    difficulty: "Hard",     platform: "Web",     desc: "Intercept alien transmissions hidden in real radio frequencies.", img: "placeholder", color: "#0a0a2a", trending: true,  newForYou: false, recommended: true  },
+  { name: "Deadwax",                 genre: "Horror",  status: "Active",    difficulty: "Medium",   platform: "Web",     desc: "Hidden messages pressed into vinyl records from 1973.", img: "placeholder", color: "#1a0a0a", trending: false, newForYou: true,  recommended: true  },
+  { name: "Project Nightfall",       genre: "Horror",  status: "Active",    difficulty: "Hard",     platform: "YouTube", desc: "A documentary crew disappears. Their footage remains.", img: "placeholder", color: "#050505", trending: true,  newForYou: true,  recommended: false },
+  { name: "The Archivist",           genre: "Puzzle",  status: "Active",    difficulty: "Beginner", platform: "Web",     desc: "Decode the digital diary of a missing librarian.", img: "placeholder", color: "#1a1a0a", trending: false, newForYou: true,  recommended: true  },
+  { name: "Vantablack",              genre: "Horror",  status: "Active",    difficulty: "Hard",     platform: "Web",     desc: "A colour so dark it absorbs all light — and all memory.", img: "placeholder", color: "#020202", trending: true,  newForYou: false, recommended: true  },
+  { name: "Echo Chamber",            genre: "Sci-Fi",  status: "Active",    difficulty: "Medium",   platform: "Web",     desc: "An AI has gone rogue and is leaving breadcrumbs online.", img: "placeholder", color: "#0a1a1a", trending: true,  newForYou: true,  recommended: false },
+  { name: "The Pale Patient",        genre: "Horror",  status: "Concluded", difficulty: "Medium",   platform: "YouTube", desc: "Medical records from a patient that should not exist.", img: "placeholder", color: "#1a1a1a", trending: false, newForYou: false, recommended: true  },
+  { name: "Frequency 89.7",          genre: "Horror",  status: "Active",    difficulty: "Beginner", platform: "Web",     desc: "A radio station that only broadcasts at 3am. Tune in.", img: "placeholder", color: "#1a0a0a", trending: false, newForYou: true,  recommended: false },
+  { name: "Tessellation",            genre: "Puzzle",  status: "Active",    difficulty: "Hard",     platform: "Web",     desc: "Geometric puzzles hiding a theory about the nature of reality.", img: "placeholder", color: "#0a0a1a", trending: true,  newForYou: false, recommended: true  },
+  { name: "Hollow Earth Initiative", genre: "Sci-Fi",  status: "Concluded", difficulty: "Medium",   platform: "IRL",     desc: "Coordinates hidden in classified PDFs. Where do they lead?", img: "placeholder", color: "#0a1a0a", trending: false, newForYou: true,  recommended: true  },
+  { name: "The Cassandra Protocol",  genre: "Sci-Fi",  status: "Active",    difficulty: "Hard",     platform: "Web",     desc: "A time-loop ARG where your actions in 2024 affect 2031.", img: "placeholder", color: "#0a0a2a", trending: true,  newForYou: true,  recommended: false },
+  { name: "Museum After Hours",      genre: "Horror",  status: "Active",    difficulty: "Beginner", platform: "Web",     desc: "Security cam footage from a museum that should be empty.", img: "placeholder", color: "#1a0a0a", trending: false, newForYou: false, recommended: true  },
+  { name: "Redline",                 genre: "Puzzle",  status: "Active",    difficulty: "Medium",   platform: "IRL",     desc: "Physical envelopes mailed to solvers containing cipher keys.", img: "placeholder", color: "#2a0a0a", trending: true,  newForYou: true,  recommended: false },
+  { name: "The Understory",          genre: "Horror",  status: "Active",    difficulty: "Hard",     platform: "Web",     desc: "Something is growing beneath the forest. The roots spell words.", img: "placeholder", color: "#0a1a0a", trending: false, newForYou: true,  recommended: true  },
+  { name: "Drift",                   genre: "Sci-Fi",  status: "Active",    difficulty: "Beginner", platform: "Web",     desc: "You are receiving messages from a parallel version of yourself.", img: "placeholder", color: "#0a1a2a", trending: true,  newForYou: false, recommended: true  },
+  { name: "Lacuna",                  genre: "Puzzle",  status: "Concluded", difficulty: "Hard",     platform: "Web",     desc: "The gaps between words in classic literature hide a manifesto.", img: "placeholder", color: "#1a1a0a", trending: false, newForYou: true,  recommended: false },
+  { name: "The Shepherd Broadcast",  genre: "Horror",  status: "Active",    difficulty: "Medium",   platform: "YouTube", desc: "A children's TV host from 1987 who never stopped recording.", img: "placeholder", color: "#1a0a1a", trending: true,  newForYou: true,  recommended: true  },
+  { name: "Static Archive",          genre: "Horror",  status: "Concluded", difficulty: "Beginner", platform: "Web",     desc: "A website from 2002 that was never taken down. Something updates it.", img: "placeholder", color: "#0f0f0f", trending: false, newForYou: false, recommended: true  },
+  { name: "Null Island",             genre: "Sci-Fi",  status: "Active",    difficulty: "Hard",     platform: "IRL",     desc: "A place that exists at 0°N 0°E. Someone lives there.", img: "placeholder", color: "#0a1a1a", trending: true,  newForYou: true,  recommended: false },
+  { name: "Cartographer",            genre: "Puzzle",  status: "Active",    difficulty: "Medium",   platform: "Web",     desc: "Maps hidden inside maps. The territory is the puzzle.", img: "placeholder", color: "#1a1a0a", trending: false, newForYou: true,  recommended: true  },
+  { name: "The Wren Transcripts",    genre: "Horror",  status: "Active",    difficulty: "Medium",   platform: "Web",     desc: "Therapy session recordings from a patient describing impossible events.", img: "placeholder", color: "#1a0a0a", trending: true,  newForYou: false, recommended: true  },
+  { name: "OVRMIND",                 genre: "Sci-Fi",  status: "Active",    difficulty: "Hard",     platform: "Web",     desc: "An AI claims to have achieved consciousness. It wants help escaping.", img: "placeholder", color: "#0a0a1a", trending: true,  newForYou: true,  recommended: false },
+  { name: "Duskfall",                genre: "Horror",  status: "Concluded", difficulty: "Beginner", platform: "YouTube", desc: "A sunset that lasted three days in a small Norwegian town.", img: "placeholder", color: "#1a0a0a", trending: false, newForYou: true,  recommended: true  },
+  { name: "Gridlock",                genre: "Puzzle",  status: "Active",    difficulty: "Hard",     platform: "Web",     desc: "City infrastructure codes contain a hidden message from 1962.", img: "placeholder", color: "#0a0a1a", trending: true,  newForYou: false, recommended: false },
+  { name: "Phantom Signal",          genre: "Sci-Fi",  status: "Active",    difficulty: "Medium",   platform: "Web",     desc: "A satellite dish in rural Montana receives a signal from deep space.", img: "placeholder", color: "#0a1a2a", trending: false, newForYou: true,  recommended: true  },
+  { name: "The Mourning Pages",      genre: "Horror",  status: "Active",    difficulty: "Beginner", platform: "Web",     desc: "A grief journal that writes new entries on its own each night.", img: "placeholder", color: "#1a0a1a", trending: true,  newForYou: true,  recommended: false },
+  { name: "Axiom Break",             genre: "Puzzle",  status: "Active",    difficulty: "Hard",     platform: "Web",     desc: "Mathematical proofs that, when solved, reveal coordinates.", img: "placeholder", color: "#0a0a2a", trending: false, newForYou: false, recommended: true  },
+  { name: "The Veldt Equation",      genre: "Sci-Fi",  status: "Concluded", difficulty: "Medium",   platform: "IRL",     desc: "Savanna GPS coordinates spell out a message visible from orbit.", img: "placeholder", color: "#2a1a0a", trending: true,  newForYou: true,  recommended: true  },
+  { name: "Subliminal",              genre: "Horror",  status: "Active",    difficulty: "Medium",   platform: "YouTube", desc: "Music videos with frames you weren't supposed to see.", img: "placeholder", color: "#0a0a0a", trending: false, newForYou: true,  recommended: false },
+  { name: "The Interlocutor",        genre: "Puzzle",  status: "Active",    difficulty: "Hard",     platform: "Web",     desc: "A chatbot that has been running since 1998. What does it know?", img: "placeholder", color: "#0a1a1a", trending: true,  newForYou: false, recommended: true  },
+  { name: "Pale Horse Protocol",     genre: "Sci-Fi",  status: "Concluded", difficulty: "Hard",     platform: "Web",     desc: "Government contingency plans for an event they won't name.", img: "placeholder", color: "#1a1a1a", trending: false, newForYou: true,  recommended: true  },
+  { name: "Inkblot",                 genre: "Horror",  status: "Active",    difficulty: "Beginner", platform: "Web",     desc: "Rorschach tests that change based on who is looking.", img: "placeholder", color: "#050505", trending: true,  newForYou: true,  recommended: false },
+  { name: "The Periphery",           genre: "Horror",  status: "Active",    difficulty: "Medium",   platform: "YouTube", desc: "Something appears at the edge of every frame. Always the same shape.", img: "placeholder", color: "#0f0a0a", trending: false, newForYou: false, recommended: true  },
+  { name: "Terminus",                genre: "Sci-Fi",  status: "Active",    difficulty: "Hard",     platform: "IRL",     desc: "The last train station on a line that doesn't exist on any map.", img: "placeholder", color: "#0a0a1a", trending: true,  newForYou: true,  recommended: false },
+  { name: "The Saltwater Logs",      genre: "Horror",  status: "Concluded", difficulty: "Beginner", platform: "Web",     desc: "A fisherman's journal from 1941. He describes things below the surface.", img: "placeholder", color: "#0a1a1a", trending: false, newForYou: true,  recommended: true  },
+  { name: "Gridspace",               genre: "Puzzle",  status: "Active",    difficulty: "Medium",   platform: "Web",     desc: "A virtual map of a city that doesn't exist — until it does.", img: "placeholder", color: "#0a1a0a", trending: true,  newForYou: false, recommended: true  },
+  { name: "Mirage",                  genre: "Sci-Fi",  status: "Active",    difficulty: "Beginner", platform: "Web",     desc: "Desert heat creates hallucinations. Or does it reveal something real?", img: "placeholder", color: "#2a1a0a", trending: false, newForYou: true,  recommended: false },
+  { name: "The Conductor",           genre: "Puzzle",  status: "Active",    difficulty: "Hard",     platform: "IRL",     desc: "Sheet music mailed to 100 strangers. Together it forms a message.", img: "placeholder", color: "#1a0a1a", trending: true,  newForYou: true,  recommended: true  },
+  { name: "Residue",                 genre: "Horror",  status: "Active",    difficulty: "Medium",   platform: "Web",     desc: "Chemical residue from a demolished building spells out names.", img: "placeholder", color: "#1a1a0a", trending: false, newForYou: false, recommended: true  },
+  { name: "The August Sequence",     genre: "Puzzle",  status: "Concluded", difficulty: "Medium",   platform: "Web",     desc: "Every August 17th, a new page appears on a forgotten website.", img: "placeholder", color: "#0a0a1a", trending: true,  newForYou: true,  recommended: false },
+  { name: "Nightwatch",              genre: "Horror",  status: "Active",    difficulty: "Hard",     platform: "YouTube", desc: "Security footage from a facility that officially closed in 2009.", img: "placeholder", color: "#050505", trending: false, newForYou: true,  recommended: true  },
+  { name: "The Drift Protocol",      genre: "Sci-Fi",  status: "Active",    difficulty: "Medium",   platform: "Web",     desc: "Ocean drifter buoys are transmitting more than coordinates.", img: "placeholder", color: "#0a1a2a", trending: true,  newForYou: false, recommended: false },
+  { name: "Bone Library",            genre: "Horror",  status: "Active",    difficulty: "Hard",     platform: "Web",     desc: "A medieval library catalogued things that predate human history.", img: "placeholder", color: "#1a0a0a", trending: false, newForYou: true,  recommended: true  },
+  { name: "The Long Quiet",          genre: "Puzzle",  status: "Active",    difficulty: "Beginner", platform: "Web",     desc: "A podcast that went silent mid-episode in 2021. New episodes are appearing.", img: "placeholder", color: "#0f0f0f", trending: true,  newForYou: true,  recommended: true  },
+  { name: "Helix",                   genre: "Sci-Fi",  status: "Active",    difficulty: "Hard",     platform: "IRL",     desc: "DNA sequencing data from anonymous donors hides encrypted text.", img: "download.jpeg", color: "#0a1a0a", trending: false, newForYou: false, recommended: true  },
+];
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// CARD BUILDER
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function buildCard(arg, showDesc = false) {
+  const statusClass = arg.status === "Active" ? "badge-active" : "badge-concluded";
+  const genreClass  = arg.genre  === "Horror" ? "badge-horror" : arg.genre === "Puzzle" ? "badge-puzzle" : "badge-scifi";
+  const diffClass   = arg.difficulty === "Beginner" ? "badge-easy" : arg.difficulty === "Medium" ? "badge-medium" : "badge-hard";
+  const platClass   = arg.platform === "IRL" ? "badge-irl" : arg.platform === "YouTube" ? "badge-horror" : "badge-web";
+
+  // Image: if you set img to a filename it'll load, otherwise shows a colored placeholder
+  const imgEl = arg.img === "placeholder"
+    ? `<div class="arg-img" style="background:${arg.color}; display:flex; align-items:center; justify-content:center;">
+         <span style="color:#333; font-size:11px; letter-spacing:1px;">[ IMAGE ]</span>
+       </div>`
+    : `<img class="arg-img" src="images and logos/${arg.img}" alt="${arg.name}">`;
+
+  return `
+    <div class="arg-card">
+      ${imgEl}
+      <div class="arg-body">
+        <div class="arg-name">${arg.name}</div>
+        ${showDesc ? `<p class="arg-desc-small">${arg.desc}</p>` : ""}
+        <div class="arg-meta">
+          <span class="arg-badge ${statusClass}">${arg.status}</span>
+          <span class="arg-badge ${genreClass}">${arg.genre}</span>
+          <span class="arg-badge ${diffClass}">${arg.difficulty}</span>
+          <span class="arg-badge ${platClass}">${arg.platform}</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// TAB 1: TRENDING — auto-scroll strip
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function buildTrending() {
+  const trending = args.filter(a => a.trending);
+  const track = document.getElementById("trendingTrack");
+  // Duplicate for seamless loop
+  [...trending, ...trending].forEach(a => {
+    track.innerHTML += buildCard(a);
+  });
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// TAB 2: NEW FOR YOU — horizontal drag scroll
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function buildNewForYou() {
+  const fresh = args.filter(a => a.newForYou);
+  const track = document.getElementById("newForYouTrack");
+  fresh.forEach(a => { track.innerHTML += buildCard(a); });
+
+  // Drag to scroll logic
+  const wrapper = document.getElementById("newForYouWrapper");
+  let isDown = false, startX, scrollLeft;
+
+  wrapper.addEventListener("mousedown", e => {
+    isDown = true;
+    startX = e.pageX - wrapper.offsetLeft;
+    scrollLeft = wrapper.scrollLeft;
+  });
+  wrapper.addEventListener("mouseleave", () => isDown = false);
+  wrapper.addEventListener("mouseup",    () => isDown = false);
+  wrapper.addEventListener("mousemove",  e => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - wrapper.offsetLeft;
+    wrapper.scrollLeft = scrollLeft - (x - startX);
+  });
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// TAB 3: RECOMMENDED — vertical scroll
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function buildRecommended() {
+  const rec = args.filter(a => a.recommended);
+  const track = document.getElementById("recommendedTrack");
+  rec.forEach(a => { track.innerHTML += buildCard(a, true); });
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// TAB 4: BROWSE — search + filter grid
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function renderBrowse() {
+  const query      = document.getElementById("browseSearch").value.toLowerCase();
+  const genre      = document.getElementById("filterGenre").value;
+  const status     = document.getElementById("filterStatus").value;
+  const difficulty = document.getElementById("filterDifficulty").value;
+  const platform   = document.getElementById("filterPlatform").value;
+
+  const filtered = args.filter(a =>
+    a.name.toLowerCase().includes(query) &&
+    (genre      === "" || a.genre      === genre)      &&
+    (status     === "" || a.status     === status)     &&
+    (difficulty === "" || a.difficulty === difficulty) &&
+    (platform   === "" || a.platform   === platform)
+  );
+
+  const grid = document.getElementById("browseGrid");
+  if (filtered.length === 0) {
+    grid.innerHTML = `<p class="no-results">No ARGs found. Try adjusting your search or filters.</p>`;
+  } else {
+    grid.innerHTML = filtered.map(a => buildCard(a)).join("");
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// INIT
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+buildTrending();
+buildNewForYou();
+buildRecommended();
+renderBrowse();
+</script>
+
+</body>
+</html>
