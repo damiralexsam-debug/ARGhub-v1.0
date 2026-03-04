@@ -4,151 +4,797 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <style>
+
+    /* =====================
+       HERO SECTION
+    ===================== */
+    .hero {
+      position: relative;
+      text-align: center;
+      padding: 60px 20px 80px;
+      overflow: hidden;
+    }
+
+    /* Subtle animated grid background */
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: gridDrift 20s linear infinite;
+      z-index: 0;
+    }
+
+    @keyframes gridDrift {
+      from { background-position: 0 0; }
+      to   { background-position: 60px 60px; }
+    }
+
+    .hero > * { position: relative; z-index: 1; }
+
+    .hero h1 {
+      font-size: 52px;
+      font-weight: 900;
+      margin: 0 0 16px;
+      letter-spacing: 2px;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .hero-sub {
+      font-size: 20px;
+      color: #aaa;
+      max-width: 600px;
+      margin: 0 auto 36px;
+      line-height: 1.6;
+      animation: fadeUp 0.8s ease 0.15s both;
+    }
+
+    .hero-btns {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      animation: fadeUp 0.8s ease 0.3s both;
+    }
+
+    .hero-btn {
+      padding: 14px 32px;
+      border-radius: 10px;
+      font-family: 'Roboto Slab', serif;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+      text-decoration: none;
+      border: 1px solid white;
+      color: white;
+      background: transparent;
+      display: inline-block;
+    }
+
+    .hero-btn.primary { background: white; color: black; }
+    .hero-btn.primary:hover { background: transparent; color: white; box-shadow: 0 0 18px white; }
+    .hero-btn.secondary:hover { background: white; color: black; box-shadow: 0 0 18px white; }
+
+    /* =====================
+       LIVE STATS BAR
+    ===================== */
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      gap: 60px;
+      padding: 28px 40px;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+      background: #080808;
+      flex-wrap: wrap;
+      animation: fadeUp 0.8s ease 0.45s both;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 32px;
+      font-weight: 900;
+      color: white;
+      display: block;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: #555;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 6px;
+      display: block;
+    }
+
+    /* =====================
+       SECTION HEADINGS
+    ===================== */
+    .section-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 30px;
+    }
+
+    .section-title-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 60px 0 24px;
+    }
+
+    .section-title-row h2 {
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin: 0;
+    }
+
+    .section-pill {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    /* =====================
+       FEATURE CARDS (Why ARGhub)
+    ===================== */
+    .feature-grid {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .feature-card {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 14px;
+      padding: 28px 24px;
+      width: 300px;
+      transition: 0.3s;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .feature-card:hover {
+      border-color: white;
+      transform: translateY(-4px);
+      box-shadow: 0 0 20px rgba(255,255,255,0.06);
+    }
+
+    .feature-icon {
+      font-size: 28px;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .feature-card h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin: 0 0 8px;
+      letter-spacing: 1px;
+    }
+
+    .feature-card p {
+      font-size: 13px;
+      color: #888;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    /* =====================
+       GLOSSARY / TOOLTIP BOX
+    ===================== */
+    .glossary-strip {
+      background: #0a0a0a;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+      padding: 30px 40px;
+      margin: 60px 0 0;
+    }
+
+    .glossary-label {
+      text-align: center;
+      font-size: 11px;
+      color: #555;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .glossary-row {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .glossary-pill {
+      padding: 8px 16px;
+      border-radius: 30px;
+      font-size: 13px;
+      border: 1px solid;
+      cursor: help;
+      position: relative;
+      transition: 0.2s;
+    }
+
+    .glossary-pill.green  { border-color: #4CAF50; color: #4CAF50; }
+    .glossary-pill.orange { border-color: #ff9800; color: #ff9800; }
+    .glossary-pill.red    { border-color: #f44336; color: #f44336; }
+
+    .glossary-pill:hover { opacity: 0.8; }
+
+    /* =====================
+       INFO BOXES (original section - revamped)
+    ===================== */
+    .action-grid {
+      display: flex;
+      justify-content: space-around;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-top: 40px;
+    }
+
+    .action-section {
+      text-align: center;
+      width: 30%;
+      min-width: 260px;
+    }
+
+    .action-section button {
+      padding: 15px 30px;
+      font-size: 18px;
+      border-radius: 8px;
+      font-family: 'Roboto Slab', serif;
+      width: 100%;
+      transition: 0.3s;
+    }
+
+    .infoBox {
+      overflow: visible;
+      display: none;
+      opacity: 0;
+      transition: 0.5s;
+      border: 2px solid white;
+      padding: 20px;
+      background: #111;
+      border-radius: 12px;
+      margin-top: 15px;
+      text-align: left;
+    }
+
+    .infoBox h2 { margin-top: 0; }
+
+    /* =====================
+       CLASSICS SECTION
+    ===================== */
+    .classics-grid {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
+      margin-top: 30px;
+      padding-bottom: 80px;
+    }
+
+    .argCard {
+      background: #111;
+      border: 1px solid white;
+      padding: 20px;
+      width: 320px;
+      border-radius: 12px;
+      text-align: center;
+      transition: 0.3s;
+      cursor: pointer;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .argCard.card1:hover { background-color: rgb(134,15,170); box-shadow: 0 0 20px rgb(134,15,170); }
+    .argCard.card2:hover { background-color: aquamarine; color: black; box-shadow: 0 0 20px rgb(15,170,136); }
+    .argCard.card3:hover { background-color: rgb(170,15,15); box-shadow: 0 0 20px rgb(170,15,15); }
+
+    .argCard img { max-width: 100%; border-radius: 8px; margin-bottom: 12px; }
+    .argCard h3  { margin: 0 0 10px; font-size: 18px; }
+    .argCard p   { font-size: 13px; color: #aaa; line-height: 1.6; }
+    .argCard:hover p { color: inherit; }
+
+    /* =====================
+       HOW IT WORKS
+    ===================== */
+    .steps-row {
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      margin: 30px 0 60px;
+      flex-wrap: wrap;
+      position: relative;
+    }
+
+    .step {
+      text-align: center;
+      width: 220px;
+      padding: 0 20px;
+      position: relative;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .step:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      right: -10px;
+      top: 30px;
+      font-size: 22px;
+      color: #333;
+    }
+
+    .step-num {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 2px solid white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 900;
+      margin: 0 auto 14px;
+    }
+
+    .step h4 { font-size: 14px; font-weight: 700; margin: 0 0 8px; letter-spacing: 1px; }
+    .step p  { font-size: 12px; color: #666; line-height: 1.5; margin: 0; }
+
+    /* =====================
+       FADE-IN KEYFRAME
+    ===================== */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Stagger delays for feature cards */
+    .feature-card:nth-child(1) { animation-delay: 0.05s; }
+    .feature-card:nth-child(2) { animation-delay: 0.15s; }
+    .feature-card:nth-child(3) { animation-delay: 0.25s; }
+    .feature-card:nth-child(4) { animation-delay: 0.35s; }
+
+    .step:nth-child(1) { animation-delay: 0.1s; }
+    .step:nth-child(2) { animation-delay: 0.2s; }
+    .step:nth-child(3) { animation-delay: 0.3s; }
+    .step:nth-child(4) { animation-delay: 0.4s; }
+
+    /* =====================
+       TOOLTIP OVERRIDE for homepage pills
+    ===================== */
+    .glossary-pill .tooltiptext {
+      bottom: 130%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 240px;
+    }
+
+    /* =====================
+       SCROLL-TRIGGERED REVEAL
+    ===================== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+  </style>
 </head>
 <body>
 
 <a href="index.html"><img src="images and logos/ARGhub_3.png" width="200" class="site-logo"></a>
 
+<!-- TOOLTIP LEGEND -->
 <div class="boxTips">
   <span class="tooltip green">Green Tooltip
-    <span class="tooltiptext">If the tooltipped word is green, it means that everyone in the ARG community is familiar with it, and it is a common term used in the ARG space.</span>
+    <span class="tooltiptext">Everyone in the ARG community knows this — it's a standard, widely-used term.</span>
   </span>
   <span class="tooltip orange">Orange Tooltip
-    <span class="tooltiptext">If the tooltipped word is orange, it means that it is a term that is known by most of the ARG community, but it may not be as common as the green tooltipped words.</span>
+    <span class="tooltiptext">Known by most, but not universally. A mid-tier term in the ARG space.</span>
   </span>
   <span class="tooltip red">Red Tooltip
-    <span class="tooltiptext">If the tooltipped word is red, it means that it is a term that is not widely known in the ARG community, and it may be a more obscure or niche term.</span>
+    <span class="tooltiptext">Obscure or niche — only veterans and deep-divers tend to know this one.</span>
   </span>
 </div>
 
-<h2 class="tagline">Solve, Together.</h2>
-
 <nav class="navbar">
-  <a href="discover.html"    class="navbtn discover">Discover</a>
-  <a href="pricing.html"     class="navbtn pricing">Pricing</a>
-  <a href="featured.html"    class="navbtn featured">Featured</a>
-  <a href="dashboard.html"   class="navbtn dashboard">Dashboard</a>
-  <a href="recting.html"     class="navbtn recting">Recting</a>
+  <a href="discover.html"     class="navbtn discover">Discover</a>
+  <a href="pricing.html"      class="navbtn pricing">Pricing</a>
+  <a href="featured.html"     class="navbtn featured">Featured</a>
+  <a href="dashboard.html"    class="navbtn dashboard">Dashboard</a>
+  <a href="recting.html"      class="navbtn recting">Recting</a>
   <a href="contextslips.html" class="navbtn context">Context Slips</a>
 </nav>
 
-<br>
-<h1 style="text-align:center;">ARGhub is live!</h1>
-<h2 style="text-align:center;">The hub for solving, discussing, creating and learning. Join the
-  <span class="tooltip green">ARG
-    <span class="tooltiptext">Alternate Reality Game. A game that uses the real world as a platform, often involving multiple media and game elements to tell a story that may be affected by players' ideas or actions.</span>
-  </span>
-  space today.
-</h2>
-
-<div class="buttonRow">
-
-  <div class="section">
-    <button id="DiscussButton" onclick="toggleBox('Discuss')">Discuss & Create ARGs</button>
-    <div id="DiscussBox" class="infoBox">
-      <h2>Discuss & Create</h2>
-      <p>Talk about ARGs and build your own; while learning from other
-        <span class="tooltip green">Puppetmasters
-          <span class="tooltiptext">The person controlling/creating the ARG.</span>
-        </span>.
-        Share videos, pictures, codes, most files with your peers in the Communities.
-        Or create your own ARG using the Dashboard, which has better functionality when upgraded to a new plan.
-        The Premium plan adds the Evidence Board to your Dashboard, allowing you to organize all your saved files and documentations in File Stacks, allowing for a better organized space.
-      </p>
-      <button><a href="dashboard.html">Create your ARG now!</a></button>
-    </div>
+<!-- ══════════════════════════════════
+     HERO
+══════════════════════════════════ -->
+<div class="hero">
+  <h1>ARGhub is live.</h1>
+  <p class="hero-sub">
+    The central hub for
+    <span class="tooltip green">ARG
+      <span class="tooltiptext">Alternate Reality Game. A game that uses the real world as its platform, blending websites, puzzles, real phone calls, and physical events into a single unfolding story. Players interact as themselves.</span>
+    </span>
+    creators and solvers. Everything used to be scattered on Reddit, Discord, and dead forums.
+    Now it's here.
+  </p>
+  <div class="hero-btns">
+    <a href="featured.html" class="hero-btn primary">Browse ARGs</a>
+    <a href="dashboard.html" class="hero-btn secondary">Post Your ARG</a>
   </div>
-
-  <div class="section">
-    <button id="JoinButton" onclick="toggleBox('Join')">Join Communities</button>
-    <div id="JoinBox" class="infoBox">
-      <h2>Join Communities</h2>
-      <p>Find active ARGs and solve together.
-        Create communities dedicated to your favourite ARG, or join one and be a part of the completion. Share files, have in-community polls, and solve the ARG you love.
-        While solving, moderators will grant you
-        <span class="tooltip orange">Promotion Tickets
-          <span class="tooltiptext">Tickets that promote your ARG to the top of the Featured Page, increasing visibility and player count. They are only temporary, but they are a great boost to the early stages of an ARG. Feature created only in ARGhub.</span>
-        </span>,
-        that clear the algorithm of the Featured Page, so that your ARG shows up on the top charts.
-        These tickets grant one day of visibility per ticket.
-      </p>
-      <button><a href="discover.html">Join other Solvers</a></button>
-    </div>
-  </div>
-
-  <div class="section">
-    <button id="LearnButton" onclick="toggleBox('Learn')">Learn Ciphers</button>
-    <div id="LearnBox" class="infoBox">
-      <h2>Learn
-        <span class="tooltip green">Ciphers
-          <span class="tooltiptext">A method of transforming a message to conceal its meaning. They are often used in ARGs to hide clues and information, and they can range from simple substitution ciphers to complex encryption methods.</span>
-        </span>
-      </h2>
-      <p>Master puzzle-solving with the never-thought-of invention: the Context Slips.
-        Containing most completed ARGs with detailed instructions on how they were solved and what was the story, the Archive is for the newcomers wanting to educate themselves to be a part of the ARG community.
-        But the Dictionary contains all known terms and definitions of these terms, which are all related to the ARG space.
-      </p>
-      <button><a href="contextslips.html">Enter the Vault of Knowledge</a></button>
-    </div>
-  </div>
-
 </div>
 
-<br>
-<h2 style="text-align:center;">Some of the Classics</h2>
+<!-- ══════════════════════════════════
+     STATS BAR
+══════════════════════════════════ -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <span class="stat-number">2,400+</span>
+    <span class="stat-label">ARGs Listed</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-number">38,000+</span>
+    <span class="stat-label">Active Solvers</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-number">900+</span>
+    <span class="stat-label">Communities</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-number">140+</span>
+    <span class="stat-label">Active ARGs Right Now</span>
+  </div>
+</div>
 
-<div class="featuredRow">
-
-  <div class="argCard card1">
-    <img src="images and logos/OperatorSymbol.webp" width="75%">
-    <h3>Marble Hornets</h3>
-    <p>Marble Hornets is an American found footage web series created by Troy Wagner, Joseph DeLage, and Tim Sutton.
-      It is a pseudo-documentary based on the Slender Man online mythos.
-      While there is some participation from the solver community, Marble Hornets is mostly
-      <span class="tooltip orange">Analog Horror
-        <span class="tooltiptext">A genre of horror that uses the aesthetics and technology of the past, often with a focus on VHS tapes, old television broadcasts, and other analog media. It is often used in ARGs to create a sense of nostalgia and unease, and it can be a powerful storytelling tool.</span>
-      </span>. But ARGs and Analog Horror can overlap, and that is a good thing.
-    </p>
-    <button>View ARG</button>
+<!-- ══════════════════════════════════
+     WHY ARGHUB
+══════════════════════════════════ -->
+<div class="section-wrap">
+  <div class="section-title-row reveal">
+    <h2>Why ARGhub</h2>
+    <span class="section-pill" style="background:#222; color:#aaa; border:1px solid #333;">THE PITCH</span>
   </div>
 
-  <div class="argCard card2">
-    <img src="images and logos/post-image2.png" width="100%">
-    <h3>CICADA 3301</h3>
-    <p>Cicada 3301 refers to a series of highly complex, cryptic, and unsolved, or partially solved internet puzzles posted between 2012 and 2014, designed to recruit "intelligent individuals".
-      Using
-      <span class="tooltip orange">Steganography
-        <span class="tooltiptext">The practice of hiding messages or information within other non-secret text or data. It is often used in ARGs to conceal clues and information.</span>
-      </span>,
-      cryptography, and various riddles, the challenges, which originated on 4chan, demanded advanced technical skills and knowledge of data security, privacy, and literature.
-    </p>
-    <button>View ARG</button>
+  <div class="feature-grid">
+    <div class="feature-card reveal">
+      <span class="feature-icon">🗂️</span>
+      <h3>One Place</h3>
+      <p>No more chasing
+        <span class="tooltip green">trailheads
+          <span class="tooltiptext">The entry point of an ARG — the first clue, page, or piece of media that pulls you into the game. Usually looks like something stumbled upon by accident.</span>
+        </span>
+        across six different platforms. Every ARG, every community, every solved case — centralized.
+      </p>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon">🧩</span>
+      <h3>Built for Solvers</h3>
+      <p>Tools designed for the
+        <span class="tooltip green">collective detective
+          <span class="tooltiptext">The community of players who work together to solve an ARG. ARGs are rarely solved by one person — the community functions as a single distributed mind.</span>
+        </span>:
+        evidence boards, community hubs, cipher references, and live collaboration.
+      </p>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon">🎭</span>
+      <h3>Built for Creators</h3>
+      <p>Post your ARG, grow a solver community, and manage your
+        <span class="tooltip green">Puppetmaster
+          <span class="tooltiptext">The person or team creating and controlling an ARG from behind the scenes. The Puppetmaster authors the puzzles, plays the characters, and guides the story.</span>
+        </span>
+        dashboard — all in one place.
+      </p>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon">📖</span>
+      <h3>The Archive</h3>
+      <p>Concluded ARGs don't disappear here. The
+        <span class="tooltip orange">Context Slips
+          <span class="tooltiptext">ARGhub's archive of solved ARGs — detailed walk-throughs of how each game was solved, what the story was, and what made it special. A reference for newcomers and veterans alike.</span>
+        </span>
+        preserve the full history of every game that called it done.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     HOW IT WORKS
+══════════════════════════════════ -->
+<div class="section-wrap">
+  <div class="section-title-row reveal">
+    <h2>How It Works</h2>
+    <span class="section-pill" style="background:#0a1a0a; color:lime; border:1px solid lime;">FOR NEW SOLVERS</span>
   </div>
 
-  <div class="argCard card3">
-    <img src="images and logos/MV5BZDA1MDEyYmUtZjMwYi00YzliLWI3YzktOTc3NmQwNGVmOGJkXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" width="60%">
-    <h3>Petscop</h3>
-    <p>Petscop is a YouTube horror web series (analog horror) by Tony Domenico, made to resemble a YouTube Let's Play series.
-      The videos follow "Paul", the
-      <span class="tooltip green">protagonist
-        <span class="tooltiptext">The main character in a story, often the one who drives the plot forward and with whom the audience is meant to identify.</span>
-      </span>,
-      exploring and documenting a supposedly "long-lost PlayStation video game" titled Petscop.
-      The 24-episode series ran from March 12, 2017, to September 2, 2019.
-    </p>
-    <button>View ARG</button>
+  <div class="steps-row">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h4>Find an ARG</h4>
+      <p>Browse Featured or Discover a community. Pick one that matches your interest and difficulty level.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h4>Join the Community</h4>
+      <p>Every ARG has a solver hub. Join it to get updates, share findings, and coordinate with other
+        <span class="tooltip green">solvers
+          <span class="tooltiptext">Players actively working to crack an ARG's puzzles and uncover its story. Solvers form the backbone of the ARG community.</span>
+        </span>.
+      </p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h4>Solve Together</h4>
+      <p>Post findings, decode
+        <span class="tooltip green">ciphers
+          <span class="tooltiptext">Methods of encoding messages to conceal their meaning. ARGs use everything from Caesar shifts to Vigenère tables to custom ciphers invented just for the game.</span>
+        </span>,
+        follow
+        <span class="tooltip green">rabbit holes
+          <span class="tooltiptext">A chain of clues that pulls you deeper into an ARG, often leading somewhere unexpected. Named after Alice in Wonderland — you never know how far down it goes.</span>
+        </span>.
+      </p>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <h4>Reach the End</h4>
+      <p>When an ARG concludes, it moves to the Context Slips — a permanent record of everything you helped solve.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     GLOSSARY STRIP
+══════════════════════════════════ -->
+<div class="glossary-strip reveal">
+  <p class="glossary-label">✦ ARG Glossary — hover to learn ✦</p>
+  <div class="glossary-row">
+
+    <span class="glossary-pill tooltip green">TINAG
+      <span class="tooltiptext">"This Is Not A Game." The defining principle of ARGs — the fiction is presented as real, and players are expected to treat it as such.</span>
+    </span>
+
+    <span class="glossary-pill tooltip green">Rabbit Hole
+      <span class="tooltiptext">The entry point or chain of clues that pulls a player deeper into an ARG's story. Going down the rabbit hole means committing to the solve.</span>
+    </span>
+
+    <span class="glossary-pill tooltip green">Puppetmaster
+      <span class="tooltiptext">The creator(s) controlling an ARG from behind the curtain. They author puzzles, play characters, and guide the story in response to player actions.</span>
+    </span>
+
+    <span class="glossary-pill tooltip green">Trailhead
+      <span class="tooltiptext">The initial clue or page that brings someone into an ARG. Usually designed to look like an accidental discovery.</span>
+    </span>
+
+    <span class="glossary-pill tooltip green">Collective Detective
+      <span class="tooltiptext">The player community working together to solve an ARG. No one person cracks it — the community functions as one distributed mind.</span>
+    </span>
+
+    <span class="glossary-pill tooltip orange">Curtain
+      <span class="tooltiptext">The line separating players from Puppetmasters. Lifting the curtain means revealing the game's true creators — which breaks the TINAG illusion.</span>
+    </span>
+
+    <span class="glossary-pill tooltip orange">Lurker
+      <span class="tooltiptext">Someone who follows an ARG and its community without actively participating in solves. The ratio of lurkers to active solvers is typically 5:1 to 20:1.</span>
+    </span>
+
+    <span class="glossary-pill tooltip orange">Analog Horror
+      <span class="tooltiptext">A horror subgenre using retro media aesthetics — VHS tapes, old TV broadcasts, corrupted files. Often overlaps with ARGs. Think Local 58 or Gemini Home Entertainment.</span>
+    </span>
+
+    <span class="glossary-pill tooltip orange">Rubbernecker
+      <span class="tooltiptext">A step above a lurker — someone who follows the community and may post, but avoids direct contact with in-game characters or registering through in-game websites.</span>
+    </span>
+
+    <span class="glossary-pill tooltip orange">Steganography
+      <span class="tooltiptext">Hiding secret messages inside ordinary-looking files — images, audio, video. A core ARG tool. The message is invisible unless you know to look.</span>
+    </span>
+
+    <span class="glossary-pill tooltip red">Staple
+      <span class="tooltiptext">When an ARG abruptly ends without resolution, leaving solvers with no payoff for their time. One of the most dreaded outcomes in the community.</span>
+    </span>
+
+    <span class="glossary-pill tooltip red">Walkthrough
+      <span class="tooltiptext">A linear narrative of how an ARG was discovered and solved, step by step. Useful for newcomers catching up on concluded games.</span>
+    </span>
+
+    <span class="glossary-pill tooltip red">Beast
+      <span class="tooltiptext">The first mainstream ARG, created for the film A.I. in 2001. It established almost every convention the genre still uses today — trailheads, Puppetmasters, the TINAG principle.</span>
+    </span>
+
+    <span class="glossary-pill tooltip red">Metatransparency
+      <span class="tooltiptext">The open secret that an ARG is a game even while maintaining the TINAG fiction. Players know it's a game but agree to play as if it isn't.</span>
+    </span>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     THREE ACTIONS (revamped original section)
+══════════════════════════════════ -->
+<div class="section-wrap">
+  <div class="section-title-row reveal">
+    <h2>Get Started</h2>
+    <span class="section-pill" style="background:#1a0a00; color:orange; border:1px solid orange;">PICK YOUR PATH</span>
   </div>
 
+  <div class="action-grid">
+
+    <div class="action-section reveal">
+      <button id="DiscussButton" onclick="toggleBox('Discuss')">Discuss &amp; Create ARGs</button>
+      <div id="DiscussBox" class="infoBox">
+        <h2>Discuss &amp; Create</h2>
+        <p>Talk about ARGs and build your own — while learning from other
+          <span class="tooltip green">Puppetmasters
+            <span class="tooltiptext">The person controlling and creating the ARG. Puppetmasters design the puzzles, operate the characters, and manage the story in real time.</span>
+          </span>.
+          Share videos, pictures, codes, and files with your peers in the Communities.
+          Or create your own ARG using the Dashboard, which adds more functionality as you upgrade your plan.
+          The Premium plan unlocks the Evidence Board — organize your documentation in
+          <span class="tooltip orange">File Stacks
+            <span class="tooltiptext">ARGhub's organizational system for saving and sorting ARG documents, images, and media. Available on the Premium plan and above.</span>
+          </span>,
+          keeping everything in one searchable space.
+        </p>
+        <button><a href="dashboard.html">Create your ARG now!</a></button>
+      </div>
+    </div>
+
+    <div class="action-section reveal">
+      <button id="JoinButton" onclick="toggleBox('Join')">Join Communities</button>
+      <div id="JoinBox" class="infoBox">
+        <h2>Join Communities</h2>
+        <p>Find active ARGs and solve together.
+          Create communities dedicated to your favourite ARG, or join one and be part of the solve.
+          Share files, run in-community polls, and follow the
+          <span class="tooltip green">rabbit hole
+            <span class="tooltiptext">The chain of clues that leads you deeper into an ARG. Going down a rabbit hole means fully committing to a solve — it might take hours, days, or months.</span>
+          </span>
+          together.
+          While solving, moderators may grant you
+          <span class="tooltip orange">Promotion Tickets
+            <span class="tooltiptext">Tickets that temporarily push your ARG to the top of the Featured Page. Earned through active community contribution. Each ticket grants one day of visibility.</span>
+          </span>
+          — one day of top-chart visibility per ticket.
+        </p>
+        <button><a href="discover.html">Join other Solvers</a></button>
+      </div>
+    </div>
+
+    <div class="action-section reveal">
+      <button id="LearnButton" onclick="toggleBox('Learn')">Learn Ciphers</button>
+      <div id="LearnBox" class="infoBox">
+        <h2>Learn
+          <span class="tooltip green">Ciphers
+            <span class="tooltiptext">A method of transforming a message to hide its meaning. ARGs use ciphers constantly — from simple substitution to custom encryption invented just for the game.</span>
+          </span>
+        </h2>
+        <p>Master puzzle-solving with the Context Slips — ARGhub's archive of completed ARGs, each with a detailed
+          <span class="tooltip red">walkthrough
+            <span class="tooltiptext">A linear, step-by-step account of how an ARG was solved. Useful for newcomers wanting to understand how the community cracked a concluded game.</span>
+          </span>
+          of how it was solved and what the story was.
+          The
+          <span class="tooltip orange">steganography
+            <span class="tooltiptext">The practice of hiding secret messages inside images, audio, or other media. A staple of ARG puzzle design — the message is invisible until you know where to look.</span>
+          </span>
+          section, cipher guides, and ARG term dictionary are all inside — everything a newcomer needs to get serious.
+        </p>
+        <button><a href="contextslips.html">Enter the Vault of Knowledge</a></button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     CLASSICS
+══════════════════════════════════ -->
+<div class="section-wrap">
+  <div class="section-title-row reveal">
+    <h2>Some of the Classics</h2>
+    <span class="section-pill" style="background:#1a0a1a; color:violet; border:1px solid violet;">HISTORY</span>
+  </div>
+
+  <div class="classics-grid">
+
+    <div class="argCard card1 reveal">
+      <img src="images and logos/OperatorSymbol.webp" width="75%">
+      <h3>Marble Hornets</h3>
+      <p>An American
+        <span class="tooltip orange">found footage
+          <span class="tooltiptext">A storytelling format presenting media as if it were discovered recordings from real events. Used in ARGs and analog horror to heighten the sense that what you're watching actually happened.</span>
+        </span>
+        web series by Troy Wagner, Joseph DeLage, and Tim Sutton — the defining entry in the
+        <span class="tooltip orange">Slender Man
+          <span class="tooltiptext">An internet-born mythological figure: a faceless, impossibly tall entity that stalks and abducts people. Originated on Something Awful in 2009. Marble Hornets expanded the mythos into its most coherent ARG form.</span>
+        </span>
+        mythos. Mostly
+        <span class="tooltip orange">Analog Horror
+          <span class="tooltiptext">Horror that uses the aesthetics of old media — VHS tapes, CRT distortion, broadcast glitches — to create unease. ARGs and Analog Horror frequently overlap.</span>
+        </span>,
+        with strong community participation. A landmark of the genre.
+      </p>
+    </div>
+
+    <div class="argCard card2 reveal">
+      <img src="images and logos/post-image2.png" width="100%">
+      <h3>CICADA 3301</h3>
+      <p>A series of cryptic internet puzzles posted between 2012 and 2014, designed to recruit highly intelligent individuals.
+        Used
+        <span class="tooltip orange">steganography
+          <span class="tooltiptext">Hiding secret messages inside images, audio, or other media. Cicada 3301 hid messages inside posted images that were only detectable with the right tools.</span>
+        </span>,
+        cryptography, and real-world
+        <span class="tooltip orange">dead drops
+          <span class="tooltiptext">Physical locations where ARG clues or objects are hidden for solvers to find in real life. Cicada 3301 left posters at coordinates around the world.</span>
+        </span>
+        across multiple continents. Partially unsolved to this day.
+      </p>
+    </div>
+
+    <div class="argCard card3 reveal">
+      <img src="images and logos/MV5BZDA1MDEyYmUtZjMwYi00YzliLWI3YzktOTc3NmQwNGVmOGJkXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" width="60%">
+      <h3>Petscop</h3>
+      <p>A YouTube horror series by Tony Domenico, framed as a
+        <span class="tooltip green">Let's Play
+          <span class="tooltiptext">A video format where someone plays and narrates a game for an audience. Petscop mimics the format to make a fictional PS1 horror game feel like a real discovery.</span>
+        </span>
+        of a lost PlayStation game. The
+        <span class="tooltip green">protagonist
+          <span class="tooltiptext">The main character whose perspective drives the story. In Petscop, "Paul" is the player — and his discoveries become more disturbing the deeper he goes.</span>
+        </span>
+        uncovers increasingly dark truths across 24 episodes from 2017 to 2019. One of the most discussed ARG-adjacent works ever made.
+      </p>
+    </div>
+
+  </div>
 </div>
 
 <script>
 function toggleBox(type) {
-  let button = document.getElementById(type + "Button");
-  let box = document.getElementById(type + "Box");
+  const button = document.getElementById(type + "Button");
+  const box    = document.getElementById(type + "Box");
   button.style.display = "none";
-  box.style.display = "block";
+  box.style.display    = "block";
   setTimeout(() => { box.style.opacity = "1"; }, 10);
 }
+
+// ── Scroll-triggered reveal ──
+// IntersectionObserver watches each .reveal element and adds .visible when it enters the viewport
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add("visible");
+      // Unobserve so it only fires once
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
 </script>
 
 </body>
