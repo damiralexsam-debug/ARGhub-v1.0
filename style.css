@@ -1,5 +1,5 @@
 /* =====================
-   BASE
+   BASE (everything)
 ===================== */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -13,7 +13,7 @@ body {
 }
 
 /* =====================
-   NAVBAR
+   NAVBAR (every page)
 ===================== */
 .navbar {
   background: rgb(0, 0, 0);
@@ -55,7 +55,7 @@ body {
 .navbtn.context-active   { background: violet;  box-shadow: 0 0 15px violet;  color: white; }
 
 /* =====================
-   LOGO + TAGLINE
+   LOGO + TAGLINE (every page)
 ===================== */
 .site-logo {
   display: block;
@@ -69,7 +69,7 @@ body {
 }
 
 /* =====================
-   TOOLTIPS
+   TOOLTIPS (every page)
 ===================== */
 .tooltip {
   position: relative;
@@ -151,7 +151,7 @@ body {
 }
 
 /* =====================
-   FEATURED ARG CARDS
+   FEATURED ARG CARDS (index.html)
 ===================== */
 .featuredRow {
   display: flex;
@@ -188,7 +188,7 @@ body {
 }
 
 /* =====================
-   HOME PAGE BUTTONS & INFO BOXES
+   HOME PAGE (index.html) BUTTONS & INFO BOXES
 ===================== */
 .buttonRow {
   display: flex;
