@@ -55,13 +55,13 @@
 
       <div class="form-group">
         <label>ARG Name <span class="req">*</span></label>
-        <input type="text" id="argName" placeholder="e.g. The Oslo Files">
+        <input type="text" id="argName" placeholder="e.g. Marble Hornets">
         <span class="field-error" id="errName">Please enter a name.</span>
       </div>
 
       <div class="form-group">
         <label>Author / Creator Name <span class="req">*</span></label>
-        <input type="text" id="argAuthor" placeholder="e.g. Damir">
+        <input type="text" id="argAuthor" placeholder="e.g. Cool Person">
         <span class="field-error" id="errAuthor">Please enter an author name.</span>
       </div>
 
@@ -113,7 +113,7 @@
         </select>
       </div>
       <div class="form-group">
-        <label>Status <span class="req">*</span></label>
+        <label>Status <span class="optional">(optional since it is automatically active)</span></label>
         <select id="argStatus">
           <option value="">Select status...</option>
           <option value="Active">Active</option>
@@ -137,7 +137,7 @@
           <option value="IRL">IRL</option>
         </select>
       </div>
-      <span class="field-error" id="errTags">Please fill in all four tag fields.</span>
+      <span class="field-error" id="errTags">Please fill in all tag fields.</span>
 
       <button class="modal-submit green-submit" onclick="submitARG()">Submit ARG →</button>
     </div>
