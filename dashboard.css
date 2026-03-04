@@ -1,0 +1,186 @@
+/* ── ACTION BUTTONS ── */
+.dash-btn {
+  padding: 15px 36px;
+  font-size: 16px;
+  font-family: 'Roboto Slab', serif;
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+  transition: 0.3s;
+  letter-spacing: 1px;
+}
+.dash-btn.green  { border: 1px solid lime;   color: lime; }
+.dash-btn.orange { border: 1px solid orange; color: orange; }
+.dash-btn.green:hover  { background: lime;   color: black; box-shadow: 0 0 16px lime   !important; }
+.dash-btn.orange:hover { background: orange; color: black; box-shadow: 0 0 16px orange !important; }
+
+/* ── MODAL OVERLAY ── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.88);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+}
+.modal-overlay.open { display: flex; }
+
+/* ── MODAL BOX ── */
+.modal-box {
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 16px;
+  padding: 36px 40px;
+  width: 580px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: fadeUp 0.3s ease both;
+  scrollbar-width: thin;
+  scrollbar-color: #333 transparent;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.modal-title {
+  margin: 0 0 24px;
+  font-size: 20px;
+  letter-spacing: 1px;
+}
+.modal-title.green  { color: lime; }
+.modal-title.orange { color: orange; }
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 22px;
+  cursor: pointer;
+  transition: 0.2s;
+  font-family: 'Roboto Slab', serif;
+}
+.modal-close:hover { color: white; box-shadow: none !important; }
+
+/* ── FORM FIELDS ── */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+.form-group label {
+  font-size: 13px;
+  color: #aaa;
+  letter-spacing: 1px;
+}
+.req      { color: red;  margin-left: 3px; }
+.optional { color: #555; font-size: 11px; }
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  padding: 11px 14px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #1a1a1a;
+  color: white;
+  font-family: 'Roboto Slab', serif;
+  font-size: 14px;
+  outline: none;
+  transition: 0.3s;
+  resize: vertical;
+}
+.form-group input[type="file"] {
+  padding: 8px;
+  cursor: pointer;
+}
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  border-color: lime;
+  box-shadow: 0 0 8px rgba(0,255,0,0.15);
+}
+.form-group select option { background: #1a1a1a; }
+
+.url-hint {
+  font-size: 11px;
+  color: #555;
+}
+.form-divider {
+  border: none;
+  border-top: 1px solid #222;
+  margin: 24px 0;
+}
+.form-section-title {
+  font-size: 12px;
+  color: #666;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+/* ── SUBMIT ── */
+.modal-submit {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  background: transparent;
+  font-family: 'Roboto Slab', serif;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: 8px;
+}
+.green-submit  { border: 1px solid lime;   color: lime; }
+.green-submit:hover  { background: lime;   color: black; box-shadow: 0 0 16px lime   !important; }
+
+/* ── SUCCESS VIEW ── */
+.modal-success {
+  display: none;
+  text-align: center;
+  padding: 40px 20px;
+}
+.modal-success h3 { color: lime; font-size: 22px; margin-bottom: 10px; }
+.modal-success p  { color: #aaa; font-size: 14px; }
+
+/* ── ERRORS ── */
+.field-error { color: red; font-size: 12px; display: none; }
+
+/* ── MY ARGs LIST ── */
+.my-arg-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  background: #1a1a1a;
+  transition: 0.2s;
+}
+.my-arg-row:hover { border-color: #444; }
+.my-arg-row-name  { font-size: 15px; font-weight: bold; color: white; }
+.my-arg-row-meta  { font-size: 12px; color: #666; margin-top: 3px; }
+.my-arg-actions   { display: flex; gap: 10px; }
+
+.row-btn {
+  padding: 7px 16px;
+  border-radius: 7px;
+  font-family: 'Roboto Slab', serif;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s;
+  background: transparent;
+}
+.row-btn.edit   { border: 1px solid orange; color: orange; }
+.row-btn.delete { border: 1px solid red;    color: red; }
+.row-btn.edit:hover   { background: orange; color: black; box-shadow: none !important; }
+.row-btn.delete:hover { background: red;    color: white; box-shadow: none !important; }
+
+.no-args-msg { color: #555; text-align: center; padding: 40px 0; font-size: 15px; }
