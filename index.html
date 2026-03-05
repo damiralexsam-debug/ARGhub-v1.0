@@ -4,6 +4,55 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── PAGE LOAD ANIMATIONS ── */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .site-logo  { animation: fadeDown 0.6s ease both; }
+    .boxTips    { animation: fadeIn  0.6s ease 0.1s both; }
+    .tagline    { animation: fadeDown 0.6s ease 0.15s both; }
+    .navbar     { animation: fadeDown 0.6s ease 0.25s both; }
+    h1          { animation: fadeUp  0.6s ease 0.35s both; }
+    h1 + h2     { animation: fadeUp  0.6s ease 0.45s both; }
+    .buttonRow  { animation: fadeUp  0.7s ease 0.55s both; }
+
+    /* stagger the classic cards */
+    .argCard.card1 { animation: fadeUp 0.6s ease 0.65s both; }
+    .argCard.card2 { animation: fadeUp 0.6s ease 0.80s both; }
+    .argCard.card3 { animation: fadeUp 0.6s ease 0.95s both; }
+
+    /* ── MANIFESTO ── */
+    .manifesto {
+      max-width: 720px;
+      margin: 70px auto 60px;
+      padding: 40px 48px;
+      border-top: 1px solid #222;
+      border-bottom: 1px solid #222;
+      text-align: center;
+    }
+    .manifesto p {
+      font-size: 16px;
+      color: #aaa;
+      line-height: 2;
+      margin: 0;
+    }
+    .manifesto p em {
+      color: white;
+      font-style: normal;
+      font-weight: 700;
+    }
+  </style>
 </head>
 <body>
 
@@ -140,6 +189,22 @@
   </div>
 
 </div>
+
+<!-- ── MANIFESTO ── -->
+<div class="manifesto">
+  <p>
+    The ARG community has always lived in fragments —
+    <em>threads buried on Reddit</em>, Discord servers that vanish overnight,
+    YouTube channels with no context, wikis that go unmaintained.
+    The puzzles are out there. The solvers are out there.
+    <em>They just can't find each other.</em>
+    ARGhub is the attempt to fix that. One place for everything.
+    The ARGs, the communities, the archives, the tools.
+    <em>All of it. Here.</em>
+  </p>
+</div>
+
+<br>
 
 <script>
 function toggleBox(type) {
