@@ -1,4 +1,4 @@
-import { supabase, requireAuth, getUser } from "./supabase-auth.js";
+import { supabase, requireAuth, getUser, getDisplayName } from "./supabase-auth.js";
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // MODAL HELPERS
@@ -7,12 +7,9 @@ import { supabase, requireAuth, getUser } from "./supabase-auth.js";
 function closeModal(id) {
   document.getElementById(id).classList.remove("open");
 }
-
 function handleOverlayClick(e, id) {
   if (e.target === document.getElementById(id)) closeModal(id);
 }
-
-// Make these available to inline onclick attributes in the HTML
 window.closeModal         = closeModal;
 window.handleOverlayClick = handleOverlayClick;
 
@@ -22,18 +19,16 @@ window.handleOverlayClick = handleOverlayClick;
 
 let pendingImageData = "";
 
-// Called by the "+ Post New ARG" button
-// requireAuth gates it — if not logged in, auth modal appears first
 window.openPostModal = function() {
   requireAuth(_openPostForm);
 };
 
-function _openPostForm() {
+async function _openPostForm() {
   document.getElementById("formView").style.display    = "block";
   document.getElementById("successView").style.display = "none";
   document.querySelectorAll(".field-error").forEach(e => e.style.display = "none");
 
-  ["argName","argAuthor","argYoutube","argWebsite","argGame","argDesc"].forEach(id => {
+  ["argName","argYoutube","argWebsite","argGame","argDesc"].forEach(id => {
     document.getElementById(id).value = "";
   });
   ["argGenre","argStatus","argDifficulty","argPlatform"].forEach(id => {
@@ -46,10 +41,18 @@ function _openPostForm() {
   document.getElementById("argImgFile").value = "";
   pendingImageData = "";
 
+  // Auto-fill author with the user's real display name and lock it
+  // This prevents impersonation — the field shows who you are, you can't change it
+  const name = await getDisplayName();
+  const authorField = document.getElementById("argAuthor");
+  authorField.value    = name || "";
+  authorField.readOnly = true;
+  authorField.style.color  = "#666";
+  authorField.style.cursor = "not-allowed";
+
   document.getElementById("postModal").classList.add("open");
 }
 
-// Called when user picks a banner image — reads it as base64 for preview
 window.previewImage = function(input) {
   const file = input.files[0];
   if (!file) return;
@@ -67,6 +70,7 @@ window.submitARG = async function() {
   document.querySelectorAll(".field-error").forEach(e => e.style.display = "none");
 
   const name       = document.getElementById("argName").value.trim();
+  // Author is always the logged-in user's display name — taken from the locked field
   const author     = document.getElementById("argAuthor").value.trim();
   const youtube    = document.getElementById("argYoutube").value.trim();
   const website    = document.getElementById("argWebsite").value.trim();
@@ -77,24 +81,19 @@ window.submitARG = async function() {
   const difficulty = document.getElementById("argDifficulty").value;
   const platform   = document.getElementById("argPlatform").value;
 
-  // ── Validation ──
   let valid = true;
-  if (!name)                          { document.getElementById("errName").style.display   = "block"; valid = false; }
-  if (!author)                        { document.getElementById("errAuthor").style.display = "block"; valid = false; }
-  if (!youtube && !website && !game)  { document.getElementById("errUrl").style.display    = "block"; valid = false; }
-  if (!genre || !difficulty || !platform) { document.getElementById("errTags").style.display = "block"; valid = false; }
+  if (!name)                              { document.getElementById("errName").style.display   = "block"; valid = false; }
+  if (!youtube && !website && !game)      { document.getElementById("errUrl").style.display    = "block"; valid = false; }
+  if (!genre || !difficulty || !platform) { document.getElementById("errTags").style.display   = "block"; valid = false; }
   if (!valid) return;
 
-  // ── Get logged-in user ──
   const user = await getUser();
   if (!user) { window.__authModal.open(); return; }
 
-  // ── Insert into Supabase ──
-  // user_id links this ARG to the logged-in user (enforced by row-level security)
   const { error } = await supabase.from("args").insert({
     user_id:     user.id,
     name,
-    author,
+    author,      // always the real profile name, set by the system
     youtube:     youtube || null,
     website:     website || null,
     game:        game    || null,
@@ -132,8 +131,6 @@ async function _loadMyARGs() {
 
   const user = await getUser();
 
-  // Fetch only this user's ARGs from Supabase
-  // .eq("user_id", user.id) filters by the logged-in user — RLS also enforces this server-side
   const { data: args, error } = await supabase
     .from("args")
     .select("*")
@@ -169,21 +166,15 @@ async function _loadMyARGs() {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 window.openEdit = async function(id) {
-  // Fetch just this one ARG by its UUID
-  const { data, error } = await supabase
-    .from("args")
-    .select("*")
-    .eq("id", id)
-    .single();
-
+  const { data, error } = await supabase.from("args").select("*").eq("id", id).single();
   if (error || !data) { alert("Couldn't load ARG for editing."); return; }
 
-  document.getElementById("editIndex").value       = id; // store UUID instead of array index
-  document.getElementById("editDesc").value        = data.description;
-  document.getElementById("editGenre").value       = data.genre;
-  document.getElementById("editStatus").value      = data.status;
-  document.getElementById("editDifficulty").value  = data.difficulty;
-  document.getElementById("editPlatform").value    = data.platform;
+  document.getElementById("editIndex").value      = id;
+  document.getElementById("editDesc").value       = data.description;
+  document.getElementById("editGenre").value      = data.genre;
+  document.getElementById("editStatus").value     = data.status;
+  document.getElementById("editDifficulty").value = data.difficulty;
+  document.getElementById("editPlatform").value   = data.platform;
 
   closeModal("myARGsModal");
   document.getElementById("editModal").classList.add("open");
@@ -192,7 +183,6 @@ window.openEdit = async function(id) {
 window.saveEdit = async function() {
   const id = document.getElementById("editIndex").value;
 
-  // .update() only touches the fields we pass — name/URLs stay unchanged
   const { error } = await supabase.from("args").update({
     description: document.getElementById("editDesc").value.trim() || "No description provided.",
     genre:       document.getElementById("editGenre").value,
@@ -204,7 +194,7 @@ window.saveEdit = async function() {
   if (error) { alert("Save failed. Try again."); return; }
 
   closeModal("editModal");
-  _loadMyARGs(); // refresh the list
+  _loadMyARGs();
 };
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -213,10 +203,7 @@ window.saveEdit = async function() {
 
 window.deleteARG = async function(id) {
   if (!confirm("Are you sure you want to delete this ARG? This cannot be undone.")) return;
-
-  // .delete() removes the row — RLS ensures you can only delete your own
   const { error } = await supabase.from("args").delete().eq("id", id);
   if (error) { alert("Delete failed. Try again."); return; }
-
-  _loadMyARGs(); // refresh list
+  _loadMyARGs();
 };

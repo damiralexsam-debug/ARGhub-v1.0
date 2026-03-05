@@ -1,8 +1,6 @@
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // SUPABASE CLIENT
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// We load Supabase from CDN (see script tag in each HTML file).
-// createClient() initialises the connection to our project.
 
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
@@ -15,14 +13,11 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
 // SESSION HELPERS
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-// Returns the current logged-in user, or null if not logged in
 export async function getUser() {
   const { data: { user } } = await supabase.auth.getUser();
   return user;
 }
 
-// Call this on any page that needs to know who's logged in.
-// Runs the callback with the user object (or null) whenever auth state changes.
 export function onAuthChange(callback) {
   supabase.auth.onAuthStateChange((_event, session) => {
     callback(session?.user ?? null);
@@ -30,16 +25,40 @@ export function onAuthChange(callback) {
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// AUTH MODAL HTML
-// Injected into the page once, reused everywhere
+// DISPLAY NAME
+// Priority: Google full_name → profiles table → email prefix
+// Exported so dashboard-post.js can use it for the author field
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+export async function getDisplayName() {
+  const user = await getUser();
+  if (!user) return null;
+
+  // Google OAuth stores the real name here automatically
+  if (user.user_metadata?.full_name) return user.user_metadata.full_name;
+
+  // Email/password users: we store their chosen name in the profiles table
+  const { data } = await supabase
+    .from("profiles")
+    .select("display_name")
+    .eq("id", user.id)
+    .single();
+
+  if (data?.display_name) return data.display_name;
+
+  // Absolute fallback
+  return user.email.split("@")[0];
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// AUTH MODAL HTML — injected into every page
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 function injectAuthModal() {
-  if (document.getElementById("authModal")) return; // already injected
+  if (document.getElementById("authModal")) return;
 
   const html = `
   <style>
-    /* ── AUTH MODAL OVERLAY ── */
     #authModal {
       display: none;
       position: fixed;
@@ -76,177 +95,100 @@ function injectAuthModal() {
     }
     #authClose:hover { color: white; box-shadow: none !important; }
 
-    /* ── TABS ── */
     .auth-tabs {
       display: flex;
-      gap: 0;
       margin-bottom: 28px;
       border-bottom: 1px solid #333;
     }
     .auth-tab {
-      flex: 1;
-      padding: 10px;
-      text-align: center;
-      cursor: pointer;
-      font-size: 14px;
-      color: #666;
-      letter-spacing: 1px;
-      transition: 0.2s;
+      flex: 1; padding: 10px;
+      text-align: center; cursor: pointer;
+      font-size: 14px; color: #666;
+      letter-spacing: 1px; transition: 0.2s;
       border-bottom: 2px solid transparent;
       margin-bottom: -1px;
       background: none;
-      border-top: none;
-      border-left: none;
-      border-right: none;
+      border-top: none; border-left: none; border-right: none;
       font-family: 'Roboto Slab', serif;
     }
     .auth-tab.active { color: white; border-bottom-color: white; }
 
-    /* ── FORM FIELDS ── */
-    .auth-field {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 16px;
-    }
-    .auth-field label {
-      font-size: 12px;
-      color: #aaa;
-      letter-spacing: 1px;
-    }
+    .auth-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    .auth-field label { font-size: 12px; color: #aaa; letter-spacing: 1px; }
     .auth-field input {
-      padding: 11px 14px;
-      border-radius: 8px;
-      border: 1px solid #333;
-      background: #1a1a1a;
-      color: white;
-      font-family: 'Roboto Slab', serif;
-      font-size: 14px;
-      outline: none;
-      transition: 0.3s;
+      padding: 11px 14px; border-radius: 8px;
+      border: 1px solid #333; background: #1a1a1a;
+      color: white; font-family: 'Roboto Slab', serif;
+      font-size: 14px; outline: none; transition: 0.3s;
     }
-    .auth-field input:focus {
-      border-color: white;
-      box-shadow: 0 0 8px rgba(255,255,255,0.1);
-    }
+    .auth-field input:focus { border-color: white; box-shadow: 0 0 8px rgba(255,255,255,0.1); }
 
-    /* ── BUTTONS ── */
     .auth-submit {
-      width: 100%;
-      padding: 13px;
-      border-radius: 10px;
-      border: 1px solid white;
-      background: transparent;
-      color: white;
-      font-family: 'Roboto Slab', serif;
-      font-size: 15px;
-      cursor: pointer;
-      transition: 0.3s;
-      margin-top: 4px;
+      width: 100%; padding: 13px; border-radius: 10px;
+      border: 1px solid white; background: transparent; color: white;
+      font-family: 'Roboto Slab', serif; font-size: 15px;
+      cursor: pointer; transition: 0.3s; margin-top: 4px;
     }
     .auth-submit:hover { background: white; color: black; }
 
     .auth-divider {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin: 18px 0;
-      color: #444;
-      font-size: 12px;
+      display: flex; align-items: center;
+      gap: 12px; margin: 18px 0; color: #444; font-size: 12px;
     }
-    .auth-divider::before,
-    .auth-divider::after {
-      content: "";
-      flex: 1;
-      height: 1px;
-      background: #333;
+    .auth-divider::before, .auth-divider::after {
+      content: ""; flex: 1; height: 1px; background: #333;
     }
 
     .auth-google {
-      width: 100%;
-      padding: 13px;
-      border-radius: 10px;
-      border: 1px solid #444;
-      background: #1a1a1a;
-      color: #ccc;
-      font-family: 'Roboto Slab', serif;
-      font-size: 14px;
-      cursor: pointer;
-      transition: 0.3s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
+      width: 100%; padding: 13px; border-radius: 10px;
+      border: 1px solid #444; background: #1a1a1a; color: #ccc;
+      font-family: 'Roboto Slab', serif; font-size: 14px;
+      cursor: pointer; transition: 0.3s;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
     }
     .auth-google:hover { border-color: white; color: white; box-shadow: none !important; }
 
-    .auth-error {
-      color: red;
-      font-size: 12px;
-      margin-top: 8px;
-      display: none;
-      text-align: center;
-    }
-    .auth-success {
-      color: lime;
-      font-size: 13px;
-      margin-top: 8px;
-      display: none;
-      text-align: center;
-    }
+    .auth-error   { color: red;  font-size: 12px; margin-top: 8px; display: none; text-align: center; }
+    .auth-success { color: lime; font-size: 13px; margin-top: 8px; display: none; text-align: center; }
 
-    /* ── LOGGED-IN STATE ── */
+    /* Logged-in view inside modal */
     #authLoggedIn { display: none; text-align: center; }
-    #authLoggedIn p { color: #aaa; font-size: 14px; margin-bottom: 20px; }
-    #authLoggedIn strong { color: white; }
+    #authLoggedIn p { color: #aaa; font-size: 13px; margin-bottom: 4px; }
+    #authLoggedIn .auth-name        { color: white; font-size: 22px; font-weight: 700; display: block; margin-bottom: 4px; }
+    #authLoggedIn .auth-email-small { color: #555;  font-size: 12px; display: block; margin-bottom: 22px; }
     .auth-signout {
-      padding: 11px 28px;
-      border-radius: 8px;
-      border: 1px solid red;
-      background: transparent;
-      color: red;
-      font-family: 'Roboto Slab', serif;
-      font-size: 14px;
-      cursor: pointer;
-      transition: 0.2s;
+      padding: 11px 28px; border-radius: 8px;
+      border: 1px solid red; background: transparent; color: red;
+      font-family: 'Roboto Slab', serif; font-size: 14px;
+      cursor: pointer; transition: 0.2s;
     }
     .auth-signout:hover { background: red; color: white; box-shadow: none !important; }
 
-    /* ── NAV USER INDICATOR ── */
+    /* Fixed top-right button — solid background so it never blends into scroll content */
     #navUserBtn {
-      padding: 8px 18px;
-      border-radius: 8px;
-      border: 1px solid #444;
-      background: transparent;
-      color: #aaa;
-      font-family: 'Roboto Slab', serif;
-      font-size: 13px;
-      cursor: pointer;
-      transition: 0.2s;
-      position: fixed;
-      top: 16px;
-      right: 20px;
-      z-index: 9998;
+      padding: 7px 16px; border-radius: 8px;
+      border: 1px solid #444; background: #0a0a0a; color: #aaa;
+      font-family: 'Roboto Slab', serif; font-size: 13px;
+      cursor: pointer; transition: 0.2s;
+      position: fixed; top: 14px; right: 18px; z-index: 9998;
     }
     #navUserBtn:hover { border-color: white; color: white; box-shadow: none !important; }
     #navUserBtn.signed-in { border-color: lime; color: lime; }
   </style>
 
-  <!-- Fixed sign-in button top-right corner of every page -->
   <button id="navUserBtn" onclick="window.__authModal.open()">Sign In</button>
 
   <div id="authModal" onclick="window.__authModal.handleOverlay(event)">
     <div id="authBox">
       <button id="authClose" onclick="window.__authModal.close()">✕</button>
 
-      <!-- LOGGED OUT VIEW -->
       <div id="authForms">
         <div class="auth-tabs">
           <button class="auth-tab active" id="tabSignIn" onclick="window.__authModal.switchTab('signin')">Sign In</button>
           <button class="auth-tab"        id="tabSignUp" onclick="window.__authModal.switchTab('signup')">Sign Up</button>
         </div>
 
-        <!-- SIGN IN FORM -->
+        <!-- SIGN IN -->
         <div id="formSignIn">
           <div class="auth-field">
             <label>Email</label>
@@ -257,12 +199,15 @@ function injectAuthModal() {
             <input type="password" id="siPassword" placeholder="••••••••">
           </div>
           <button class="auth-submit" onclick="window.__authModal.signIn()">Sign In →</button>
-          <p class="auth-error"  id="siError"></p>
-          <p class="auth-success" id="siSuccess"></p>
+          <p class="auth-error" id="siError"></p>
         </div>
 
-        <!-- SIGN UP FORM -->
+        <!-- SIGN UP — name field added -->
         <div id="formSignUp" style="display:none;">
+          <div class="auth-field">
+            <label>Your Name</label>
+            <input type="text" id="suName" placeholder="What should we call you?">
+          </div>
           <div class="auth-field">
             <label>Email</label>
             <input type="email" id="suEmail" placeholder="you@example.com">
@@ -289,12 +234,13 @@ function injectAuthModal() {
         </button>
       </div>
 
-      <!-- LOGGED IN VIEW -->
+      <!-- LOGGED IN -->
       <div id="authLoggedIn">
-        <p>Signed in as<br><strong id="authUserEmail"></strong></p>
+        <p>Signed in as</p>
+        <span class="auth-name"        id="authUserName"></span>
+        <span class="auth-email-small" id="authUserEmail"></span>
         <button class="auth-signout" onclick="window.__authModal.signOut()">Sign Out</button>
       </div>
-
     </div>
   </div>
   `;
@@ -304,16 +250,11 @@ function injectAuthModal() {
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // AUTH MODAL CONTROLLER
-// Exposed globally as window.__authModal so non-module scripts can call it
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-// pendingCallback: a function to run after the user successfully logs in
-// (e.g. open the post modal, proceed to dashboard, etc.)
 let pendingCallback = null;
 
 window.__authModal = {
-
-  // Opens the modal. Pass a callback to run after login.
   open(callback) {
     pendingCallback = callback || null;
     document.getElementById("authModal").classList.add("open");
@@ -336,7 +277,6 @@ window.__authModal = {
     document.getElementById("tabSignUp").classList.toggle("active", !isSignIn);
   },
 
-  // Refreshes the modal to show logged-in vs logged-out view
   async _refreshView() {
     const user = await getUser();
     const forms    = document.getElementById("authForms");
@@ -344,6 +284,8 @@ window.__authModal = {
     if (user) {
       forms.style.display    = "none";
       loggedIn.style.display = "block";
+      const name = await getDisplayName();
+      document.getElementById("authUserName").textContent  = name;
       document.getElementById("authUserEmail").textContent = user.email;
     } else {
       forms.style.display    = "block";
@@ -359,14 +301,15 @@ window.__authModal = {
 
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      errEl.textContent    = error.message;
-      errEl.style.display  = "block";
+      errEl.textContent   = error.message;
+      errEl.style.display = "block";
       return;
     }
     this._onSuccess();
   },
 
   async signUp() {
+    const name     = document.getElementById("suName").value.trim();
     const email    = document.getElementById("suEmail").value.trim();
     const password = document.getElementById("suPassword").value;
     const errEl    = document.getElementById("suError");
@@ -374,19 +317,35 @@ window.__authModal = {
     errEl.style.display = "none";
     sucEl.style.display = "none";
 
-    const { error } = await supabase.auth.signUp({ email, password });
+    if (!name) {
+      errEl.textContent   = "Please enter your name.";
+      errEl.style.display = "block";
+      return;
+    }
+
+    // data: { full_name } stores the name in auth user_metadata
+    // Email confirmation must be OFF in Supabase (Auth → Settings) for immediate login
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: name } }
+    });
+
     if (error) {
       errEl.textContent   = error.message;
       errEl.style.display = "block";
       return;
     }
-    // Supabase sends a confirmation email before the session activates
-    sucEl.textContent   = "Check your email to confirm your account!";
-    sucEl.style.display = "block";
+
+    // Also store in profiles table as backup
+    if (data.user) {
+      await supabase.from("profiles").upsert({ id: data.user.id, display_name: name });
+    }
+
+    this._onSuccess();
   },
 
   async googleSignIn() {
-    // redirectTo sends the user back to the current page after Google auth
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo: window.location.href }
@@ -409,15 +368,14 @@ window.__authModal = {
 };
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// NAV BUTTON — updates top-right corner
+// NAV BUTTON
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-function updateNavBtn(user) {
+async function updateNavBtn(user) {
   const btn = document.getElementById("navUserBtn");
   if (!btn) return;
   if (user) {
-    // Show first part of email e.g. "damir@..." → "damir"
-    const name = user.email.split("@")[0];
+    const name = await getDisplayName();
     btn.textContent = "👤 " + name;
     btn.classList.add("signed-in");
   } else {
@@ -427,35 +385,22 @@ function updateNavBtn(user) {
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// GATE FUNCTION — export this and call it
-// wherever a login is required before an action.
-//
-// Usage:
-//   import { requireAuth } from "./supabase-auth.js";
-//   requireAuth(() => openPostModal());
-//
-// If the user is already logged in, runs the callback immediately.
-// If not, opens the auth modal and queues the callback for after login.
+// GATE FUNCTION
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 export async function requireAuth(callback) {
   const user = await getUser();
-  if (user) {
-    callback();
-  } else {
-    window.__authModal.open(callback);
-  }
+  if (user) { callback(); } else { window.__authModal.open(callback); }
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// INIT — runs on every page this file is loaded on
+// INIT
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 injectAuthModal();
 
-// Keep nav button and modal in sync with auth state at all times
 onAuthChange((user) => {
   updateNavBtn(user);
-  // If modal is open and user just logged in, close it and fire callback
   const modal = document.getElementById("authModal");
   if (modal?.classList.contains("open") && user) {
     window.__authModal._onSuccess();
