@@ -379,7 +379,7 @@
       <li>10 GB storage</li>
       <li>Purchase Featured add-on anytime</li>
     </ul>
-    <button class="plan-btn">Upgrade to Premium</button>
+    <button class="plan-btn" onclick="handlePlanClick(this)">Upgrade to Premium</button>
   </div>
 
   <!-- PUPPETMASTER -->
@@ -399,7 +399,7 @@
       <li>Expandable up to 500 GB via one-time payments</li>
       <li>Purchase Featured add-on anytime</li>
     </ul>
-    <button class="plan-btn">Upgrade to Puppetmaster</button>
+    <button class="plan-btn" onclick="handlePlanClick(this)">Upgrade to Puppetmaster</button>
   </div>
 
 </div>
@@ -415,7 +415,7 @@
     <div class="featured-right">
       <div class="featured-price">$20</div>
       <span class="featured-period">per week</span>
-      <button class="featured-btn">Get Featured</button>
+      <button class="featured-btn" onclick="handlePlanClick(this)">Get Featured</button>
     </div>
   </div>
 </div>
@@ -445,6 +445,18 @@
       document.getElementById("period-" + plan).textContent = vals.period;
     }
   }
+</script>
+
+<script type="module">
+  import { requireAuth } from "./supabase-auth.js";
+
+  // Called by every upgrade/purchase button
+  // After auth, you'd wire this up to your actual payment flow (Stripe etc.)
+  window.handlePlanClick = function(btn) {
+    requireAuth(() => {
+      alert("Payment flow coming soon! You're signed in and ready.");
+    });
+  };
 </script>
 
 </body>

@@ -429,7 +429,7 @@ function renderPage(page) {
         <p class="community-desc">${c.desc}</p>
         <div class="card-bottom">
           <span>👥 ${c.members.toLocaleString()} members</span>
-          <button class="join-btn">Join</button>
+          <button class="join-btn" onclick="handleJoin(event)">Join</button>
         </div>
       `;
       grid.appendChild(card);
@@ -482,6 +482,25 @@ function buildVIPStrip() {
 
 buildVIPStrip();
 renderPage(1);
+</script>
+
+<script type="module">
+  // Import auth — this injects the modal and nav button on this page too
+  import { requireAuth } from "./supabase-auth.js";
+
+  // handleJoin is called by every Join button on the community cards
+  // requireAuth checks if logged in — if not, pops the modal first
+  window.handleJoin = function(e) {
+    const btn = e.target;
+    requireAuth(() => {
+      // Swap button to "Joined" state after successful auth + join
+      btn.textContent = "Joined ✓";
+      btn.style.background = "lime";
+      btn.style.color = "black";
+      btn.style.borderColor = "lime";
+      btn.disabled = true;
+    });
+  };
 </script>
 
 </body>

@@ -41,6 +41,10 @@
 </div>
 
 <script src="dashboard.js"></script>
+<script type="module">
+  import { requireAuth } from "./supabase-auth.js";
+  requireAuth(() => { console.log("Dashboard: authenticated"); });
+</script>
 
 <br>
 <div style="margin-left:100px; padding-right:20px;">Your contribution thus far...</div>
@@ -211,6 +215,6 @@
 
 <h2 style="text-align:center; margin-top:20px;">This website is building, more coming soon.</h2>
 
-<script src="dashboard-post.js"></script>
+<script type="module" src="dashboard-post.js"></script>
 </body>
 </html>
