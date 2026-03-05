@@ -24,6 +24,20 @@ window.openPostModal = function() {
 };
 
 async function _openPostForm() {
+  // Hard check — requireAuth passes if a user object exists, but with email
+  // confirmation enabled the user object exists before confirmation.
+  // getSession() only returns a session if the email is actually confirmed.
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+    // No real session — show a friendly message in the auth modal instead
+    window.__authModal.open();
+    const sucEl = document.getElementById("suSuccess");
+    if (sucEl) {
+      sucEl.textContent   = "Please confirm your email first, then sign in.";
+      sucEl.style.display = "block";
+    }
+    return;
+  }
   document.getElementById("formView").style.display    = "block";
   document.getElementById("successView").style.display = "none";
   document.querySelectorAll(".field-error").forEach(e => e.style.display = "none");

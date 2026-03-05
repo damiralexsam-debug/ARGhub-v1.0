@@ -342,7 +342,16 @@ window.__authModal = {
       await supabase.from("profiles").upsert({ id: data.user.id, display_name: name });
     }
 
-    this._onSuccess();
+    // Keep the modal open and show the confirmation message.
+    // The user must confirm their email before they get an active session.
+    // Once they click the link in their email, Supabase sets the session
+    // and onAuthChange fires automatically, closing the modal then.
+    sucEl.textContent   = "✓ Check your inbox! Confirm your email to finish signing up.";
+    sucEl.style.display = "block";
+
+    // Disable the button so they don't spam-submit
+    document.querySelector("#formSignUp .auth-submit").disabled = true;
+    document.querySelector("#formSignUp .auth-submit").style.opacity = "0.4";
   },
 
   async googleSignIn() {
