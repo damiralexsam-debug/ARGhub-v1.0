@@ -239,4 +239,4 @@ function renderBrowse() {
 buildTrending();
 buildNewForYou();
 buildRecommended();
-renderBrowse();
+// renderBrowse() is now handled by featured-browse.js (Supabase version)
