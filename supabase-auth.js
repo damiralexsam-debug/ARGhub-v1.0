@@ -346,7 +346,7 @@ window.__authModal = {
     // The user must confirm their email before they get an active session.
     // Once they click the link in their email, Supabase sets the session
     // and onAuthChange fires automatically, closing the modal then.
-    sucEl.textContent   = "✓ Check your inbox! Confirm your email to finish signing up.";
+    sucEl.textContent   = "✓ Check your Spam folder! Confirm your email to finish signing up. Click 'No-Spam' to ensure that future emails get sent into your inbox.";
     sucEl.style.display = "block";
 
     // Disable the button so they don't spam-submit
