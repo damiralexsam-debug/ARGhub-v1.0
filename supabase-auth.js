@@ -408,10 +408,19 @@ export async function requireAuth(callback) {
 
 injectAuthModal();
 
-onAuthChange((user) => {
+supabase.auth.onAuthStateChange((event, session) => {
+  const user = session?.user ?? null;
   updateNavBtn(user);
   const modal = document.getElementById("authModal");
-  if (modal?.classList.contains("open") && user) {
-    window.__authModal._onSuccess();
+
+  if (event === "SIGNED_IN") {
+    // Fired both on normal login AND when user clicks confirmation link
+    if (modal?.classList.contains("open")) {
+      window.__authModal._onSuccess();
+    } else {
+      // They confirmed from their email and landed on the page fresh
+      // Just update the nav button — they're already logged in
+      updateNavBtn(user);
+    }
   }
 });
