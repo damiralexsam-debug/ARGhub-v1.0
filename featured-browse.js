@@ -2,16 +2,13 @@ import { supabase } from "./supabase-auth.js";
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // BROWSE TAB — reads from Supabase instead of localStorage
-// Replaces the renderBrowse() and openDetail("posted", ...) logic
-// in featured.js for user-posted ARGs.
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-// Cache of fetched ARGs — used by openPostedDetail() to avoid re-fetching
+// Cache used only by openPostedDetail() for the popup — always refreshed on fetch
 let postedARGsCache = [];
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// CARD BUILDER (mirrors featured.js buildCard but for posted ARGs)
-// Uses the ARG's Supabase id instead of array index for detail lookup
+// CARD BUILDER
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function buildPostedCard(arg) {
   const statusClass = arg.status === "Active" ? "badge-active" : "badge-concluded";
@@ -19,14 +16,12 @@ function buildPostedCard(arg) {
   const diffClass   = arg.difficulty === "Beginner" ? "badge-easy" : arg.difficulty === "Medium" ? "badge-medium" : "badge-hard";
   const platClass   = arg.platform === "IRL" ? "badge-irl" : arg.platform === "YouTube" ? "badge-horror" : "badge-web";
 
-  // img field: base64 string uploaded by user, or null = show placeholder block
   const imgEl = arg.img
     ? `<img class="arg-img" src="${arg.img}" alt="${arg.name}" style="height:120px;">`
     : `<div class="arg-img" style="background:#0a0a0a; height:120px; display:flex; align-items:center; justify-content:center;">
          <span style="color:#333; font-size:11px; letter-spacing:1px;">[ IMAGE ]</span>
        </div>`;
 
-  // Pass the Supabase UUID so openPostedDetail can find it in the cache
   return `
     <div class="arg-card" onclick="openPostedDetail('${arg.id}')">
       ${imgEl}
@@ -44,8 +39,7 @@ function buildPostedCard(arg) {
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// DETAIL POPUP for posted ARGs
-// Called by onclick in buildPostedCard — looks up arg by id in cache
+// DETAIL POPUP — looks up by Supabase UUID in the cache
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 window.openPostedDetail = function(id) {
   const arg = postedARGsCache.find(a => a.id === id);
@@ -89,8 +83,8 @@ window.openPostedDetail = function(id) {
 };
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// RENDER BROWSE — fetches from Supabase, filters client-side
-// Exposed globally so the HTML oninput/onchange handlers still work
+// RENDER BROWSE — always fetches fresh from Supabase
+// then filters client-side so search/dropdowns feel instant
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 window.renderBrowse = async function() {
   const grid       = document.getElementById("browseGrid");
@@ -100,25 +94,26 @@ window.renderBrowse = async function() {
   const difficulty = document.getElementById("filterDifficulty").value;
   const platform   = document.getElementById("filterPlatform").value;
 
-  // Show loading state while fetching
-  grid.innerHTML = `<p class="no-results" style="color:#555;">Loading ARGs...</p>`;
-
-  // Only fetch if cache is empty — avoids re-fetching on every filter change
+  // Only show loading spinner on the initial page load (cache is empty)
+  // Subsequent filter changes feel instant — no flash of "Loading..."
   if (postedARGsCache.length === 0) {
-    const { data, error } = await supabase
-      .from("args")
-      .select("*")
-      .order("posted_at", { ascending: false });
-
-    if (error) {
-      grid.innerHTML = `<p class="no-results" style="color:red;">Failed to load ARGs. Try refreshing.</p>`;
-      return;
-    }
-
-    postedARGsCache = data || [];
+    grid.innerHTML = `<p class="no-results" style="color:#555;">Loading ARGs...</p>`;
   }
 
-  // Filter client-side so search/dropdowns feel instant after first load
+  // Always fetch fresh — every user always sees the latest posted ARGs
+  const { data, error } = await supabase
+    .from("args")
+    .select("*")
+    .order("posted_at", { ascending: false });
+
+  if (error) {
+    grid.innerHTML = `<p class="no-results" style="color:red;">Failed to load ARGs. Try refreshing.</p>`;
+    return;
+  }
+
+  // Refresh cache so openPostedDetail always has current data too
+  postedARGsCache = data || [];
+
   const filtered = postedARGsCache.filter(a =>
     a.name.toLowerCase().includes(query) &&
     (genre      === "" || a.genre      === genre)      &&
@@ -137,6 +132,6 @@ window.renderBrowse = async function() {
 };
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// INIT — run on page load
+// INIT
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 renderBrowse();
