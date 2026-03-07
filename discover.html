@@ -5,6 +5,147 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <style>
+    /* ── CREATE COMMUNITY BUTTON ── */
+    .create-community-btn {
+      padding: 13px 32px;
+      border-radius: 10px;
+      border: 1px solid lime;
+      background: transparent;
+      color: lime;
+      font-family: 'Roboto Slab', serif;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.3s;
+      letter-spacing: 1px;
+    }
+    .create-community-btn:hover {
+      background: lime;
+      color: black;
+      box-shadow: 0 0 16px lime !important;
+    }
+
+    /* ── CREATE COMMUNITY MODAL ── */
+    .cc-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.88);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+    .cc-overlay.open { display: flex; }
+
+    .cc-box {
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 16px;
+      padding: 36px 40px;
+      width: 520px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      animation: fadeUp 0.3s ease both;
+      scrollbar-width: thin;
+      scrollbar-color: #333 transparent;
+    }
+
+    .cc-title {
+      color: lime;
+      font-size: 20px;
+      letter-spacing: 1px;
+      margin: 0 0 24px;
+    }
+
+    .cc-close {
+      position: absolute;
+      top: 16px; right: 20px;
+      background: none; border: none;
+      color: #666; font-size: 22px;
+      cursor: pointer; transition: 0.2s;
+      font-family: 'Roboto Slab', serif;
+    }
+    .cc-close:hover { color: white; box-shadow: none !important; }
+
+    .cc-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 18px;
+    }
+    .cc-field label {
+      font-size: 13px;
+      color: #aaa;
+      letter-spacing: 1px;
+    }
+    .cc-field input,
+    .cc-field textarea,
+    .cc-field select {
+      padding: 11px 14px;
+      border-radius: 8px;
+      border: 1px solid #333;
+      background: #1a1a1a;
+      color: white;
+      font-family: 'Roboto Slab', serif;
+      font-size: 14px;
+      outline: none;
+      transition: 0.3s;
+      resize: vertical;
+    }
+    .cc-field input:focus,
+    .cc-field textarea:focus,
+    .cc-field select:focus {
+      border-color: lime;
+      box-shadow: 0 0 8px rgba(0,255,0,0.15);
+    }
+    .cc-field input[readonly] {
+      color: #666;
+      cursor: not-allowed;
+    }
+
+    /* ARG search dropdown */
+    #ccArgWrap { position: relative; }
+    #ccArgResults {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0; right: 0;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 0 0 8px 8px;
+      z-index: 999;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .arg-result-item {
+      padding: 10px 14px;
+      font-size: 13px;
+      color: #ccc;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .arg-result-item:hover { background: #2a2a2a; color: white; }
+
+    .cc-hint { font-size: 11px; color: #555; }
+
+    .cc-submit {
+      width: 100%;
+      padding: 14px;
+      border-radius: 10px;
+      background: transparent;
+      border: 1px solid lime;
+      color: lime;
+      font-family: 'Roboto Slab', serif;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-top: 8px;
+    }
+    .cc-submit:hover { background: lime; color: black; box-shadow: 0 0 16px lime !important; }
+
+    .cc-error   { color: red;  font-size: 12px; display: none; margin-top: 8px; text-align: center; }
+    .cc-success { color: lime; font-size: 13px; display: none; margin-top: 8px; text-align: center; }
+
     /* ── SEARCH & FILTER BAR ── */
     .discover-controls {
       display: flex;
@@ -292,6 +433,11 @@
 <br>
 <h1 style="text-align:center;">Discover Communities</h1>
 
+<!-- CREATE COMMUNITY BUTTON -->
+<div style="display:flex; justify-content:center; margin: 0 0 10px;">
+  <button class="create-community-btn" onclick="openCreateCommunity()">+ Create Community</button>
+</div>
+
 <!-- SEARCH & FILTER -->
 <div class="discover-controls">
   <input id="searchBar" type="text" placeholder="Search communities..." oninput="renderPage(1)">
@@ -318,12 +464,58 @@
   <div class="vip-strip-track" id="vipTrack"></div>
 </div>
 
+<!-- CREATE COMMUNITY MODAL -->
+<div class="cc-overlay" id="createCommunityModal" onclick="handleCreateOverlay(event)">
+  <div class="cc-box">
+    <button class="cc-close" onclick="closeCreateCommunity()">✕</button>
+    <h2 class="cc-title">Create a Community</h2>
+
+    <div class="cc-field">
+      <label>Community Name <span style="color:red;">*</span></label>
+      <input type="text" id="ccName" placeholder="e.g. Marble Hornets Solvers">
+    </div>
+
+    <div class="cc-field">
+      <label>Linked ARG <span style="color:#555; font-size:11px;">(optional — search from posted ARGs)</span></label>
+      <div id="ccArgWrap">
+        <input type="text" id="ccArgSearch" placeholder="Search ARG name..." oninput="filterArgNames()" autocomplete="off">
+        <div id="ccArgResults"></div>
+        <input type="hidden" id="ccArgHidden">
+      </div>
+      <span class="cc-hint">Can't find your ARG? Post it on the Dashboard first, or just type the name.</span>
+    </div>
+
+    <div class="cc-field">
+      <label>Description <span style="color:#555; font-size:11px;">(optional)</span></label>
+      <textarea id="ccDesc" rows="3" placeholder="What is this community about?"></textarea>
+    </div>
+
+    <div class="cc-field">
+      <label>Type</label>
+      <select id="ccType">
+        <option value="Public">🌐 Public — anyone can join</option>
+        <option value="Invite">🔒 Invite Only — members by invite</option>
+      </select>
+      <span class="cc-hint">VIP communities require the Premium plan.</span>
+    </div>
+
+    <div class="cc-field">
+      <label>Creator</label>
+      <input type="text" id="ccAuthor" readonly>
+    </div>
+
+    <p class="cc-error"   id="ccError"></p>
+    <p class="cc-success" id="ccSuccess">✓ Community created!</p>
+
+    <button class="cc-submit modal-submit" onclick="submitCommunity()">Create Community →</button>
+  </div>
+</div>
+
 <script>
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// COMMUNITY DATA — edit names, types, members, and descriptions here!
-// type must be exactly: "VIP", "Public", or "Invite"
+// COMMUNITY DATA — hardcoded placeholders (shown alongside real ones)
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-const communities = [
+const placeholderCommunities = [
   { name: "Marble Hornets Archive",    type: "Public", members: 4821, desc: "The definitive community for Marble Hornets discussion, evidence boards, and lore deep-dives." },
   { name: "Cicada 3301 Solvers",       type: "VIP",    members: 1203, desc: "An elite group dedicated to cracking the remaining unsolved layers of Cicada 3301." },
   { name: "Petscop Research Lab",      type: "Public", members: 3302, desc: "Documenting every frame, sound, and symbol hidden inside Petscop's fictional game world." },
@@ -341,7 +533,7 @@ const communities = [
   { name: "Signal Lost",               type: "VIP",    members:  601, desc: "Radio-frequency ARG community. Decode shortwave broadcasts and share findings here." },
   { name: "Puzzle Collective",         type: "Public", members: 4403, desc: "General puzzle-solving hangout for ARG newcomers and veterans alike. No ARG too small." },
   { name: "Rabbit Hole Runners",       type: "Public", members: 1987, desc: "For those who love the chase more than the answer. Share your latest rabbit holes here." },
-  { name: "Archive: LYST",            type: "Invite", members:  155, desc: "Documentation community for the now-concluded LYST ARG. Preserving the full timeline." },
+  { name: "Archive: LYST",             type: "Invite", members:  155, desc: "Documentation community for the now-concluded LYST ARG. Preserving the full timeline." },
   { name: "The Trailhead Network",     type: "VIP",    members:  889, desc: "A curated space for Puppetmasters to share early-stage ARG trailheads and get feedback." },
   { name: "Cryptic Coordinates",       type: "Public", members: 2210, desc: "Real-world location drops, geocaching meets ARG. Share coordinates and physical find logs." },
   { name: "Frequency Nine",            type: "Invite", members:  334, desc: "An ongoing original ARG. New chapters release on the 9th of each month. Invite required." },
@@ -349,47 +541,52 @@ const communities = [
   { name: "Meta-ARG Watch",            type: "Public", members: 3788, desc: "Tracking ARGs that are hidden inside other ARGs. Down the rabbit hole, together." },
 ];
 
+// communities = real (Supabase) prepended to placeholders
+let communities = [...placeholderCommunities];
+
 const PER_PAGE = 9;
 let currentFilter = "all";
 let currentPage   = 1;
+
+// Called by discover-communities.js after Supabase fetch
+window.refreshWithReal = function() {
+  const real = (window.__supabaseCommunities || []).map(c => ({
+    name:    c.name,
+    type:    c.type,
+    members: c.members,
+    desc:    c.desc,
+    real:    true
+  }));
+  communities = [...real, ...placeholderCommunities];
+  renderPage(1);
+  buildVIPStrip();
+};
 
 function toggleDropdown() {
   document.getElementById("filterDropdown").classList.toggle("open");
 }
 
-// Close dropdown if user clicks anywhere outside it
 document.addEventListener("click", function(e) {
   const wrapper = document.querySelector(".filter-wrapper");
-  if (!wrapper.contains(e.target)) {
+  if (wrapper && !wrapper.contains(e.target)) {
     document.getElementById("filterDropdown").classList.remove("open");
   }
 });
 
 function setFilter(f, label) {
   currentFilter = f;
-
-  // Update button label to show active filter
   document.getElementById("filterBtn").textContent = label === "All" ? "Filter ▾" : label;
-
-  // Reset all button/option active classes
   const btn = document.getElementById("filterBtn");
   btn.className = "filter-btn";
   if (f === "all")    btn.classList.add("active-all");
   if (f === "VIP")    btn.classList.add("active-vip");
   if (f === "Public") btn.classList.add("active-pub");
   if (f === "Invite") btn.classList.add("active-inv");
-
-  // Highlight the active option inside the dropdown
-  document.querySelectorAll(".filter-option").forEach(o => {
-    o.className = "filter-option";
-  });
-  const optMap = { all: "opt-all", VIP: "opt-vip", Public: "opt-public", Invite: "opt-invite" };
+  document.querySelectorAll(".filter-option").forEach(o => { o.className = "filter-option"; });
+  const optMap     = { all: "opt-all", VIP: "opt-vip", Public: "opt-public", Invite: "opt-invite" };
   const activeClass = { all: "active-all", VIP: "active-vip", Public: "active-pub", Invite: "active-inv" };
   document.getElementById(optMap[f]).classList.add(activeClass[f]);
-
-  // Close dropdown
   document.getElementById("filterDropdown").classList.remove("open");
-
   renderPage(1);
 }
 
@@ -408,7 +605,6 @@ function renderPage(page) {
   const totalPages = Math.ceil(filtered.length / PER_PAGE);
   const slice      = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
-  // ── Cards ──
   const grid = document.getElementById("communityGrid");
   grid.innerHTML = "";
 
@@ -418,17 +614,19 @@ function renderPage(page) {
     slice.forEach((c, i) => {
       const typeClass = c.type === "VIP" ? "type-vip" : c.type === "Public" ? "type-public" : "type-invite";
       const typeLabel = c.type === "Invite" ? "INVITE ONLY" : c.type.toUpperCase();
+      const realBadge = c.real ? `<span style="font-size:10px; color:lime; margin-left:6px; letter-spacing:1px;">✦ REAL</span>` : "";
       const card = document.createElement("div");
       card.className = "community-card";
       card.style.animationDelay = (i * 0.06) + "s";
+      if (c.real) card.style.borderColor = "#1a3d1a";
       card.innerHTML = `
         <div class="card-top">
-          <h3 class="community-name">${c.name}</h3>
+          <h3 class="community-name">${c.name}${realBadge}</h3>
           <span class="community-type ${typeClass}">${typeLabel}</span>
         </div>
         <p class="community-desc">${c.desc}</p>
         <div class="card-bottom">
-          <span>👥 ${c.members.toLocaleString()} members</span>
+          <span>👥 ${c.members.toLocaleString()} member${c.members === 1 ? "" : "s"}</span>
           <button class="join-btn" onclick="handleJoin(event)">Join</button>
         </div>
       `;
@@ -436,42 +634,33 @@ function renderPage(page) {
     });
   }
 
-  // ── Pagination ──
+  // Pagination
   const pag = document.getElementById("pagination");
   pag.innerHTML = "";
-
   if (totalPages > 1) {
     const prev = document.createElement("button");
-    prev.className = "page-btn";
-    prev.textContent = "← Prev";
-    prev.disabled = page === 1;
+    prev.className = "page-btn"; prev.textContent = "← Prev"; prev.disabled = page === 1;
     prev.onclick = () => renderPage(page - 1);
     pag.appendChild(prev);
-
     for (let p = 1; p <= totalPages; p++) {
       const btn = document.createElement("button");
       btn.className = "page-btn" + (p === page ? " current" : "");
-      btn.textContent = p;
-      btn.onclick = () => renderPage(p);
+      btn.textContent = p; btn.onclick = () => renderPage(p);
       pag.appendChild(btn);
     }
-
     const next = document.createElement("button");
-    next.className = "page-btn";
-    next.textContent = "Next →";
-    next.disabled = page === totalPages;
+    next.className = "page-btn"; next.textContent = "Next →"; next.disabled = page === totalPages;
     next.onclick = () => renderPage(page + 1);
     pag.appendChild(next);
   }
 
-  // ── VIP strip: hide when filtering by VIP already ──
   document.getElementById("vipStrip").style.display = currentFilter === "VIP" ? "none" : "block";
 }
 
 function buildVIPStrip() {
   const vipList = communities.filter(c => c.type === "VIP");
   const track   = document.getElementById("vipTrack");
-  // Duplicate for seamless loop
+  track.innerHTML = "";
   [...vipList, ...vipList].forEach(c => {
     const pill = document.createElement("div");
     pill.className = "vip-pill";
@@ -485,15 +674,10 @@ renderPage(1);
 </script>
 
 <script type="module">
-  // Import auth — this injects the modal and nav button on this page too
   import { requireAuth } from "./supabase-auth.js";
-
-  // handleJoin is called by every Join button on the community cards
-  // requireAuth checks if logged in — if not, pops the modal first
   window.handleJoin = function(e) {
     const btn = e.target;
     requireAuth(() => {
-      // Swap button to "Joined" state after successful auth + join
       btn.textContent = "Joined ✓";
       btn.style.background = "lime";
       btn.style.color = "black";
@@ -502,6 +686,7 @@ renderPage(1);
     });
   };
 </script>
+<script type="module" src="discover-communities.js"></script>
 
 </body>
 </html>
