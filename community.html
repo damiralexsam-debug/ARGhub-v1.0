@@ -5,33 +5,26 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background: #0a0a0a;
-      color: white;
-      font-family: 'Roboto Slab', serif;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-    .top-bar {
-      height: 52px;
-      background: #111;
-      border-bottom: 1px solid #222;
-      display: flex;
-      align-items: center;
-      padding: 0 20px;
-      gap: 16px;
-      flex-shrink: 0;
-    }
-    .top-bar-back { color: #666; text-decoration: none; font-size: 13px; transition: 0.2s; letter-spacing: 1px; }
+    body { background: #0a0a0a; color: white; font-family: 'Roboto Slab', serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+    /* hide the global floating sign-in button on this page */
+    #navUserBtn { display: none !important; }
+
+    /* TOP BAR */
+    .top-bar { height: 52px; background: #111; border-bottom: 1px solid #222; display: flex; align-items: center; padding: 0 16px; gap: 12px; flex-shrink: 0; }
+    .top-bar-back { color: #666; text-decoration: none; font-size: 13px; transition: 0.2s; letter-spacing: 1px; white-space: nowrap; }
     .top-bar-back:hover { color: white; }
-    .top-bar-name { font-size: 16px; font-weight: 700; color: white; flex: 1; }
-    .top-bar-type { font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: bold; letter-spacing: 1px; }
+    .top-bar-name { font-size: 16px; font-weight: 700; color: white; }
+    .top-bar-type { font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: bold; letter-spacing: 1px; white-space: nowrap; }
     .type-public { background: lime;   color: black; }
     .type-invite { background: violet; color: white; }
-    .top-bar-members { font-size: 12px; color: #555; letter-spacing: 1px; }
+    .top-bar-members { font-size: 12px; color: #555; letter-spacing: 1px; white-space: nowrap; }
+    .top-bar-spacer { flex: 1; }
+    .top-bar-user { display: flex; align-items: center; gap: 8px; padding: 5px 12px; border-radius: 8px; border: 1px solid #2a2a2a; background: #0f0f0f; font-size: 13px; color: #aaa; white-space: nowrap; cursor: pointer; transition: 0.2s; }
+    .top-bar-user:hover { border-color: #444; color: white; }
+    .top-bar-user-dot { width: 8px; height: 8px; border-radius: 50%; background: lime; flex-shrink: 0; }
 
+    /* LAYOUT */
     .community-layout { display: flex; flex: 1; overflow: hidden; }
 
     /* SIDEBAR */
@@ -44,7 +37,7 @@
     .channel-hash { color: #444; font-size: 16px; }
     .channel-item.active .channel-hash { color: #888; }
     .sidebar-divider { border: none; border-top: 1px solid #1a1a1a; margin: 8px 12px; }
-    .rules-box { margin: 8px 12px 16px; padding: 10px 12px; background: #0f0f0f; border: 1px solid #1a1a1a; border-radius: 8px; font-size: 12px; color: #555; line-height: 1.6; }
+    .rules-box { margin: 8px 12px 16px; padding: 10px 12px; background: #0f0f0f; border: 1px solid #1a1a1a; border-radius: 8px; font-size: 12px; color: #555; line-height: 1.6; white-space: pre-line; }
     .rules-box-title { font-size: 10px; color: #444; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
 
     /* CHAT */
@@ -55,60 +48,79 @@
 
     .messages-wrap { flex: 1; overflow-y: auto; padding: 20px 20px 8px; display: flex; flex-direction: column; gap: 2px; scrollbar-width: thin; scrollbar-color: #222 transparent; }
 
-    .msg-group { display: flex; gap: 12px; padding: 4px 8px; border-radius: 6px; transition: 0.1s; animation: fadeUp 0.2s ease both; }
+    .msg-group { display: flex; gap: 12px; padding: 4px 8px; border-radius: 6px; transition: background 0.1s; animation: fadeUp 0.18s ease both; }
     .msg-group:hover { background: #111; }
-    .msg-avatar { width: 36px; height: 36px; border-radius: 50%; background: #222; border: 1px solid #333; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #888; flex-shrink: 0; margin-top: 2px; }
+    .msg-avatar { width: 38px; height: 38px; border-radius: 50%; background: #1a1a1a; border: 1px solid #2a2a2a; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
     .msg-body { flex: 1; min-width: 0; }
-    .msg-header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 3px; }
-    .msg-author { font-size: 14px; font-weight: 700; color: lime; }
-    .msg-time   { font-size: 11px; color: #444; }
-    .msg-text   { font-size: 14px; color: #ccc; line-height: 1.5; word-break: break-word; }
+    .msg-header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
+    .msg-author { font-size: 14px; font-weight: 700; }
+    .msg-author.is-me { color: lime; }
+    .msg-author.is-other { color: #88aaff; }
+    .msg-time { font-size: 11px; color: #444; }
+    .msg-text { font-size: 14px; color: #ccc; line-height: 1.6; word-break: break-word; }
+    .msg-text a { color: #88aaff; text-decoration: underline; }
+    .msg-text a:hover { color: white; }
 
-    .msg-file { display: inline-flex; align-items: center; gap: 10px; margin-top: 4px; padding: 10px 14px; background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px; text-decoration: none; color: #ccc; font-size: 13px; transition: 0.2s; max-width: 320px; }
-    .msg-file:hover { border-color: #444; color: white; }
-    .msg-file-icon { font-size: 20px; }
-    .msg-file-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .msg-img { margin-top: 6px; max-width: 360px; max-height: 280px; border-radius: 8px; border: 1px solid #222; display: block; cursor: pointer; transition: 0.2s; }
-    .msg-img:hover { border-color: #444; }
+    /* image */
+    .msg-img { margin-top: 6px; max-width: 400px; max-height: 300px; border-radius: 8px; border: 1px solid #222; display: block; cursor: zoom-in; transition: 0.2s; object-fit: cover; }
+    .msg-img:hover { border-color: #555; }
+
+    /* video */
+    .msg-video { margin-top: 6px; max-width: 400px; border-radius: 8px; border: 1px solid #222; display: block; background: #000; }
+
+    /* audio */
+    .msg-audio { margin-top: 6px; width: 100%; max-width: 360px; }
+
+    /* generic file */
+    .msg-file { display: inline-flex; align-items: center; gap: 10px; margin-top: 6px; padding: 10px 14px; background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px; text-decoration: none; color: #ccc; font-size: 13px; transition: 0.2s; max-width: 340px; }
+    .msg-file:hover { border-color: #555; color: white; }
+    .msg-file-icon { font-size: 22px; flex-shrink: 0; }
+    .msg-file-info { display: flex; flex-direction: column; gap: 2px; overflow: hidden; }
+    .msg-file-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
+    .msg-file-size { font-size: 11px; color: #555; }
 
     .date-divider { display: flex; align-items: center; gap: 12px; margin: 16px 0 8px; color: #333; font-size: 11px; letter-spacing: 1px; }
     .date-divider::before, .date-divider::after { content: ""; flex: 1; height: 1px; background: #1a1a1a; }
-    .sys-msg { text-align: center; color: #333; font-size: 12px; padding: 8px 0; letter-spacing: 1px; }
+    .sys-msg { text-align: center; color: #333; font-size: 12px; padding: 16px 0; letter-spacing: 1px; }
 
     /* INPUT */
     .input-bar { padding: 12px 20px 16px; flex-shrink: 0; }
     .input-wrap { display: flex; align-items: center; gap: 10px; background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 10px; padding: 10px 14px; transition: 0.2s; }
-    .input-wrap:focus-within { border-color: #444; }
-    .file-btn { background: none; border: none; color: #555; font-size: 20px; cursor: pointer; transition: 0.2s; padding: 0; line-height: 1; flex-shrink: 0; }
+    .input-wrap:focus-within { border-color: #555; }
+    .file-btn { background: none; border: none; color: #444; font-size: 20px; cursor: pointer; transition: 0.2s; padding: 0; line-height: 1; flex-shrink: 0; }
     .file-btn:hover { color: white; box-shadow: none !important; }
     #fileInput { display: none; }
-    .file-preview { display: none; align-items: center; gap: 8px; background: #222; border-radius: 6px; padding: 6px 10px; font-size: 12px; color: #aaa; flex-shrink: 0; max-width: 180px; }
+
+    .file-preview { display: none; align-items: center; gap: 8px; background: #222; border: 1px solid #333; border-radius: 6px; padding: 5px 10px; font-size: 12px; color: #aaa; flex-shrink: 0; max-width: 200px; }
     .file-preview.visible { display: flex; }
     .file-preview-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .file-preview-clear { background: none; border: none; color: #555; cursor: pointer; font-size: 14px; padding: 0; flex-shrink: 0; }
+    .file-preview-clear { background: none; border: none; color: #555; cursor: pointer; font-size: 14px; padding: 0; flex-shrink: 0; transition: 0.15s; }
     .file-preview-clear:hover { color: white; box-shadow: none !important; }
-    #msgInput { flex: 1; background: none; border: none; outline: none; color: white; font-family: 'Roboto Slab', serif; font-size: 14px; }
-    #msgInput::placeholder { color: #444; }
-    .send-btn { background: none; border: none; color: #555; font-size: 18px; cursor: pointer; transition: 0.2s; padding: 0; flex-shrink: 0; }
+
+    #msgInput { flex: 1; background: none; border: none; outline: none; color: white; font-family: 'Roboto Slab', serif; font-size: 14px; min-width: 0; }
+    #msgInput::placeholder { color: #333; }
+    .send-btn { background: none; border: none; color: #333; font-size: 18px; cursor: pointer; transition: 0.2s; padding: 0; flex-shrink: 0; }
     .send-btn:hover { color: lime; box-shadow: none !important; }
     .send-btn.ready { color: lime; }
+
+    /* NOT SIGNED IN BANNER */
+    .sign-in-banner { background: #1a1a0a; border-top: 1px solid #333; padding: 12px 20px; text-align: center; font-size: 13px; color: #888; flex-shrink: 0; }
+    .sign-in-banner button { margin-left: 10px; padding: 6px 16px; border-radius: 6px; border: 1px solid lime; background: transparent; color: lime; font-family: 'Roboto Slab', serif; font-size: 13px; cursor: pointer; transition: 0.2s; }
+    .sign-in-banner button:hover { background: lime; color: black; box-shadow: none !important; }
 
     /* INVITE GATE */
     #inviteGate { display: none; flex: 1; justify-content: center; align-items: center; flex-direction: column; gap: 16px; text-align: center; padding: 40px; }
     #inviteGate h2 { color: violet; font-size: 28px; }
     #inviteGate p  { color: #555; font-size: 14px; max-width: 400px; line-height: 1.7; }
 
-    .loading-msg { text-align: center; color: #333; font-size: 14px; padding: 40px; letter-spacing: 1px; }
+    .loading-msg { text-align: center; color: #333; font-size: 14px; padding: 60px; letter-spacing: 1px; }
 
     /* LIGHTBOX */
-    #lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; justify-content: center; align-items: center; cursor: zoom-out; }
+    #lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 9999; justify-content: center; align-items: center; cursor: zoom-out; }
     #lightbox.open { display: flex; }
-    #lightbox img  { max-width: 90vw; max-height: 90vh; border-radius: 8px; }
+    #lightbox img { max-width: 92vw; max-height: 92vh; border-radius: 8px; box-shadow: 0 0 60px rgba(0,0,0,0.8); }
 
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
   </style>
 </head>
 <body>
@@ -118,6 +130,11 @@
   <div class="top-bar-name" id="communityName">Loading...</div>
   <span class="top-bar-type" id="communityType"></span>
   <span class="top-bar-members" id="communityMembers"></span>
+  <div class="top-bar-spacer"></div>
+  <div class="top-bar-user" id="topBarUser" onclick="window.__authModal && window.__authModal.open()" style="display:none;">
+    <div class="top-bar-user-dot"></div>
+    <span id="topBarUserName">...</span>
+  </div>
 </div>
 
 <div class="community-layout">
@@ -141,7 +158,9 @@
     <div class="messages-wrap" id="messagesWrap">
       <p class="loading-msg">Loading messages...</p>
     </div>
-    <div class="input-bar">
+
+    <!-- shown when signed in -->
+    <div class="input-bar" id="inputBar" style="display:none;">
       <div class="input-wrap">
         <button class="file-btn" onclick="document.getElementById('fileInput').click()" title="Attach file">📎</button>
         <input type="file" id="fileInput" onchange="handleFileSelect(this)">
@@ -149,9 +168,17 @@
           <span class="file-preview-name" id="filePreviewName"></span>
           <button class="file-preview-clear" onclick="clearFile()">✕</button>
         </div>
-        <input id="msgInput" placeholder="Message #general..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}" oninput="updateSendBtn()">
+        <input id="msgInput" placeholder="Message #general..."
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"
+          oninput="updateSendBtn()">
         <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
       </div>
+    </div>
+
+    <!-- shown when NOT signed in -->
+    <div class="sign-in-banner" id="signInBanner" style="display:none;">
+      You need to sign in to chat.
+      <button onclick="window.__authModal && window.__authModal.open()">Sign In</button>
     </div>
   </div>
 
@@ -177,11 +204,23 @@ let pendingFile     = null;
 let currentUser     = null;
 let currentUserName = null;
 
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// INIT
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 async function init() {
   if (!communityId) { window.location.href = "discover.html"; return; }
 
   currentUser     = await getUser();
   currentUserName = currentUser ? await getDisplayName() : null;
+
+  // Show user in top bar
+  if (currentUser) {
+    document.getElementById("topBarUser").style.display    = "flex";
+    document.getElementById("topBarUserName").textContent  = currentUserName || currentUser.email.split("@")[0];
+    document.getElementById("inputBar").style.display      = "block";
+  } else {
+    document.getElementById("signInBanner").style.display  = "block";
+  }
 
   const { data: community, error } = await supabase
     .from("communities").select("*").eq("id", communityId).single();
@@ -200,14 +239,14 @@ async function init() {
     document.getElementById("rulesText").textContent  = community.rules;
   }
 
-  // Gate for invite-only
+  // Invite-only gate
   if (community.type === "Invite") {
     if (!currentUser) { showInviteGate(); return; }
     const isOwner = community.user_id === currentUser.id;
     if (!isOwner) {
       const { data: membership } = await supabase
         .from("community_members").select("id")
-        .eq("community_id", communityId).eq("user_id", currentUser.id).single();
+        .eq("community_id", communityId).eq("user_id", currentUser.id).maybeSingle();
       if (!membership) { showInviteGate(); return; }
     }
   }
@@ -220,6 +259,9 @@ function showInviteGate() {
   document.getElementById("inviteGate").style.display = "flex";
 }
 
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// CHANNELS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 async function loadChannels() {
   const { data: channels } = await supabase
     .from("channels").select("*").eq("community_id", communityId).order("created_at");
@@ -228,7 +270,7 @@ async function loadChannels() {
   list.innerHTML = "";
 
   if (!channels || channels.length === 0) {
-    list.innerHTML = `<div class="channel-item" style="color:#333; cursor:default;">No channels yet</div>`;
+    list.innerHTML = `<div class="channel-item" style="color:#333;cursor:default;">No channels yet</div>`;
     return;
   }
 
@@ -262,6 +304,9 @@ function switchChannel(channelId, channelName, el) {
   subscribeRealtime();
 }
 
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// MESSAGES
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 async function loadMessages(channelId) {
   const wrap = document.getElementById("messagesWrap");
   wrap.innerHTML = `<p class="loading-msg">Loading messages...</p>`;
@@ -272,13 +317,13 @@ async function loadMessages(channelId) {
 
   wrap.innerHTML = "";
   if (!messages || messages.length === 0) {
-    wrap.innerHTML = `<p class="sys-msg">No messages yet. Say something! 👋</p>`;
+    wrap.innerHTML = `<p class="sys-msg">No messages yet — say something! 👋</p>`;
     return;
   }
 
   let lastDate = null;
   messages.forEach(msg => {
-    const d = new Date(msg.created_at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+    const d = new Date(msg.created_at).toLocaleDateString("en-US", { month:"long", day:"numeric", year:"numeric" });
     if (d !== lastDate) {
       const div = document.createElement("div");
       div.className = "date-divider";
@@ -292,28 +337,54 @@ async function loadMessages(channelId) {
 }
 
 function buildMessageEl(msg) {
-  const el = document.createElement("div");
-  el.className = "msg-group";
-  const time    = new Date(msg.created_at).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+  const el      = document.createElement("div");
+  el.className  = "msg-group";
+  const time    = new Date(msg.created_at).toLocaleTimeString("en-US", { hour:"2-digit", minute:"2-digit" });
   const initial = (msg.author || "?")[0].toUpperCase();
-  let content   = "";
-  if (msg.content) content += `<div class="msg-text">${escapeHtml(msg.content)}</div>`;
+  const isMe    = currentUser && msg.user_id === currentUser.id;
+  const authorClass = isMe ? "is-me" : "is-other";
+
+  let content = "";
+
+  // Text — auto-linkify URLs
+  if (msg.content) {
+    content += `<div class="msg-text">${linkify(escapeHtml(msg.content))}</div>`;
+  }
+
+  // File / media
   if (msg.file_url) {
-    const isImage = msg.file_type && msg.file_type.startsWith("image/");
-    if (isImage) {
-      content += `<img class="msg-img" src="${msg.file_url}" alt="${msg.file_name || ''}" onclick="openLightbox('${msg.file_url}')">`;
+    const type = msg.file_type || "";
+    if (type.startsWith("image/")) {
+      // Inline image
+      content += `<img class="msg-img" src="${msg.file_url}" alt="${escapeHtml(msg.file_name||'image')}" loading="lazy" onclick="openLightbox('${msg.file_url}')">`;
+    } else if (type.startsWith("video/")) {
+      // Inline video player
+      content += `<video class="msg-video" controls preload="metadata">
+        <source src="${msg.file_url}" type="${type}">
+        <a class="msg-file" href="${msg.file_url}" target="_blank">📹 ${escapeHtml(msg.file_name||'video')}</a>
+      </video>`;
+    } else if (type.startsWith("audio/")) {
+      // Inline audio player
+      content += `<audio class="msg-audio" controls preload="metadata">
+        <source src="${msg.file_url}" type="${type}">
+      </audio>`;
     } else {
-      content += `<a class="msg-file" href="${msg.file_url}" target="_blank">
-        <span class="msg-file-icon">${getFileIcon(msg.file_type)}</span>
-        <span class="msg-file-name">${escapeHtml(msg.file_name || "File")}</span>
+      // Generic downloadable file card
+      content += `<a class="msg-file" href="${msg.file_url}" target="_blank" download="${escapeHtml(msg.file_name||'file')}">
+        <span class="msg-file-icon">${getFileIcon(type)}</span>
+        <span class="msg-file-info">
+          <span class="msg-file-name">${escapeHtml(msg.file_name||'File')}</span>
+          <span class="msg-file-size">Click to download</span>
+        </span>
       </a>`;
     }
   }
+
   el.innerHTML = `
-    <div class="msg-avatar">${initial}</div>
+    <div class="msg-avatar" style="color:${isMe ? '#0a0a0a' : '#88aaff'}; background:${isMe ? '#1a3d1a' : '#0a0a2a'}; border-color:${isMe ? '#2a5a2a' : '#1a1a3a'};">${initial}</div>
     <div class="msg-body">
       <div class="msg-header">
-        <span class="msg-author">${escapeHtml(msg.author)}</span>
+        <span class="msg-author ${authorClass}">${escapeHtml(msg.author)}</span>
         <span class="msg-time">${time}</span>
       </div>
       ${content}
@@ -321,12 +392,15 @@ function buildMessageEl(msg) {
   return el;
 }
 
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// REALTIME
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function subscribeRealtime() {
   realtimeChannel = supabase
     .channel("msgs-" + activeChannelId)
     .on("postgres_changes", {
-      event: "INSERT", schema: "public", table: "messages",
-      filter: `channel_id=eq.${activeChannelId}`
+      event:"INSERT", schema:"public", table:"messages",
+      filter:`channel_id=eq.${activeChannelId}`
     }, payload => {
       const wrap = document.getElementById("messagesWrap");
       const placeholder = wrap.querySelector(".sys-msg");
@@ -337,27 +411,35 @@ function subscribeRealtime() {
     .subscribe();
 }
 
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// SEND
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 window.sendMessage = async function() {
-  if (!currentUser) { requireAuth(() => {}); return; }
+  if (!currentUser) { window.__authModal && window.__authModal.open(); return; }
+
   const input   = document.getElementById("msgInput");
   const content = input.value.trim();
   if (!content && !pendingFile) return;
+
+  // Disable input while sending
+  input.disabled = true;
+  document.getElementById("sendBtn").disabled = true;
 
   let fileUrl = null, fileName = null, fileType = null;
 
   if (pendingFile) {
     const ext  = pendingFile.name.split(".").pop();
-    const path = `${communityId}/${activeChannelId}/${Date.now()}.${ext}`;
+    const path = `${communityId}/${activeChannelId}/${Date.now()}-${pendingFile.name.replace(/[^a-z0-9._-]/gi, "_")}`;
     const { error: upErr } = await supabase.storage
-      .from("community-files").upload(path, pendingFile, { contentType: pendingFile.type });
-    if (upErr) { alert("File upload failed."); return; }
+      .from("community-files").upload(path, pendingFile, { contentType: pendingFile.type, upsert: false });
+    if (upErr) { alert("File upload failed: " + upErr.message); input.disabled = false; document.getElementById("sendBtn").disabled = false; return; }
     const { data: urlData } = supabase.storage.from("community-files").getPublicUrl(path);
     fileUrl  = urlData.publicUrl;
     fileName = pendingFile.name;
     fileType = pendingFile.type;
   }
 
-  await supabase.from("messages").insert({
+  const { error } = await supabase.from("messages").insert({
     channel_id: activeChannelId,
     user_id:    currentUser.id,
     author:     currentUserName || currentUser.email.split("@")[0],
@@ -367,14 +449,24 @@ window.sendMessage = async function() {
     file_type:  fileType
   });
 
-  input.value = "";
+  if (error) { alert("Failed to send. Try again."); }
+
+  input.value    = "";
+  input.disabled = false;
+  document.getElementById("sendBtn").disabled = false;
   clearFile();
   updateSendBtn();
+  input.focus();
 };
 
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// FILE HANDLING
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 window.handleFileSelect = function(input) {
   const file = input.files[0];
   if (!file) return;
+  // 50MB max
+  if (file.size > 50 * 1024 * 1024) { alert("File too large. Max 50MB."); return; }
   pendingFile = file;
   document.getElementById("filePreviewName").textContent = file.name;
   document.getElementById("filePreview").classList.add("visible");
@@ -393,11 +485,17 @@ window.updateSendBtn = function() {
   document.getElementById("sendBtn").classList.toggle("ready", !!has);
 };
 
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// LIGHTBOX
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 window.openLightbox = function(url) {
   document.getElementById("lightboxImg").src = url;
   document.getElementById("lightbox").classList.add("open");
 };
 
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// HELPERS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function scrollToBottom() {
   const w = document.getElementById("messagesWrap");
   w.scrollTop = w.scrollHeight;
@@ -407,13 +505,20 @@ function escapeHtml(s) {
   return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 }
 
+// Turns raw URLs in text into clickable <a> tags
+function linkify(text) {
+  return text.replace(/(https?:\/\/[^\s<>"]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+}
+
 function getFileIcon(t) {
   if (!t) return "📄";
   if (t.startsWith("image/")) return "🖼️";
   if (t.startsWith("audio/")) return "🎵";
   if (t.startsWith("video/")) return "🎬";
   if (t.includes("pdf"))      return "📕";
-  if (t.includes("zip"))      return "🗜️";
+  if (t.includes("zip") || t.includes("rar") || t.includes("7z")) return "🗜️";
+  if (t.includes("word") || t.includes("doc")) return "📝";
+  if (t.includes("sheet") || t.includes("excel") || t.includes("csv")) return "📊";
   return "📄";
 }
 
