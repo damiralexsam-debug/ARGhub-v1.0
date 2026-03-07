@@ -1,0 +1,423 @@
+<html>
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0a0a0a;
+      color: white;
+      font-family: 'Roboto Slab', serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .top-bar {
+      height: 52px;
+      background: #111;
+      border-bottom: 1px solid #222;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+    .top-bar-back { color: #666; text-decoration: none; font-size: 13px; transition: 0.2s; letter-spacing: 1px; }
+    .top-bar-back:hover { color: white; }
+    .top-bar-name { font-size: 16px; font-weight: 700; color: white; flex: 1; }
+    .top-bar-type { font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: bold; letter-spacing: 1px; }
+    .type-public { background: lime;   color: black; }
+    .type-invite { background: violet; color: white; }
+    .top-bar-members { font-size: 12px; color: #555; letter-spacing: 1px; }
+
+    .community-layout { display: flex; flex: 1; overflow: hidden; }
+
+    /* SIDEBAR */
+    .sidebar { width: 220px; background: #111; border-right: 1px solid #1a1a1a; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
+    .sidebar-section { padding: 16px 12px 8px; }
+    .sidebar-label { font-size: 10px; color: #555; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; padding: 0 8px; }
+    .channel-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 14px; color: #666; transition: 0.15s; }
+    .channel-item:hover { background: #1a1a1a; color: #ccc; }
+    .channel-item.active { background: #1a1a1a; color: white; }
+    .channel-hash { color: #444; font-size: 16px; }
+    .channel-item.active .channel-hash { color: #888; }
+    .sidebar-divider { border: none; border-top: 1px solid #1a1a1a; margin: 8px 12px; }
+    .rules-box { margin: 8px 12px 16px; padding: 10px 12px; background: #0f0f0f; border: 1px solid #1a1a1a; border-radius: 8px; font-size: 12px; color: #555; line-height: 1.6; }
+    .rules-box-title { font-size: 10px; color: #444; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+
+    /* CHAT */
+    .chat-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .channel-header { height: 48px; border-bottom: 1px solid #1a1a1a; display: flex; align-items: center; padding: 0 20px; gap: 8px; flex-shrink: 0; }
+    .channel-header-hash { color: #555; font-size: 18px; }
+    .channel-header-name { font-size: 15px; font-weight: 700; }
+
+    .messages-wrap { flex: 1; overflow-y: auto; padding: 20px 20px 8px; display: flex; flex-direction: column; gap: 2px; scrollbar-width: thin; scrollbar-color: #222 transparent; }
+
+    .msg-group { display: flex; gap: 12px; padding: 4px 8px; border-radius: 6px; transition: 0.1s; animation: fadeUp 0.2s ease both; }
+    .msg-group:hover { background: #111; }
+    .msg-avatar { width: 36px; height: 36px; border-radius: 50%; background: #222; border: 1px solid #333; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #888; flex-shrink: 0; margin-top: 2px; }
+    .msg-body { flex: 1; min-width: 0; }
+    .msg-header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 3px; }
+    .msg-author { font-size: 14px; font-weight: 700; color: lime; }
+    .msg-time   { font-size: 11px; color: #444; }
+    .msg-text   { font-size: 14px; color: #ccc; line-height: 1.5; word-break: break-word; }
+
+    .msg-file { display: inline-flex; align-items: center; gap: 10px; margin-top: 4px; padding: 10px 14px; background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px; text-decoration: none; color: #ccc; font-size: 13px; transition: 0.2s; max-width: 320px; }
+    .msg-file:hover { border-color: #444; color: white; }
+    .msg-file-icon { font-size: 20px; }
+    .msg-file-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .msg-img { margin-top: 6px; max-width: 360px; max-height: 280px; border-radius: 8px; border: 1px solid #222; display: block; cursor: pointer; transition: 0.2s; }
+    .msg-img:hover { border-color: #444; }
+
+    .date-divider { display: flex; align-items: center; gap: 12px; margin: 16px 0 8px; color: #333; font-size: 11px; letter-spacing: 1px; }
+    .date-divider::before, .date-divider::after { content: ""; flex: 1; height: 1px; background: #1a1a1a; }
+    .sys-msg { text-align: center; color: #333; font-size: 12px; padding: 8px 0; letter-spacing: 1px; }
+
+    /* INPUT */
+    .input-bar { padding: 12px 20px 16px; flex-shrink: 0; }
+    .input-wrap { display: flex; align-items: center; gap: 10px; background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 10px; padding: 10px 14px; transition: 0.2s; }
+    .input-wrap:focus-within { border-color: #444; }
+    .file-btn { background: none; border: none; color: #555; font-size: 20px; cursor: pointer; transition: 0.2s; padding: 0; line-height: 1; flex-shrink: 0; }
+    .file-btn:hover { color: white; box-shadow: none !important; }
+    #fileInput { display: none; }
+    .file-preview { display: none; align-items: center; gap: 8px; background: #222; border-radius: 6px; padding: 6px 10px; font-size: 12px; color: #aaa; flex-shrink: 0; max-width: 180px; }
+    .file-preview.visible { display: flex; }
+    .file-preview-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .file-preview-clear { background: none; border: none; color: #555; cursor: pointer; font-size: 14px; padding: 0; flex-shrink: 0; }
+    .file-preview-clear:hover { color: white; box-shadow: none !important; }
+    #msgInput { flex: 1; background: none; border: none; outline: none; color: white; font-family: 'Roboto Slab', serif; font-size: 14px; }
+    #msgInput::placeholder { color: #444; }
+    .send-btn { background: none; border: none; color: #555; font-size: 18px; cursor: pointer; transition: 0.2s; padding: 0; flex-shrink: 0; }
+    .send-btn:hover { color: lime; box-shadow: none !important; }
+    .send-btn.ready { color: lime; }
+
+    /* INVITE GATE */
+    #inviteGate { display: none; flex: 1; justify-content: center; align-items: center; flex-direction: column; gap: 16px; text-align: center; padding: 40px; }
+    #inviteGate h2 { color: violet; font-size: 28px; }
+    #inviteGate p  { color: #555; font-size: 14px; max-width: 400px; line-height: 1.7; }
+
+    .loading-msg { text-align: center; color: #333; font-size: 14px; padding: 40px; letter-spacing: 1px; }
+
+    /* LIGHTBOX */
+    #lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; justify-content: center; align-items: center; cursor: zoom-out; }
+    #lightbox.open { display: flex; }
+    #lightbox img  { max-width: 90vw; max-height: 90vh; border-radius: 8px; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a href="discover.html" class="top-bar-back">← Discover</a>
+  <div class="top-bar-name" id="communityName">Loading...</div>
+  <span class="top-bar-type" id="communityType"></span>
+  <span class="top-bar-members" id="communityMembers"></span>
+</div>
+
+<div class="community-layout">
+  <div class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Channels</div>
+      <div id="channelList"></div>
+    </div>
+    <hr class="sidebar-divider">
+    <div class="rules-box" id="rulesBox" style="display:none;">
+      <div class="rules-box-title">Rules</div>
+      <div id="rulesText"></div>
+    </div>
+  </div>
+
+  <div class="chat-area" id="chatArea">
+    <div class="channel-header">
+      <span class="channel-header-hash">#</span>
+      <span class="channel-header-name" id="activeChannelName">general</span>
+    </div>
+    <div class="messages-wrap" id="messagesWrap">
+      <p class="loading-msg">Loading messages...</p>
+    </div>
+    <div class="input-bar">
+      <div class="input-wrap">
+        <button class="file-btn" onclick="document.getElementById('fileInput').click()" title="Attach file">📎</button>
+        <input type="file" id="fileInput" onchange="handleFileSelect(this)">
+        <div class="file-preview" id="filePreview">
+          <span class="file-preview-name" id="filePreviewName"></span>
+          <button class="file-preview-clear" onclick="clearFile()">✕</button>
+        </div>
+        <input id="msgInput" placeholder="Message #general..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}" oninput="updateSendBtn()">
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="inviteGate">
+    <h2>🔒 Invite Only</h2>
+    <p>This community is invite-only. You need to be invited by a member or moderator to gain access.</p>
+    <a href="discover.html" style="color:#555; font-size:13px; letter-spacing:1px; margin-top:8px;">← Back to Discover</a>
+  </div>
+</div>
+
+<div id="lightbox" onclick="this.classList.remove('open')">
+  <img id="lightboxImg" src="" alt="">
+</div>
+
+<script type="module">
+import { supabase, getUser, getDisplayName, requireAuth } from "./supabase-auth.js";
+
+const params      = new URLSearchParams(window.location.search);
+const communityId = params.get("id");
+let activeChannelId = null;
+let realtimeChannel = null;
+let pendingFile     = null;
+let currentUser     = null;
+let currentUserName = null;
+
+async function init() {
+  if (!communityId) { window.location.href = "discover.html"; return; }
+
+  currentUser     = await getUser();
+  currentUserName = currentUser ? await getDisplayName() : null;
+
+  const { data: community, error } = await supabase
+    .from("communities").select("*").eq("id", communityId).single();
+
+  if (error || !community) { window.location.href = "discover.html"; return; }
+
+  document.getElementById("communityName").textContent    = community.name;
+  document.getElementById("communityMembers").textContent = `👥 ${community.members} members`;
+  const typeEl = document.getElementById("communityType");
+  typeEl.textContent = community.type === "Invite" ? "INVITE ONLY" : community.type.toUpperCase();
+  typeEl.className   = "top-bar-type " + (community.type === "Invite" ? "type-invite" : "type-public");
+  document.title     = community.name + " — ARGhub";
+
+  if (community.rules) {
+    document.getElementById("rulesBox").style.display = "block";
+    document.getElementById("rulesText").textContent  = community.rules;
+  }
+
+  // Gate for invite-only
+  if (community.type === "Invite") {
+    if (!currentUser) { showInviteGate(); return; }
+    const isOwner = community.user_id === currentUser.id;
+    if (!isOwner) {
+      const { data: membership } = await supabase
+        .from("community_members").select("id")
+        .eq("community_id", communityId).eq("user_id", currentUser.id).single();
+      if (!membership) { showInviteGate(); return; }
+    }
+  }
+
+  await loadChannels();
+}
+
+function showInviteGate() {
+  document.getElementById("chatArea").style.display   = "none";
+  document.getElementById("inviteGate").style.display = "flex";
+}
+
+async function loadChannels() {
+  const { data: channels } = await supabase
+    .from("channels").select("*").eq("community_id", communityId).order("created_at");
+
+  const list = document.getElementById("channelList");
+  list.innerHTML = "";
+
+  if (!channels || channels.length === 0) {
+    list.innerHTML = `<div class="channel-item" style="color:#333; cursor:default;">No channels yet</div>`;
+    return;
+  }
+
+  channels.forEach((ch, i) => {
+    const item = document.createElement("div");
+    item.className = "channel-item" + (i === 0 ? " active" : "");
+    item.dataset.channelId = ch.id;
+    item.innerHTML = `<span class="channel-hash">#</span>${ch.name}`;
+    item.onclick = () => switchChannel(ch.id, ch.name, item);
+    list.appendChild(item);
+    if (i === 0) {
+      activeChannelId = ch.id;
+      document.getElementById("msgInput").placeholder = `Message #${ch.name}...`;
+    }
+  });
+
+  if (activeChannelId) {
+    await loadMessages(activeChannelId);
+    subscribeRealtime();
+  }
+}
+
+function switchChannel(channelId, channelName, el) {
+  activeChannelId = channelId;
+  document.getElementById("activeChannelName").textContent = channelName;
+  document.getElementById("msgInput").placeholder = `Message #${channelName}...`;
+  document.querySelectorAll(".channel-item").forEach(i => i.classList.remove("active"));
+  el.classList.add("active");
+  if (realtimeChannel) supabase.removeChannel(realtimeChannel);
+  loadMessages(channelId);
+  subscribeRealtime();
+}
+
+async function loadMessages(channelId) {
+  const wrap = document.getElementById("messagesWrap");
+  wrap.innerHTML = `<p class="loading-msg">Loading messages...</p>`;
+
+  const { data: messages } = await supabase
+    .from("messages").select("*").eq("channel_id", channelId)
+    .order("created_at", { ascending: true }).limit(100);
+
+  wrap.innerHTML = "";
+  if (!messages || messages.length === 0) {
+    wrap.innerHTML = `<p class="sys-msg">No messages yet. Say something! 👋</p>`;
+    return;
+  }
+
+  let lastDate = null;
+  messages.forEach(msg => {
+    const d = new Date(msg.created_at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+    if (d !== lastDate) {
+      const div = document.createElement("div");
+      div.className = "date-divider";
+      div.textContent = d;
+      wrap.appendChild(div);
+      lastDate = d;
+    }
+    wrap.appendChild(buildMessageEl(msg));
+  });
+  scrollToBottom();
+}
+
+function buildMessageEl(msg) {
+  const el = document.createElement("div");
+  el.className = "msg-group";
+  const time    = new Date(msg.created_at).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+  const initial = (msg.author || "?")[0].toUpperCase();
+  let content   = "";
+  if (msg.content) content += `<div class="msg-text">${escapeHtml(msg.content)}</div>`;
+  if (msg.file_url) {
+    const isImage = msg.file_type && msg.file_type.startsWith("image/");
+    if (isImage) {
+      content += `<img class="msg-img" src="${msg.file_url}" alt="${msg.file_name || ''}" onclick="openLightbox('${msg.file_url}')">`;
+    } else {
+      content += `<a class="msg-file" href="${msg.file_url}" target="_blank">
+        <span class="msg-file-icon">${getFileIcon(msg.file_type)}</span>
+        <span class="msg-file-name">${escapeHtml(msg.file_name || "File")}</span>
+      </a>`;
+    }
+  }
+  el.innerHTML = `
+    <div class="msg-avatar">${initial}</div>
+    <div class="msg-body">
+      <div class="msg-header">
+        <span class="msg-author">${escapeHtml(msg.author)}</span>
+        <span class="msg-time">${time}</span>
+      </div>
+      ${content}
+    </div>`;
+  return el;
+}
+
+function subscribeRealtime() {
+  realtimeChannel = supabase
+    .channel("msgs-" + activeChannelId)
+    .on("postgres_changes", {
+      event: "INSERT", schema: "public", table: "messages",
+      filter: `channel_id=eq.${activeChannelId}`
+    }, payload => {
+      const wrap = document.getElementById("messagesWrap");
+      const placeholder = wrap.querySelector(".sys-msg");
+      if (placeholder) placeholder.remove();
+      wrap.appendChild(buildMessageEl(payload.new));
+      scrollToBottom();
+    })
+    .subscribe();
+}
+
+window.sendMessage = async function() {
+  if (!currentUser) { requireAuth(() => {}); return; }
+  const input   = document.getElementById("msgInput");
+  const content = input.value.trim();
+  if (!content && !pendingFile) return;
+
+  let fileUrl = null, fileName = null, fileType = null;
+
+  if (pendingFile) {
+    const ext  = pendingFile.name.split(".").pop();
+    const path = `${communityId}/${activeChannelId}/${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage
+      .from("community-files").upload(path, pendingFile, { contentType: pendingFile.type });
+    if (upErr) { alert("File upload failed."); return; }
+    const { data: urlData } = supabase.storage.from("community-files").getPublicUrl(path);
+    fileUrl  = urlData.publicUrl;
+    fileName = pendingFile.name;
+    fileType = pendingFile.type;
+  }
+
+  await supabase.from("messages").insert({
+    channel_id: activeChannelId,
+    user_id:    currentUser.id,
+    author:     currentUserName || currentUser.email.split("@")[0],
+    content:    content || null,
+    file_url:   fileUrl,
+    file_name:  fileName,
+    file_type:  fileType
+  });
+
+  input.value = "";
+  clearFile();
+  updateSendBtn();
+};
+
+window.handleFileSelect = function(input) {
+  const file = input.files[0];
+  if (!file) return;
+  pendingFile = file;
+  document.getElementById("filePreviewName").textContent = file.name;
+  document.getElementById("filePreview").classList.add("visible");
+  updateSendBtn();
+};
+
+window.clearFile = function() {
+  pendingFile = null;
+  document.getElementById("fileInput").value = "";
+  document.getElementById("filePreview").classList.remove("visible");
+  updateSendBtn();
+};
+
+window.updateSendBtn = function() {
+  const has = document.getElementById("msgInput").value.trim() || pendingFile;
+  document.getElementById("sendBtn").classList.toggle("ready", !!has);
+};
+
+window.openLightbox = function(url) {
+  document.getElementById("lightboxImg").src = url;
+  document.getElementById("lightbox").classList.add("open");
+};
+
+function scrollToBottom() {
+  const w = document.getElementById("messagesWrap");
+  w.scrollTop = w.scrollHeight;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function getFileIcon(t) {
+  if (!t) return "📄";
+  if (t.startsWith("image/")) return "🖼️";
+  if (t.startsWith("audio/")) return "🎵";
+  if (t.startsWith("video/")) return "🎬";
+  if (t.includes("pdf"))      return "📕";
+  if (t.includes("zip"))      return "🗜️";
+  return "📄";
+}
+
+init();
+</script>
+</body>
+</html>

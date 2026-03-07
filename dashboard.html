@@ -49,6 +49,14 @@
 <br>
 <div style="margin-left:100px; padding-right:20px;">Your contribution thus far...</div>
 
+<!-- JOINED COMMUNITIES BOX -->
+<div style="margin: 40px 30px 20px;">
+  <h2 style="margin-bottom:16px;">Your Communities</h2>
+  <div id="joinedCommunitiesBox" style="display:flex; flex-wrap:wrap; gap:14px; min-height:80px;">
+    <p style="color:#333; font-size:14px; letter-spacing:1px;">Loading your communities...</p>
+  </div>
+</div>
+
 <!-- ════════ POST ARG MODAL ════════ -->
 <div class="modal-overlay" id="postModal" onclick="handleOverlayClick(event, 'postModal')">
   <div class="modal-box">
@@ -216,5 +224,53 @@
 <h2 style="text-align:center; margin-top:20px;">This website is building, more coming soon.</h2>
 
 <script type="module" src="dashboard-post.js"></script>
+
+<script type="module">
+import { supabase, getUser } from "./supabase-auth.js";
+
+async function loadJoinedCommunities() {
+  const box  = document.getElementById("joinedCommunitiesBox");
+  const user = await getUser();
+
+  if (!user) {
+    box.innerHTML = `<p style="color:#333; font-size:14px; letter-spacing:1px;">Sign in to see your communities.</p>`;
+    return;
+  }
+
+  // Get communities the user created OR joined
+  const [{ data: created }, { data: joined }] = await Promise.all([
+    supabase.from("communities").select("id, name, type, members").eq("user_id", user.id),
+    supabase.from("community_members")
+      .select("community_id, communities(id, name, type, members)")
+      .eq("user_id", user.id)
+  ]);
+
+  const createdList = (created || []).map(c => ({ ...c, role: "Creator" }));
+  const joinedList  = (joined  || [])
+    .map(j => j.communities ? { ...j.communities, role: "Member" } : null)
+    .filter(Boolean)
+    .filter(j => !createdList.find(c => c.id === j.id)); // no duplicates
+
+  const all = [...createdList, ...joinedList];
+
+  if (all.length === 0) {
+    box.innerHTML = `<p style="color:#333; font-size:14px; letter-spacing:1px;">You haven't joined any communities yet. <a href="discover.html" style="color:lime;">Discover some →</a></p>`;
+    return;
+  }
+
+  box.innerHTML = all.map(c => `
+    <a class="joined-community-card" href="community.html?id=${c.id}">
+      <div class="joined-community-card-name">${c.name}</div>
+      <div class="joined-community-card-meta">
+        <span>👥 ${c.members} members</span>
+        <span style="color:${c.role === 'Creator' ? 'orange' : 'lime'}">${c.role}</span>
+      </div>
+      <div class="joined-community-card-open">Open →</div>
+    </a>
+  `).join("");
+}
+
+loadJoinedCommunities();
+</script>
 </body>
 </html>

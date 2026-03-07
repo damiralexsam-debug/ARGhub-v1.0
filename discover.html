@@ -511,6 +511,44 @@
   </div>
 </div>
 
+<!-- EDIT COMMUNITY MODAL -->
+<div class="cc-overlay" id="editCommunityModal" onclick="if(event.target===this)closeEditCommunity()">
+  <div class="cc-box">
+    <button class="cc-close" onclick="closeEditCommunity()">✕</button>
+    <h2 class="cc-title" style="color:orange;">Edit Community</h2>
+    <input type="hidden" id="ecId">
+
+    <div class="cc-field">
+      <label>Community Name</label>
+      <input type="text" id="ecName" readonly style="color:#555;cursor:not-allowed;">
+      <span class="cc-hint">Community name cannot be changed.</span>
+    </div>
+
+    <div class="cc-field">
+      <label>Description</label>
+      <textarea id="ecDesc" rows="3" placeholder="What is this community about?"></textarea>
+    </div>
+
+    <div class="cc-field">
+      <label>Rules <span style="color:#555; font-size:11px;">(optional)</span></label>
+      <textarea id="ecRules" rows="5" placeholder="1. Be respectful&#10;2. No spoilers without tags&#10;3. Stay on topic"></textarea>
+    </div>
+
+    <div class="cc-field">
+      <label>Type</label>
+      <select id="ecType">
+        <option value="Public">🌐 Public — anyone can join</option>
+        <option value="Invite">🔒 Invite Only — members by invite</option>
+      </select>
+    </div>
+
+    <p class="cc-error"   id="ecError"></p>
+    <p class="cc-success" id="ecSuccess" style="color:orange;">✓ Community updated!</p>
+
+    <button class="cc-submit" style="border-color:orange;color:orange;" onclick="saveEditCommunity()">Save Changes →</button>
+  </div>
+</div>
+
 <script>
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // COMMUNITY DATA — hardcoded placeholders (shown alongside real ones)
@@ -551,11 +589,13 @@ let currentPage   = 1;
 // Called by discover-communities.js after Supabase fetch
 window.refreshWithReal = function() {
   const real = (window.__supabaseCommunities || []).map(c => ({
+    id:      c.id,
     name:    c.name,
     type:    c.type,
     members: c.members,
     desc:    c.desc,
-    real:    true
+    real:    true,
+    ownerId: c.ownerId
   }));
   communities = [...real, ...placeholderCommunities];
   renderPage(1);
@@ -615,10 +655,29 @@ function renderPage(page) {
       const typeClass = c.type === "VIP" ? "type-vip" : c.type === "Public" ? "type-public" : "type-invite";
       const typeLabel = c.type === "Invite" ? "INVITE ONLY" : c.type.toUpperCase();
       const realBadge = c.real ? `<span style="font-size:10px; color:lime; margin-left:6px; letter-spacing:1px;">✦ REAL</span>` : "";
+
+      // Bottom action area differs based on community type and whether it's real
+      let actions = "";
+      if (!c.real) {
+        // Placeholder — just a static join button
+        actions = `<button class="join-btn" onclick="handleJoin(event)">Join</button>`;
+      } else if (c.type === "Invite") {
+        // Invite only — locked
+        actions = `<button class="join-btn" style="border-color:#555;color:#555;cursor:not-allowed;" disabled>🔒 Invite Only</button>`;
+      } else {
+        // Real public community — join gate + edit button if owner
+        const editBtn = `<button class="join-btn edit-community-btn" onclick="openEditCommunity(event,'${c.id}')" style="border-color:orange;color:orange;display:none;" id="edit-${c.id}">✎ Edit</button>`;
+        actions = `
+          ${editBtn}
+          <button class="join-btn" onclick="handleJoinReal(event,'${c.id}','${c.name.replace(/'/g,"\\'")}')">Join</button>
+        `;
+      }
+
       const card = document.createElement("div");
       card.className = "community-card";
       card.style.animationDelay = (i * 0.06) + "s";
       if (c.real) card.style.borderColor = "#1a3d1a";
+      card.dataset.communityId = c.id || "";
       card.innerHTML = `
         <div class="card-top">
           <h3 class="community-name">${c.name}${realBadge}</h3>
@@ -627,11 +686,14 @@ function renderPage(page) {
         <p class="community-desc">${c.desc}</p>
         <div class="card-bottom">
           <span>👥 ${c.members.toLocaleString()} member${c.members === 1 ? "" : "s"}</span>
-          <button class="join-btn" onclick="handleJoin(event)">Join</button>
+          <div style="display:flex;gap:8px;">${actions}</div>
         </div>
       `;
       grid.appendChild(card);
     });
+
+    // After rendering, check which ones the current user owns/joined
+    if (typeof window.markUserCards === "function") window.markUserCards();
   }
 
   // Pagination
@@ -674,7 +736,9 @@ renderPage(1);
 </script>
 
 <script type="module">
-  import { requireAuth } from "./supabase-auth.js";
+  import { supabase, requireAuth, getUser } from "./supabase-auth.js";
+
+  // ── Placeholder join (no Supabase) ──
   window.handleJoin = function(e) {
     const btn = e.target;
     requireAuth(() => {
@@ -684,6 +748,138 @@ renderPage(1);
       btn.style.borderColor = "lime";
       btn.disabled = true;
     });
+  };
+
+  // ── Real community join ──
+  window.handleJoinReal = function(e, communityId, communityName) {
+    const btn = e.target;
+    requireAuth(async () => {
+      const user = await getUser();
+
+      // Check if already a member
+      const { data: existing } = await supabase
+        .from("community_members")
+        .select("id")
+        .eq("community_id", communityId)
+        .eq("user_id", user.id)
+        .single();
+
+      if (existing) {
+        // Already joined — go straight to community page
+        window.location.href = `community.html?id=${communityId}`;
+        return;
+      }
+
+      // Insert membership
+      const { error } = await supabase.from("community_members").insert({
+        community_id: communityId,
+        user_id:      user.id
+      });
+
+      if (error) { alert("Failed to join. Try again."); return; }
+
+      // Visual feedback then redirect to community page
+      btn.textContent = "Joined ✓";
+      btn.style.background = "lime";
+      btn.style.color = "black";
+      btn.style.borderColor = "lime";
+      btn.disabled = true;
+
+      setTimeout(() => {
+        window.location.href = `community.html?id=${communityId}`;
+      }, 600);
+    });
+  };
+
+  // ── Mark cards for current user (show edit btn, show "Open" if joined) ──
+  window.markUserCards = async function() {
+    const user = await getUser();
+    if (!user) return;
+
+    // Get communities this user owns
+    const { data: owned } = await supabase
+      .from("communities")
+      .select("id")
+      .eq("user_id", user.id);
+
+    // Get communities this user has joined
+    const { data: joined } = await supabase
+      .from("community_members")
+      .select("community_id")
+      .eq("user_id", user.id);
+
+    const ownedIds  = (owned  || []).map(c => c.id);
+    const joinedIds = (joined || []).map(c => c.community_id);
+
+    // Show edit button for owned, swap Join→Open for joined
+    document.querySelectorAll(".community-card[data-community-id]").forEach(card => {
+      const id = card.dataset.communityId;
+      if (!id) return;
+
+      if (ownedIds.includes(id)) {
+        const editBtn = card.querySelector(`#edit-${id}`);
+        if (editBtn) editBtn.style.display = "inline-block";
+      }
+
+      if (joinedIds.includes(id) || ownedIds.includes(id)) {
+        const joinBtn = card.querySelector(".join-btn:not(.edit-community-btn)");
+        if (joinBtn) {
+          joinBtn.textContent    = "Open →";
+          joinBtn.style.background   = "lime";
+          joinBtn.style.color        = "black";
+          joinBtn.style.borderColor  = "lime";
+          joinBtn.onclick = () => { window.location.href = `community.html?id=${id}`; };
+        }
+      }
+    });
+  };
+
+  // ── Edit community modal ──
+  window.openEditCommunity = async function(e, id) {
+    e.stopPropagation();
+    const { data, error } = await supabase.from("communities").select("*").eq("id", id).single();
+    if (error || !data) { alert("Couldn't load community."); return; }
+
+    document.getElementById("ecId").value    = id;
+    document.getElementById("ecName").value  = data.name;
+    document.getElementById("ecDesc").value  = data.description || "";
+    document.getElementById("ecRules").value = data.rules || "";
+    document.getElementById("ecType").value  = data.type;
+    document.getElementById("ecError").style.display   = "none";
+    document.getElementById("ecSuccess").style.display = "none";
+
+    document.getElementById("editCommunityModal").classList.add("open");
+  };
+
+  window.closeEditCommunity = function() {
+    document.getElementById("editCommunityModal").classList.remove("open");
+  };
+
+  window.saveEditCommunity = async function() {
+    const id    = document.getElementById("ecId").value;
+    const desc  = document.getElementById("ecDesc").value.trim();
+    const rules = document.getElementById("ecRules").value.trim();
+    const type  = document.getElementById("ecType").value;
+    const errEl = document.getElementById("ecError");
+    errEl.style.display = "none";
+
+    const { error } = await supabase.from("communities").update({
+      description: desc  || null,
+      rules:       rules || null,
+      type
+    }).eq("id", id);
+
+    if (error) {
+      errEl.textContent   = "Save failed. Try again.";
+      errEl.style.display = "block";
+      return;
+    }
+
+    document.getElementById("ecSuccess").style.display = "block";
+    setTimeout(() => {
+      window.closeEditCommunity();
+      if (typeof loadCommunities === "function") loadCommunities();
+    }, 1000);
   };
 </script>
 <script type="module" src="discover-communities.js"></script>

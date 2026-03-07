@@ -184,10 +184,10 @@ async function loadCommunities() {
     members: c.members,
     desc:    c.description || (c.arg_name ? `A community for ${c.arg_name}.` : "No description provided."),
     argName: c.arg_name,
-    real:    true   // flag so we can style real vs placeholder differently if needed
+    ownerId: c.user_id,
+    real:    true
   }));
 
-  // Trigger a re-render of the page with real communities prepended
   if (typeof window.refreshWithReal === "function") window.refreshWithReal();
 }
 
