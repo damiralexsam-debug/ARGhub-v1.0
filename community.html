@@ -113,6 +113,60 @@
     #inviteGate h2 { color: violet; font-size: 28px; }
     #inviteGate p  { color: #555; font-size: 14px; max-width: 400px; line-height: 1.7; }
 
+    /* BAN GATE */
+    #banGate { display: none; flex: 1; justify-content: center; align-items: center; flex-direction: column; gap: 16px; text-align: center; padding: 40px; }
+    #banGate h2 { color: red; font-size: 28px; }
+    #banGate p  { color: #555; font-size: 14px; max-width: 400px; line-height: 1.7; }
+
+    /* ADMIN BTN in sidebar */
+    .admin-btn { display: none; margin: 8px 12px; padding: 9px 14px; border-radius: 8px; border: 1px solid #333; background: transparent; color: #666; font-family: 'Roboto Slab', serif; font-size: 12px; cursor: pointer; transition: 0.2s; letter-spacing: 1px; text-align: left; width: calc(100% - 24px); }
+    .admin-btn:hover { border-color: orange; color: orange; box-shadow: none !important; }
+
+    /* CHANNEL delete btn */
+    .channel-del { display: none; margin-left: auto; font-size: 12px; color: #444; cursor: pointer; padding: 2px 6px; border-radius: 4px; transition: 0.15s; }
+    .channel-del:hover { color: red; background: #1a0000; }
+    .channel-item:hover .channel-del { display: block; }
+
+    /* ADMIN PANEL — slides over sidebar */
+    .admin-panel { display: none; position: absolute; left: 0; top: 52px; width: 220px; height: calc(100vh - 52px); background: #0f0f0f; border-right: 1px solid #2a2a2a; z-index: 100; overflow-y: auto; flex-direction: column; scrollbar-width: thin; scrollbar-color: #222 transparent; }
+    .admin-panel.open { display: flex; flex-direction: column; }
+    .admin-header { padding: 16px 16px 8px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #1a1a1a; flex-shrink: 0; }
+    .admin-header-title { font-size: 13px; color: orange; letter-spacing: 2px; text-transform: uppercase; }
+    .admin-close { background: none; border: none; color: #555; font-size: 18px; cursor: pointer; transition: 0.2s; }
+    .admin-close:hover { color: white; box-shadow: none !important; }
+
+    .admin-section { padding: 12px 14px 8px; border-bottom: 1px solid #1a1a1a; }
+    .admin-section-title { font-size: 10px; color: #444; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+
+    .admin-input { width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid #2a2a2a; background: #1a1a1a; color: white; font-family: 'Roboto Slab', serif; font-size: 13px; outline: none; margin-bottom: 8px; transition: 0.2s; }
+    .admin-input:focus { border-color: orange; }
+    .admin-input-color { width: 36px; height: 30px; padding: 2px; border-radius: 4px; border: 1px solid #2a2a2a; background: #1a1a1a; cursor: pointer; }
+
+    .admin-action-btn { width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #333; background: transparent; color: #aaa; font-family: 'Roboto Slab', serif; font-size: 12px; cursor: pointer; transition: 0.2s; text-align: left; margin-bottom: 6px; }
+    .admin-action-btn:hover { border-color: orange; color: orange; box-shadow: none !important; }
+    .admin-action-btn.red:hover { border-color: red; color: red; }
+
+    .admin-list-item { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; border-radius: 6px; font-size: 13px; color: #aaa; margin-bottom: 4px; background: #1a1a1a; }
+    .admin-list-item-del { background: none; border: none; color: #444; cursor: pointer; font-size: 14px; transition: 0.15s; }
+    .admin-list-item-del:hover { color: red; box-shadow: none !important; }
+    .role-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ADMIN MODALS */
+    .admin-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 9998; justify-content: center; align-items: center; }
+    .admin-overlay.open { display: flex; }
+    .admin-modal { background: #111; border: 1px solid #2a2a2a; border-radius: 14px; padding: 28px 32px; width: 460px; max-height: 80vh; overflow-y: auto; position: relative; animation: fadeUp 0.2s ease both; }
+    .admin-modal-title { font-size: 16px; color: orange; letter-spacing: 1px; margin-bottom: 20px; }
+    .admin-modal-close { position: absolute; top: 14px; right: 16px; background: none; border: none; color: #555; font-size: 20px; cursor: pointer; }
+    .admin-modal-close:hover { color: white; box-shadow: none !important; }
+    .member-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-radius: 8px; background: #1a1a1a; margin-bottom: 6px; }
+    .member-row-name { font-size: 14px; color: #ccc; }
+    .member-row-roles { display: flex; gap: 4px; flex-wrap: wrap; }
+    .member-role-tag { font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: bold; }
+    .member-row-actions { display: flex; gap: 6px; }
+    .member-action-btn { padding: 4px 10px; border-radius: 5px; border: 1px solid #333; background: transparent; color: #888; font-family: 'Roboto Slab', serif; font-size: 11px; cursor: pointer; transition: 0.2s; }
+    .member-action-btn:hover { border-color: orange; color: orange; box-shadow: none !important; }
+    .member-action-btn.ban:hover { border-color: red; color: red; }
+
     .loading-msg { text-align: center; color: #333; font-size: 14px; padding: 60px; letter-spacing: 1px; }
 
     /* LIGHTBOX */
@@ -137,8 +191,41 @@
   </div>
 </div>
 
-<div class="community-layout">
-  <div class="sidebar">
+<div class="community-layout" style="position:relative;">
+  <!-- ADMIN PANEL (slides over sidebar, creator only) -->
+  <div class="admin-panel" id="adminPanel">
+    <div class="admin-header">
+      <span class="admin-header-title">⚙ Admin</span>
+      <button class="admin-close" onclick="closeAdmin()">✕</button>
+    </div>
+
+    <!-- Channels -->
+    <div class="admin-section">
+      <div class="admin-section-title">Channels</div>
+      <input class="admin-input" id="newChannelName" placeholder="New channel name...">
+      <button class="admin-action-btn" onclick="createChannel()">+ Create Channel</button>
+      <div id="adminChannelList"></div>
+    </div>
+
+    <!-- Roles -->
+    <div class="admin-section">
+      <div class="admin-section-title">Roles</div>
+      <div style="display:flex;gap:8px;margin-bottom:8px;">
+        <input class="admin-input" id="newRoleName" placeholder="Role name..." style="flex:1;margin:0;">
+        <input class="admin-input-color" id="newRoleColor" type="color" value="#ff8800" title="Role color">
+      </div>
+      <button class="admin-action-btn" onclick="createRole()">+ Create Role</button>
+      <div id="adminRoleList"></div>
+    </div>
+
+    <!-- Members -->
+    <div class="admin-section">
+      <div class="admin-section-title">Members</div>
+      <button class="admin-action-btn" onclick="openMembersModal()">👥 Manage Members</button>
+    </div>
+  </div>
+
+  <div class="sidebar" id="sidebar">
     <div class="sidebar-section">
       <div class="sidebar-label">Channels</div>
       <div id="channelList"></div>
@@ -148,6 +235,9 @@
       <div class="rules-box-title">Rules</div>
       <div id="rulesText"></div>
     </div>
+    <hr class="sidebar-divider">
+    <!-- only shown to creator -->
+    <button class="admin-btn" id="adminBtn" onclick="openAdmin()">⚙ Admin Console</button>
   </div>
 
   <div class="chat-area" id="chatArea">
@@ -158,8 +248,6 @@
     <div class="messages-wrap" id="messagesWrap">
       <p class="loading-msg">Loading messages...</p>
     </div>
-
-    <!-- shown when signed in -->
     <div class="input-bar" id="inputBar" style="display:none;">
       <div class="input-wrap">
         <button class="file-btn" onclick="document.getElementById('fileInput').click()" title="Attach file">📎</button>
@@ -174,24 +262,47 @@
         <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
       </div>
     </div>
-
-    <!-- shown when NOT signed in -->
     <div class="sign-in-banner" id="signInBanner" style="display:none;">
       You need to sign in to chat.
       <button onclick="window.__authModal && window.__authModal.open()">Sign In</button>
     </div>
   </div>
 
-  <div id="inviteGate">
-    <h2>🔒 Invite Only</h2>
-    <p>This community is invite-only. You need to be invited by a member or moderator to gain access.</p>
-    <a href="discover.html" style="color:#555; font-size:13px; letter-spacing:1px; margin-top:8px;">← Back to Discover</a>
+  <div id="inviteGate" style="flex:1;display:none;justify-content:center;align-items:center;flex-direction:column;gap:16px;text-align:center;padding:40px;">
+    <h2 style="color:violet;font-size:28px;">🔒 Invite Only</h2>
+    <p style="color:#555;font-size:14px;max-width:400px;line-height:1.7;">This community is invite-only. You need to be invited by a member or moderator to gain access.</p>
+    <a href="discover.html" style="color:#555;font-size:13px;letter-spacing:1px;">← Back to Discover</a>
+  </div>
+
+  <div id="banGate" style="flex:1;display:none;justify-content:center;align-items:center;flex-direction:column;gap:16px;text-align:center;padding:40px;">
+    <h2 style="color:red;font-size:28px;">🚫 You're Banned</h2>
+    <p style="color:#555;font-size:14px;max-width:400px;line-height:1.7;">You have been banned from this community by the creator.</p>
+    <a href="discover.html" style="color:#555;font-size:13px;letter-spacing:1px;">← Back to Discover</a>
+  </div>
+</div>
+
+<!-- MEMBERS MODAL -->
+<div class="admin-overlay" id="membersModal" onclick="if(event.target===this)closeMembersModal()">
+  <div class="admin-modal">
+    <button class="admin-modal-close" onclick="closeMembersModal()">✕</button>
+    <div class="admin-modal-title">👥 Manage Members</div>
+    <div id="membersList"><p style="color:#444;font-size:13px;">Loading...</p></div>
+  </div>
+</div>
+
+<!-- ASSIGN ROLE MODAL -->
+<div class="admin-overlay" id="assignRoleModal" onclick="if(event.target===this)closeAssignRole()">
+  <div class="admin-modal" style="width:360px;">
+    <button class="admin-modal-close" onclick="closeAssignRole()">✕</button>
+    <div class="admin-modal-title" id="assignRoleTitle">Assign Role</div>
+    <div id="assignRoleList"></div>
   </div>
 </div>
 
 <div id="lightbox" onclick="this.classList.remove('open')">
   <img id="lightboxImg" src="" alt="">
 </div>
+
 
 <script type="module">
 import { supabase, getUser, getDisplayName, requireAuth } from "./supabase-auth.js";
@@ -203,29 +314,36 @@ let realtimeChannel = null;
 let pendingFile     = null;
 let currentUser     = null;
 let currentUserName = null;
+let isCreator       = false;
+let allRoles        = [];
+let allMembers      = [];
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// INIT
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 async function init() {
   if (!communityId) { window.location.href = "discover.html"; return; }
-
   currentUser     = await getUser();
   currentUserName = currentUser ? await getDisplayName() : null;
 
-  // Show user in top bar
   if (currentUser) {
-    document.getElementById("topBarUser").style.display    = "flex";
-    document.getElementById("topBarUserName").textContent  = currentUserName || currentUser.email.split("@")[0];
-    document.getElementById("inputBar").style.display      = "block";
+    document.getElementById("topBarUser").style.display   = "flex";
+    document.getElementById("topBarUserName").textContent = currentUserName || currentUser.email.split("@")[0];
+    document.getElementById("inputBar").style.display     = "block";
   } else {
-    document.getElementById("signInBanner").style.display  = "block";
+    document.getElementById("signInBanner").style.display = "block";
   }
 
   const { data: community, error } = await supabase
     .from("communities").select("*").eq("id", communityId).single();
-
   if (error || !community) { window.location.href = "discover.html"; return; }
+
+  // Ban check
+  if (currentUser) {
+    const { data: ban } = await supabase
+      .from("community_bans").select("id")
+      .eq("community_id", communityId).eq("user_id", currentUser.id).maybeSingle();
+    if (ban) { showGate("banGate"); return; }
+  }
+
+  isCreator = currentUser && community.user_id === currentUser.id;
 
   document.getElementById("communityName").textContent    = community.name;
   document.getElementById("communityMembers").textContent = `👥 ${community.members} members`;
@@ -239,35 +357,34 @@ async function init() {
     document.getElementById("rulesText").textContent  = community.rules;
   }
 
-  // Invite-only gate
-  if (community.type === "Invite") {
-    if (!currentUser) { showInviteGate(); return; }
-    const isOwner = community.user_id === currentUser.id;
-    if (!isOwner) {
-      const { data: membership } = await supabase
-        .from("community_members").select("id")
-        .eq("community_id", communityId).eq("user_id", currentUser.id).maybeSingle();
-      if (!membership) { showInviteGate(); return; }
-    }
+  if (community.type === "Invite" && !isCreator) {
+    if (!currentUser) { showGate("inviteGate"); return; }
+    const { data: membership } = await supabase
+      .from("community_members").select("id")
+      .eq("community_id", communityId).eq("user_id", currentUser.id).maybeSingle();
+    if (!membership) { showGate("inviteGate"); return; }
   }
 
+  if (isCreator) document.getElementById("adminBtn").style.display = "block";
+
   await loadChannels();
+  await loadRoles();
 }
 
-function showInviteGate() {
-  document.getElementById("chatArea").style.display   = "none";
-  document.getElementById("inviteGate").style.display = "flex";
+function showGate(gateId) {
+  document.getElementById("chatArea").style.display = "none";
+  document.getElementById(gateId).style.display     = "flex";
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // CHANNELS
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 async function loadChannels() {
   const { data: channels } = await supabase
     .from("channels").select("*").eq("community_id", communityId).order("created_at");
 
-  const list = document.getElementById("channelList");
-  list.innerHTML = "";
+  const list      = document.getElementById("channelList");
+  const adminList = document.getElementById("adminChannelList");
+  list.innerHTML  = "";
+  if (adminList) adminList.innerHTML = "";
 
   if (!channels || channels.length === 0) {
     list.innerHTML = `<div class="channel-item" style="color:#333;cursor:default;">No channels yet</div>`;
@@ -278,19 +395,23 @@ async function loadChannels() {
     const item = document.createElement("div");
     item.className = "channel-item" + (i === 0 ? " active" : "");
     item.dataset.channelId = ch.id;
-    item.innerHTML = `<span class="channel-hash">#</span>${ch.name}`;
-    item.onclick = () => switchChannel(ch.id, ch.name, item);
+    item.innerHTML = `<span class="channel-hash">#</span>${ch.name}${isCreator ? `<span class="channel-del" onclick="deleteChannel(event,'${ch.id}')">✕</span>` : ""}`;
+    item.onclick = (e) => { if (!e.target.classList.contains("channel-del")) switchChannel(ch.id, ch.name, item); };
     list.appendChild(item);
     if (i === 0) {
       activeChannelId = ch.id;
       document.getElementById("msgInput").placeholder = `Message #${ch.name}...`;
     }
+    if (adminList && isCreator) {
+      const row = document.createElement("div");
+      row.className = "admin-list-item";
+      row.innerHTML = `<span style="color:#ccc;"># ${ch.name}</span>
+        <button class="admin-list-item-del" onclick="deleteChannel(event,'${ch.id}')">🗑</button>`;
+      adminList.appendChild(row);
+    }
   });
 
-  if (activeChannelId) {
-    await loadMessages(activeChannelId);
-    subscribeRealtime();
-  }
+  if (activeChannelId) { await loadMessages(activeChannelId); subscribeRealtime(); }
 }
 
 function switchChannel(channelId, channelName, el) {
@@ -304,223 +425,222 @@ function switchChannel(channelId, channelName, el) {
   subscribeRealtime();
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ADMIN
+window.openAdmin  = () => document.getElementById("adminPanel").classList.add("open");
+window.closeAdmin = () => document.getElementById("adminPanel").classList.remove("open");
+
+window.createChannel = async function() {
+  const name = document.getElementById("newChannelName").value.trim().toLowerCase().replace(/\s+/g,"-");
+  if (!name) return;
+  const { error } = await supabase.from("channels").insert({ community_id: communityId, name });
+  if (error) { alert("Failed: " + error.message); return; }
+  document.getElementById("newChannelName").value = "";
+  await loadChannels();
+};
+
+window.deleteChannel = async function(e, channelId) {
+  e.stopPropagation();
+  if (!confirm("Delete this channel and all its messages?")) return;
+  await supabase.from("channels").delete().eq("id", channelId);
+  await loadChannels();
+};
+
+// ROLES
+async function loadRoles() {
+  const { data } = await supabase.from("community_roles").select("*").eq("community_id", communityId);
+  allRoles = data || [];
+  renderAdminRoleList();
+}
+
+function renderAdminRoleList() {
+  const list = document.getElementById("adminRoleList");
+  if (!list) return;
+  list.innerHTML = "";
+  allRoles.forEach(role => {
+    const row = document.createElement("div");
+    row.className = "admin-list-item";
+    row.innerHTML = `<div style="display:flex;align-items:center;gap:8px;"><div class="role-dot" style="background:${role.color};"></div><span style="color:#ccc;font-size:13px;">${role.name}</span></div>
+      <button class="admin-list-item-del" onclick="deleteRole('${role.id}')">🗑</button>`;
+    list.appendChild(row);
+  });
+}
+
+window.createRole = async function() {
+  const name  = document.getElementById("newRoleName").value.trim();
+  const color = document.getElementById("newRoleColor").value;
+  if (!name) return;
+  const { error } = await supabase.from("community_roles").insert({ community_id: communityId, name, color });
+  if (error) { alert("Failed: " + error.message); return; }
+  document.getElementById("newRoleName").value = "";
+  await loadRoles();
+};
+
+window.deleteRole = async function(roleId) {
+  if (!confirm("Delete this role?")) return;
+  await supabase.from("community_roles").delete().eq("id", roleId);
+  await loadRoles();
+};
+
+// MEMBERS MODAL
+window.openMembersModal = async function() {
+  document.getElementById("membersModal").classList.add("open");
+  const list = document.getElementById("membersList");
+  list.innerHTML = `<p style="color:#444;font-size:13px;">Loading...</p>`;
+
+  const { data: members } = await supabase
+    .from("community_members")
+    .select("id, user_id, profiles(display_name), member_roles(role_id)")
+    .eq("community_id", communityId);
+
+  allMembers = members || [];
+
+  const { data: bans } = await supabase.from("community_bans").select("user_id").eq("community_id", communityId);
+  const bannedIds = (bans || []).map(b => b.user_id);
+
+  list.innerHTML = "";
+  if (allMembers.length === 0) { list.innerHTML = `<p style="color:#444;font-size:13px;">No members yet.</p>`; return; }
+
+  allMembers.forEach(member => {
+    const displayName = member.profiles?.display_name || `User ${member.user_id.slice(0,6)}`;
+    const isBanned    = bannedIds.includes(member.user_id);
+    const isOwner     = member.user_id === currentUser?.id;
+    const memberRoleIds = (member.member_roles || []).map(r => r.role_id);
+    const memberRoleTags = allRoles.filter(r => memberRoleIds.includes(r.id))
+      .map(r => `<span class="member-role-tag" style="background:${r.color}22;color:${r.color};border:1px solid ${r.color}44;">${r.name}</span>`).join("");
+
+    const row = document.createElement("div");
+    row.className = "member-row";
+    row.innerHTML = `
+      <div>
+        <div class="member-row-name">${displayName}${isOwner?' <span style="color:#444;font-size:11px;">(you)</span>':""}${isBanned?' <span style="color:red;font-size:11px;">BANNED</span>':""}</div>
+        <div class="member-row-roles" style="margin-top:4px;">${memberRoleTags||'<span style="font-size:11px;color:#333;">No roles</span>'}</div>
+      </div>
+      <div class="member-row-actions">
+        ${!isOwner?`<button class="member-action-btn" onclick="openAssignRole('${member.id}','${displayName}')">+ Role</button>`:""}
+        ${!isOwner&&!isBanned?`<button class="member-action-btn ban" onclick="banMember('${member.user_id}','${displayName}')">Ban</button>`:""}
+        ${!isOwner&&isBanned?`<button class="member-action-btn" onclick="unbanMember('${member.user_id}','${displayName}')">Unban</button>`:""}
+      </div>`;
+    list.appendChild(row);
+  });
+};
+
+window.closeMembersModal = () => document.getElementById("membersModal").classList.remove("open");
+
+window.openAssignRole = function(memberId, memberName) {
+  document.getElementById("assignRoleTitle").textContent = `Assign Role to ${memberName}`;
+  const list = document.getElementById("assignRoleList");
+  list.innerHTML = "";
+  if (allRoles.length === 0) {
+    list.innerHTML = `<p style="color:#444;font-size:13px;">No roles yet. Create some in Admin Console first.</p>`;
+  } else {
+    allRoles.forEach(role => {
+      const btn = document.createElement("button");
+      btn.className = "admin-action-btn";
+      btn.style.cssText = "display:flex;align-items:center;gap:10px;";
+      btn.innerHTML = `<div class="role-dot" style="background:${role.color};"></div>${role.name}`;
+      btn.onclick = () => assignRole(memberId, role.id);
+      list.appendChild(btn);
+    });
+  }
+  document.getElementById("assignRoleModal").classList.add("open");
+};
+
+window.closeAssignRole = () => document.getElementById("assignRoleModal").classList.remove("open");
+
+window.assignRole = async function(memberId, roleId) {
+  await supabase.from("member_roles").upsert({ member_id: memberId, role_id: roleId });
+  window.closeAssignRole();
+  window.openMembersModal();
+};
+
+window.banMember = async function(userId, name) {
+  if (!confirm(`Ban ${name} from this community?`)) return;
+  await supabase.from("community_bans").insert({ community_id: communityId, user_id: userId, banned_by: currentUser.id });
+  window.openMembersModal();
+};
+
+window.unbanMember = async function(userId, name) {
+  if (!confirm(`Unban ${name}?`)) return;
+  await supabase.from("community_bans").delete().eq("community_id", communityId).eq("user_id", userId);
+  window.openMembersModal();
+};
+
 // MESSAGES
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 async function loadMessages(channelId) {
   const wrap = document.getElementById("messagesWrap");
   wrap.innerHTML = `<p class="loading-msg">Loading messages...</p>`;
-
-  const { data: messages } = await supabase
-    .from("messages").select("*").eq("channel_id", channelId)
+  const { data: messages } = await supabase.from("messages").select("*").eq("channel_id", channelId)
     .order("created_at", { ascending: true }).limit(100);
-
   wrap.innerHTML = "";
-  if (!messages || messages.length === 0) {
-    wrap.innerHTML = `<p class="sys-msg">No messages yet — say something! 👋</p>`;
-    return;
-  }
-
+  if (!messages || messages.length === 0) { wrap.innerHTML = `<p class="sys-msg">No messages yet — say something! 👋</p>`; return; }
   let lastDate = null;
   messages.forEach(msg => {
     const d = new Date(msg.created_at).toLocaleDateString("en-US", { month:"long", day:"numeric", year:"numeric" });
-    if (d !== lastDate) {
-      const div = document.createElement("div");
-      div.className = "date-divider";
-      div.textContent = d;
-      wrap.appendChild(div);
-      lastDate = d;
-    }
+    if (d !== lastDate) { const div = document.createElement("div"); div.className = "date-divider"; div.textContent = d; wrap.appendChild(div); lastDate = d; }
     wrap.appendChild(buildMessageEl(msg));
   });
   scrollToBottom();
 }
 
 function buildMessageEl(msg) {
-  const el      = document.createElement("div");
-  el.className  = "msg-group";
-  const time    = new Date(msg.created_at).toLocaleTimeString("en-US", { hour:"2-digit", minute:"2-digit" });
-  const initial = (msg.author || "?")[0].toUpperCase();
-  const isMe    = currentUser && msg.user_id === currentUser.id;
-  const authorClass = isMe ? "is-me" : "is-other";
-
+  const el = document.createElement("div"); el.className = "msg-group";
+  const time = new Date(msg.created_at).toLocaleTimeString("en-US", { hour:"2-digit", minute:"2-digit" });
+  const initial = (msg.author||"?")[0].toUpperCase();
+  const isMe = currentUser && msg.user_id === currentUser.id;
   let content = "";
-
-  // Text — auto-linkify URLs
-  if (msg.content) {
-    content += `<div class="msg-text">${linkify(escapeHtml(msg.content))}</div>`;
-  }
-
-  // File / media
+  if (msg.content) content += `<div class="msg-text">${linkify(escapeHtml(msg.content))}</div>`;
   if (msg.file_url) {
     const type = msg.file_type || "";
-    if (type.startsWith("image/")) {
-      // Inline image
-      content += `<img class="msg-img" src="${msg.file_url}" alt="${escapeHtml(msg.file_name||'image')}" loading="lazy" onclick="openLightbox('${msg.file_url}')">`;
-    } else if (type.startsWith("video/")) {
-      // Inline video player
-      content += `<video class="msg-video" controls preload="metadata">
-        <source src="${msg.file_url}" type="${type}">
-        <a class="msg-file" href="${msg.file_url}" target="_blank">📹 ${escapeHtml(msg.file_name||'video')}</a>
-      </video>`;
-    } else if (type.startsWith("audio/")) {
-      // Inline audio player
-      content += `<audio class="msg-audio" controls preload="metadata">
-        <source src="${msg.file_url}" type="${type}">
-      </audio>`;
-    } else {
-      // Generic downloadable file card
-      content += `<a class="msg-file" href="${msg.file_url}" target="_blank" download="${escapeHtml(msg.file_name||'file')}">
-        <span class="msg-file-icon">${getFileIcon(type)}</span>
-        <span class="msg-file-info">
-          <span class="msg-file-name">${escapeHtml(msg.file_name||'File')}</span>
-          <span class="msg-file-size">Click to download</span>
-        </span>
-      </a>`;
-    }
+    if (type.startsWith("image/")) content += `<img class="msg-img" src="${msg.file_url}" loading="lazy" onclick="openLightbox('${msg.file_url}')">`;
+    else if (type.startsWith("video/")) content += `<video class="msg-video" controls preload="metadata"><source src="${msg.file_url}" type="${type}"></video>`;
+    else if (type.startsWith("audio/")) content += `<audio class="msg-audio" controls preload="metadata"><source src="${msg.file_url}" type="${type}"></audio>`;
+    else content += `<a class="msg-file" href="${msg.file_url}" target="_blank" download="${escapeHtml(msg.file_name||'file')}"><span class="msg-file-icon">${getFileIcon(type)}</span><span class="msg-file-info"><span class="msg-file-name">${escapeHtml(msg.file_name||'File')}</span><span class="msg-file-size">Click to download</span></span></a>`;
   }
-
-  el.innerHTML = `
-    <div class="msg-avatar" style="color:${isMe ? '#0a0a0a' : '#88aaff'}; background:${isMe ? '#1a3d1a' : '#0a0a2a'}; border-color:${isMe ? '#2a5a2a' : '#1a1a3a'};">${initial}</div>
-    <div class="msg-body">
-      <div class="msg-header">
-        <span class="msg-author ${authorClass}">${escapeHtml(msg.author)}</span>
-        <span class="msg-time">${time}</span>
-      </div>
-      ${content}
-    </div>`;
+  el.innerHTML = `<div class="msg-avatar" style="color:${isMe?'#0a0a0a':'#88aaff'};background:${isMe?'#1a3d1a':'#0a0a2a'};border-color:${isMe?'#2a5a2a':'#1a1a3a'};">${initial}</div>
+    <div class="msg-body"><div class="msg-header"><span class="msg-author ${isMe?'is-me':'is-other'}">${escapeHtml(msg.author)}</span><span class="msg-time">${time}</span></div>${content}</div>`;
   return el;
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// REALTIME
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function subscribeRealtime() {
-  realtimeChannel = supabase
-    .channel("msgs-" + activeChannelId)
-    .on("postgres_changes", {
-      event:"INSERT", schema:"public", table:"messages",
-      filter:`channel_id=eq.${activeChannelId}`
-    }, payload => {
+  realtimeChannel = supabase.channel("msgs-"+activeChannelId)
+    .on("postgres_changes", { event:"INSERT", schema:"public", table:"messages", filter:`channel_id=eq.${activeChannelId}` }, payload => {
       const wrap = document.getElementById("messagesWrap");
-      const placeholder = wrap.querySelector(".sys-msg");
-      if (placeholder) placeholder.remove();
-      wrap.appendChild(buildMessageEl(payload.new));
-      scrollToBottom();
-    })
-    .subscribe();
+      const p = wrap.querySelector(".sys-msg"); if (p) p.remove();
+      wrap.appendChild(buildMessageEl(payload.new)); scrollToBottom();
+    }).subscribe();
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// SEND
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 window.sendMessage = async function() {
   if (!currentUser) { window.__authModal && window.__authModal.open(); return; }
-
-  const input   = document.getElementById("msgInput");
-  const content = input.value.trim();
+  const input = document.getElementById("msgInput"); const content = input.value.trim();
   if (!content && !pendingFile) return;
-
-  // Disable input while sending
-  input.disabled = true;
-  document.getElementById("sendBtn").disabled = true;
-
+  input.disabled = true; document.getElementById("sendBtn").disabled = true;
   let fileUrl = null, fileName = null, fileType = null;
-
   if (pendingFile) {
-    const ext  = pendingFile.name.split(".").pop();
-    const path = `${communityId}/${activeChannelId}/${Date.now()}-${pendingFile.name.replace(/[^a-z0-9._-]/gi, "_")}`;
-    const { error: upErr } = await supabase.storage
-      .from("community-files").upload(path, pendingFile, { contentType: pendingFile.type, upsert: false });
-    if (upErr) { alert("File upload failed: " + upErr.message); input.disabled = false; document.getElementById("sendBtn").disabled = false; return; }
+    const path = `${communityId}/${activeChannelId}/${Date.now()}-${pendingFile.name.replace(/[^a-z0-9._-]/gi,"_")}`;
+    const { error: upErr } = await supabase.storage.from("community-files").upload(path, pendingFile, { contentType: pendingFile.type });
+    if (upErr) { alert("Upload failed: "+upErr.message); input.disabled=false; document.getElementById("sendBtn").disabled=false; return; }
     const { data: urlData } = supabase.storage.from("community-files").getPublicUrl(path);
-    fileUrl  = urlData.publicUrl;
-    fileName = pendingFile.name;
-    fileType = pendingFile.type;
+    fileUrl = urlData.publicUrl; fileName = pendingFile.name; fileType = pendingFile.type;
   }
-
-  const { error } = await supabase.from("messages").insert({
-    channel_id: activeChannelId,
-    user_id:    currentUser.id,
-    author:     currentUserName || currentUser.email.split("@")[0],
-    content:    content || null,
-    file_url:   fileUrl,
-    file_name:  fileName,
-    file_type:  fileType
-  });
-
-  if (error) { alert("Failed to send. Try again."); }
-
-  input.value    = "";
-  input.disabled = false;
-  document.getElementById("sendBtn").disabled = false;
-  clearFile();
-  updateSendBtn();
-  input.focus();
+  await supabase.from("messages").insert({ channel_id: activeChannelId, user_id: currentUser.id, author: currentUserName || currentUser.email.split("@")[0], content: content||null, file_url: fileUrl, file_name: fileName, file_type: fileType });
+  input.value = ""; input.disabled = false; document.getElementById("sendBtn").disabled = false;
+  clearFile(); updateSendBtn(); input.focus();
 };
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// FILE HANDLING
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 window.handleFileSelect = function(input) {
-  const file = input.files[0];
-  if (!file) return;
-  // 50MB max
-  if (file.size > 50 * 1024 * 1024) { alert("File too large. Max 50MB."); return; }
-  pendingFile = file;
-  document.getElementById("filePreviewName").textContent = file.name;
-  document.getElementById("filePreview").classList.add("visible");
-  updateSendBtn();
+  const file = input.files[0]; if (!file) return;
+  if (file.size > 50*1024*1024) { alert("Max 50MB."); return; }
+  pendingFile = file; document.getElementById("filePreviewName").textContent = file.name;
+  document.getElementById("filePreview").classList.add("visible"); updateSendBtn();
 };
-
-window.clearFile = function() {
-  pendingFile = null;
-  document.getElementById("fileInput").value = "";
-  document.getElementById("filePreview").classList.remove("visible");
-  updateSendBtn();
-};
-
-window.updateSendBtn = function() {
-  const has = document.getElementById("msgInput").value.trim() || pendingFile;
-  document.getElementById("sendBtn").classList.toggle("ready", !!has);
-};
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// LIGHTBOX
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-window.openLightbox = function(url) {
-  document.getElementById("lightboxImg").src = url;
-  document.getElementById("lightbox").classList.add("open");
-};
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// HELPERS
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-function scrollToBottom() {
-  const w = document.getElementById("messagesWrap");
-  w.scrollTop = w.scrollHeight;
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
-}
-
-// Turns raw URLs in text into clickable <a> tags
-function linkify(text) {
-  return text.replace(/(https?:\/\/[^\s<>"]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
-}
-
-function getFileIcon(t) {
-  if (!t) return "📄";
-  if (t.startsWith("image/")) return "🖼️";
-  if (t.startsWith("audio/")) return "🎵";
-  if (t.startsWith("video/")) return "🎬";
-  if (t.includes("pdf"))      return "📕";
-  if (t.includes("zip") || t.includes("rar") || t.includes("7z")) return "🗜️";
-  if (t.includes("word") || t.includes("doc")) return "📝";
-  if (t.includes("sheet") || t.includes("excel") || t.includes("csv")) return "📊";
-  return "📄";
-}
+window.clearFile = function() { pendingFile=null; document.getElementById("fileInput").value=""; document.getElementById("filePreview").classList.remove("visible"); updateSendBtn(); };
+window.updateSendBtn = function() { document.getElementById("sendBtn").classList.toggle("ready", !!(document.getElementById("msgInput").value.trim()||pendingFile)); };
+window.openLightbox = function(url) { document.getElementById("lightboxImg").src=url; document.getElementById("lightbox").classList.add("open"); };
+function scrollToBottom() { const w=document.getElementById("messagesWrap"); w.scrollTop=w.scrollHeight; }
+function escapeHtml(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function linkify(text) { return text.replace(/(https?:\/\/[^\s<>"]+)/g,'<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'); }
+function getFileIcon(t) { if(!t)return"📄"; if(t.startsWith("image/"))return"🖼️"; if(t.startsWith("audio/"))return"🎵"; if(t.startsWith("video/"))return"🎬"; if(t.includes("pdf"))return"📕"; if(t.includes("zip")||t.includes("rar"))return"🗜️"; return"📄"; }
 
 init();
 </script>

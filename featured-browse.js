@@ -41,7 +41,7 @@ function buildPostedCard(arg) {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // DETAIL POPUP — looks up by Supabase UUID in the cache
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-window.openPostedDetail = function(id) {
+window.openPostedDetail = async function(id) {
   const arg = postedARGsCache.find(a => a.id === id);
   if (!arg) return;
 
@@ -63,6 +63,18 @@ window.openPostedDetail = function(id) {
     links += `</div>`;
   }
 
+  // Check if a community exists for this ARG by name
+  const { data: community } = await supabase
+    .from("communities")
+    .select("id, name")
+    .eq("arg_name", arg.name)
+    .limit(1)
+    .maybeSingle();
+
+  const communityLink = community
+    ? `<a href="community.html?id=${community.id}" class="detail-link" style="background:#1a3d1a;border-color:#2a5a2a;color:lime;margin-top:8px;display:inline-flex;align-items:center;gap:6px;">👥 &nbsp;View Community: ${community.name}</a>`
+    : `<p style="font-size:12px;color:#333;margin-top:12px;letter-spacing:1px;">No community linked to this ARG yet.</p>`;
+
   document.getElementById("detailContent").innerHTML = `
     ${imgEl}
     <div class="detail-body">
@@ -76,6 +88,7 @@ window.openPostedDetail = function(id) {
       </div>
       <p class="detail-desc">${arg.description || "No description provided."}</p>
       ${links}
+      ${communityLink}
     </div>
   `;
 

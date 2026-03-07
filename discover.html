@@ -546,6 +546,29 @@
     <p class="cc-success" id="ecSuccess" style="color:orange;">✓ Community updated!</p>
 
     <button class="cc-submit" style="border-color:orange;color:orange;" onclick="saveEditCommunity()">Save Changes →</button>
+    <button class="cc-submit" style="border-color:red;color:red;margin-top:10px;" onclick="deleteCommunity()">🗑 Delete Community</button>
+  </div>
+</div>
+
+<!-- JOIN INFO MODAL — shows ARG link before joining -->
+<div class="cc-overlay" id="joinInfoModal" onclick="if(event.target===this)closeJoinInfo()">
+  <div class="cc-box" style="max-width:480px;">
+    <button class="cc-close" onclick="closeJoinInfo()">✕</button>
+    <h2 class="cc-title" id="joinInfoName" style="color:white;margin-bottom:6px;"></h2>
+    <p style="font-size:12px;color:#555;letter-spacing:1px;margin-bottom:20px;" id="joinInfoType"></p>
+
+    <div id="joinInfoArg" style="display:none;background:#0f0f0f;border:1px solid #1a1a1a;border-radius:10px;padding:16px;margin-bottom:20px;">
+      <p style="font-size:10px;color:#555;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">Linked ARG</p>
+      <p style="font-size:15px;font-weight:700;color:white;margin-bottom:6px;" id="joinInfoArgName"></p>
+      <p style="font-size:12px;color:#aaa;margin-bottom:12px;" id="joinInfoArgDesc"></p>
+      <a id="joinInfoArgLink" href="featured.html" style="font-size:12px;color:lime;letter-spacing:1px;text-decoration:none;">View in Featured →</a>
+    </div>
+
+    <div id="joinInfoNoArg" style="display:none;color:#444;font-size:13px;margin-bottom:20px;">
+      No ARG linked to this community yet.
+    </div>
+
+    <button class="cc-submit" id="joinInfoBtn" onclick="confirmJoin()" style="margin-top:0;">Join Community →</button>
   </div>
 </div>
 
@@ -738,6 +761,11 @@ renderPage(1);
 <script type="module">
   import { supabase, requireAuth, getUser } from "./supabase-auth.js";
 
+  // pending join state
+  let _joinCommunityId   = null;
+  let _joinCommunityName = null;
+  let _joinBtn           = null;
+
   // ── Placeholder join (no Supabase) ──
   window.handleJoin = function(e) {
     const btn = e.target;
@@ -750,68 +778,94 @@ renderPage(1);
     });
   };
 
-  // ── Real community join ──
+  // ── Real community join — show info modal first ──
   window.handleJoinReal = function(e, communityId, communityName) {
-    const btn = e.target;
+    e.stopPropagation();
+    _joinBtn = e.target;
     requireAuth(async () => {
       const user = await getUser();
 
       // Check if already a member
       const { data: existing } = await supabase
-        .from("community_members")
-        .select("id")
-        .eq("community_id", communityId)
-        .eq("user_id", user.id)
-        .single();
+        .from("community_members").select("id")
+        .eq("community_id", communityId).eq("user_id", user.id).maybeSingle();
 
       if (existing) {
-        // Already joined — go straight to community page
         window.location.href = `community.html?id=${communityId}`;
         return;
       }
 
-      // Insert membership
-      const { error } = await supabase.from("community_members").insert({
-        community_id: communityId,
-        user_id:      user.id
-      });
+      _joinCommunityId   = communityId;
+      _joinCommunityName = communityName;
 
-      if (error) { alert("Failed to join. Try again."); return; }
+      // Load community + linked ARG info
+      const { data: community } = await supabase
+        .from("communities").select("*, args(id, name, description)")
+        .eq("id", communityId).single();
 
-      // Visual feedback then redirect to community page
-      btn.textContent = "Joined ✓";
-      btn.style.background = "lime";
-      btn.style.color = "black";
-      btn.style.borderColor = "lime";
-      btn.disabled = true;
+      document.getElementById("joinInfoName").textContent = communityName;
+      document.getElementById("joinInfoType").textContent =
+        community?.type === "Invite" ? "🔒 INVITE ONLY" : "🌐 PUBLIC";
 
-      setTimeout(() => {
-        window.location.href = `community.html?id=${communityId}`;
-      }, 600);
+      const arg = community?.args;
+      if (arg) {
+        document.getElementById("joinInfoArg").style.display    = "block";
+        document.getElementById("joinInfoNoArg").style.display  = "none";
+        document.getElementById("joinInfoArgName").textContent  = arg.name;
+        document.getElementById("joinInfoArgDesc").textContent  = arg.description || "";
+        document.getElementById("joinInfoArgLink").href         = `featured.html`;
+      } else {
+        document.getElementById("joinInfoArg").style.display    = "none";
+        document.getElementById("joinInfoNoArg").style.display  = "block";
+      }
+
+      document.getElementById("joinInfoModal").classList.add("open");
     });
   };
 
-  // ── Mark cards for current user (show edit btn, show "Open" if joined) ──
+  window.closeJoinInfo = function() {
+    document.getElementById("joinInfoModal").classList.remove("open");
+  };
+
+  window.confirmJoin = async function() {
+    const user = await getUser();
+    if (!user || !_joinCommunityId) return;
+
+    document.getElementById("joinInfoBtn").textContent = "Joining...";
+    document.getElementById("joinInfoBtn").disabled = true;
+
+    const { error } = await supabase.from("community_members").insert({
+      community_id: _joinCommunityId,
+      user_id:      user.id
+    });
+
+    if (error) {
+      alert("Failed to join. Try again.");
+      document.getElementById("joinInfoBtn").textContent = "Join Community →";
+      document.getElementById("joinInfoBtn").disabled = false;
+      return;
+    }
+
+    window.closeJoinInfo();
+    setTimeout(() => {
+      window.location.href = `community.html?id=${_joinCommunityId}`;
+    }, 300);
+  };
+
+  // ── Mark cards for current user ──
   window.markUserCards = async function() {
     const user = await getUser();
     if (!user) return;
 
-    // Get communities this user owns
     const { data: owned } = await supabase
-      .from("communities")
-      .select("id")
-      .eq("user_id", user.id);
+      .from("communities").select("id").eq("user_id", user.id);
 
-    // Get communities this user has joined
     const { data: joined } = await supabase
-      .from("community_members")
-      .select("community_id")
-      .eq("user_id", user.id);
+      .from("community_members").select("community_id").eq("user_id", user.id);
 
     const ownedIds  = (owned  || []).map(c => c.id);
     const joinedIds = (joined || []).map(c => c.community_id);
 
-    // Show edit button for owned, swap Join→Open for joined
     document.querySelectorAll(".community-card[data-community-id]").forEach(card => {
       const id = card.dataset.communityId;
       if (!id) return;
@@ -824,10 +878,10 @@ renderPage(1);
       if (joinedIds.includes(id) || ownedIds.includes(id)) {
         const joinBtn = card.querySelector(".join-btn:not(.edit-community-btn)");
         if (joinBtn) {
-          joinBtn.textContent    = "Open →";
-          joinBtn.style.background   = "lime";
-          joinBtn.style.color        = "black";
-          joinBtn.style.borderColor  = "lime";
+          joinBtn.textContent       = "Open →";
+          joinBtn.style.background  = "lime";
+          joinBtn.style.color       = "black";
+          joinBtn.style.borderColor = "lime";
           joinBtn.onclick = () => { window.location.href = `community.html?id=${id}`; };
         }
       }
@@ -880,6 +934,24 @@ renderPage(1);
       window.closeEditCommunity();
       if (typeof loadCommunities === "function") loadCommunities();
     }, 1000);
+  };
+
+  // ── Delete community ──
+  window.deleteCommunity = async function() {
+    const id   = document.getElementById("ecId").value;
+    const name = document.getElementById("ecName").value;
+
+    if (!confirm(`Are you sure you want to delete "${name}"? This cannot be undone.`)) return;
+
+    const { error } = await supabase.from("communities").delete().eq("id", id);
+
+    if (error) {
+      alert("Delete failed. Try again.");
+      return;
+    }
+
+    window.closeEditCommunity();
+    if (typeof loadCommunities === "function") loadCommunities();
   };
 </script>
 <script type="module" src="discover-communities.js"></script>
