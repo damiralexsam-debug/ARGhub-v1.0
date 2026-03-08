@@ -546,6 +546,7 @@
     <p class="cc-success" id="ecSuccess" style="color:orange;">✓ Community updated!</p>
 
     <button class="cc-submit" style="border-color:orange;color:orange;" onclick="saveEditCommunity()">Save Changes →</button>
+    <button class="cc-submit" style="border-color:#ff3333;color:#ff3333;margin-top:10px;opacity:0.8;" onclick="deleteCommunity()">🗑 Delete Community</button>
   </div>
 </div>
 
@@ -776,6 +777,15 @@ renderPage(1);
 
       if (error) { alert("Failed to join. Try again."); return; }
 
+      // Increment the members count in the communities table
+      const { data: commData } = await supabase
+        .from("communities").select("members").eq("id", communityId).single();
+      if (commData) {
+        await supabase.from("communities")
+          .update({ members: (commData.members || 0) + 1 })
+          .eq("id", communityId);
+      }
+
       // Visual feedback then redirect to community page
       btn.textContent = "Joined ✓";
       btn.style.background = "lime";
@@ -850,6 +860,37 @@ renderPage(1);
 
   window.closeEditCommunity = function() {
     document.getElementById("editCommunityModal").classList.remove("open");
+  };
+
+  window.deleteCommunity = async function() {
+    const id   = document.getElementById("ecId").value;
+    const name = document.getElementById("ecName").value;
+    if (!confirm(`Delete "${name}"? This is permanent and removes all members. This cannot be undone.`)) return;
+
+    // Wipe members rows first (in case no cascade is set up)
+    await supabase.from("community_members").delete().eq("community_id", id);
+
+    const { error } = await supabase.from("communities").delete().eq("id", id);
+    if (error) { alert("Failed to delete community. Try again."); console.error(error); return; }
+
+    window.closeEditCommunity();
+    // Refresh the page grid — communities module exposes loadCommunities globally
+    if (typeof window.refreshWithReal === "function") {
+      // trigger a fresh load
+      const { data } = await supabase
+        .from("communities").select("*").order("created_at", { ascending: false });
+      window.__supabaseCommunities = (data || []).map(c => ({
+        id:      c.id,
+        name:    c.name,
+        type:    c.type,
+        members: c.members,
+        desc:    c.description || (c.arg_name ? `A community for ${c.arg_name}.` : "No description provided."),
+        argName: c.arg_name,
+        ownerId: c.user_id,
+        real:    true
+      }));
+      window.refreshWithReal();
+    }
   };
 
   window.saveEditCommunity = async function() {

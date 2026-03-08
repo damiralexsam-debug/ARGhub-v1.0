@@ -280,8 +280,20 @@ window.quitCommunity = async function(e, communityId, communityName) {
   e.stopPropagation();
   if (!confirm(`Leave "${communityName}"? You can rejoin anytime.`)) return;
   const user = await getUser();
+
+  // Remove membership row
   await supabase.from("community_members")
     .delete().eq("community_id", communityId).eq("user_id", user.id);
+
+  // Decrement the member count
+  const { data: commData } = await supabase
+    .from("communities").select("members").eq("id", communityId).single();
+  if (commData && commData.members > 0) {
+    await supabase.from("communities")
+      .update({ members: commData.members - 1 })
+      .eq("id", communityId);
+  }
+
   loadJoinedCommunities();
 };
 </script>

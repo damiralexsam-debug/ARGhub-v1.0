@@ -133,7 +133,7 @@ window.submitCommunity = async function() {
     return;
   }
 
-  const { error } = await supabase.from("communities").insert({
+  const { data: newComm, error } = await supabase.from("communities").insert({
     user_id:     user.id,
     name,
     arg_name:    argName || null,
@@ -141,13 +141,21 @@ window.submitCommunity = async function() {
     type,
     author,
     members:     1
-  });
+  }).select("id").single();
 
   if (error) {
     errEl.textContent   = "Something went wrong. Please try again.";
     errEl.style.display = "block";
     console.error(error);
     return;
+  }
+
+  // Add creator to community_members so member count stays accurate
+  if (newComm?.id) {
+    await supabase.from("community_members").insert({
+      community_id: newComm.id,
+      user_id:      user.id
+    });
   }
 
   // Show success, close modal after a beat, refresh grid
