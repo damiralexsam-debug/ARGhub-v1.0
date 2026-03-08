@@ -152,9 +152,11 @@ window.submitCommunity = async function() {
 
   // Add creator to community_members so member count stays accurate
   if (newComm?.id) {
+    const creatorName = await getDisplayName();
     await supabase.from("community_members").insert({
       community_id: newComm.id,
-      user_id:      user.id
+      user_id:      user.id,
+      display_name: creatorName || user.email.split("@")[0]
     });
   }
 

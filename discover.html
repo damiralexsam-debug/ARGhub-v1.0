@@ -440,7 +440,7 @@
 
 <!-- SEARCH & FILTER -->
 <div class="discover-controls">
-  <input id="searchBar" type="text" placeholder="Search communities..." oninput="renderPage(1)">
+  <input id="searchBar" type="text" placeholder="Search communities..." oninput="renderPage(1)" autocomplete="off">
   <div class="filter-wrapper">
     <button class="filter-btn active-all" id="filterBtn" onclick="toggleDropdown()">Filter ▾</button>
     <div class="filter-dropdown" id="filterDropdown">
@@ -770,9 +770,16 @@ renderPage(1);
       }
 
       // Insert membership — the DB trigger (trg_member_count) auto-increments members count
+      const { data: profileData } = await supabase
+        .from("profiles").select("display_name").eq("id", user.id).maybeSingle();
+      const displayName = user.user_metadata?.full_name
+        || profileData?.display_name
+        || user.email.split("@")[0];
+
       const { error } = await supabase.from("community_members").insert({
         community_id: communityId,
-        user_id:      user.id
+        user_id:      user.id,
+        display_name: displayName
       });
 
       if (error) { alert("Failed to join. Try again."); return; }

@@ -498,7 +498,7 @@ window.openMembersModal = async function() {
 
   const { data: members } = await supabase
     .from("community_members")
-    .select("id, user_id, profiles(display_name), member_roles(role_id)")
+    .select("id, user_id, display_name, member_roles(role_id)")
     .eq("community_id", communityId);
 
   allMembers = members || [];
@@ -510,24 +510,28 @@ window.openMembersModal = async function() {
   if (allMembers.length === 0) { list.innerHTML = `<p style="color:#444;font-size:13px;">No members yet.</p>`; return; }
 
   allMembers.forEach(member => {
-    const displayName = member.profiles?.display_name || `User ${member.user_id.slice(0,6)}`;
+    const displayName = member.display_name || `User ${member.user_id.slice(0,6)}`;
     const isBanned    = bannedIds.includes(member.user_id);
     const isOwner     = member.user_id === currentUser?.id;
     const memberRoleIds = (member.member_roles || []).map(r => r.role_id);
     const memberRoleTags = allRoles.filter(r => memberRoleIds.includes(r.id))
-      .map(r => `<span class="member-role-tag" style="background:${r.color}22;color:${r.color};border:1px solid ${r.color}44;">${r.name}</span>`).join("");
+      .map(r => `
+        <span class="member-role-tag" style="background:${r.color}22;color:${r.color};border:1px solid ${r.color}44;display:inline-flex;align-items:center;gap:4px;">
+          ${r.name}
+          ${!isOwner ? `<span onclick="removeRole('${member.id}','${r.id}')" style="cursor:pointer;opacity:0.6;font-size:10px;margin-left:2px;" title="Remove role">✕</span>` : ""}
+        </span>`).join("");
 
     const row = document.createElement("div");
     row.className = "member-row";
     row.innerHTML = `
-      <div>
+      <div style="flex:1;min-width:0;">
         <div class="member-row-name">${displayName}${isOwner?' <span style="color:#444;font-size:11px;">(you)</span>':""}${isBanned?' <span style="color:red;font-size:11px;">BANNED</span>':""}</div>
         <div class="member-row-roles" style="margin-top:4px;">${memberRoleTags||'<span style="font-size:11px;color:#333;">No roles</span>'}</div>
       </div>
       <div class="member-row-actions">
         ${!isOwner?`<button class="member-action-btn" onclick="openAssignRole('${member.id}','${displayName}')">+ Role</button>`:""}
         ${!isOwner&&!isBanned?`<button class="member-action-btn ban" onclick="banMember('${member.user_id}','${displayName}')">Ban</button>`:""}
-        ${!isOwner&&isBanned?`<button class="member-action-btn" onclick="unbanMember('${member.user_id}','${displayName}')">Unban</button>`:""}
+        ${!isOwner&&isBanned?`<button class="member-action-btn" style="border-color:#44ff44;color:#44ff44;" onclick="unbanMember('${member.user_id}','${displayName}')">Unban</button>`:""}
       </div>`;
     list.appendChild(row);
   });
@@ -559,6 +563,11 @@ window.closeAssignRole = () => document.getElementById("assignRoleModal").classL
 window.assignRole = async function(memberId, roleId) {
   await supabase.from("member_roles").upsert({ member_id: memberId, role_id: roleId });
   window.closeAssignRole();
+  window.openMembersModal();
+};
+
+window.removeRole = async function(memberId, roleId) {
+  await supabase.from("member_roles").delete().eq("member_id", memberId).eq("role_id", roleId);
   window.openMembersModal();
 };
 
