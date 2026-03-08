@@ -170,6 +170,17 @@
       transition: 0.3s;
     }
 
+    /* Kill Chrome autofill yellow background AND detect when it fires */
+    #searchBar:-webkit-autofill,
+    #searchBar:-webkit-autofill:hover,
+    #searchBar:-webkit-autofill:focus {
+      -webkit-box-shadow: 0 0 0px 1000px #111 inset !important;
+      -webkit-text-fill-color: white !important;
+      animation-name: detectAutofill;
+      animation-duration: 1ms;
+    }
+    @keyframes detectAutofill { from {} to {} }
+
     #searchBar:focus {
       border-color: orange;
       box-shadow: 0 0 10px orange;
@@ -440,14 +451,18 @@
 
 <!-- SEARCH & FILTER -->
 <div class="discover-controls">
-  <input id="searchBar" type="text" placeholder="Search communities..." oninput="renderPage(1)" autocomplete="off" readonly onfocus="this.removeAttribute('readonly')">
+  <input id="searchBar" type="text" placeholder="Search communities..." oninput="renderPage(1)" autocomplete="off">
 <script>
-  // Chrome fills autofill AFTER DOMContentLoaded/load, so we stay readonly briefly then unlock
-  window.addEventListener('load', () => {
-    const sb = document.getElementById('searchBar');
-    sb.value = '';
-    setTimeout(() => { sb.removeAttribute('readonly'); }, 200);
+  const _sb = document.getElementById('searchBar');
+  // Detect Chrome autofill via the CSS animation trick and immediately wipe it
+  _sb.addEventListener('animationstart', (e) => {
+    if (e.animationName === 'detectAutofill') {
+      _sb.value = '';
+      renderPage(1);
+    }
   });
+  // Also wipe on load as a backup
+  window.addEventListener('load', () => { _sb.value = ''; });
 </script>
   <div class="filter-wrapper">
     <button class="filter-btn active-all" id="filterBtn" onclick="toggleDropdown()">Filter ▾</button>
@@ -509,7 +524,7 @@
 
     <div class="cc-field">
       <label>Creator</label>
-      <input type="text" id="ccAuthor" readonly>
+      <input type="text" id="ccAuthor" readonly autocomplete="off">
     </div>
 
     <p class="cc-error"   id="ccError"></p>
