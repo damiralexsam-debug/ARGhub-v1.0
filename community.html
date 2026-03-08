@@ -465,15 +465,36 @@ async function loadRoles() {
 
 // Builds a map of user_id → [{ name, color }] so messages can show role tags
 async function loadUserRolesMap() {
-  const { data } = await supabase
+  // Step 1: get all members in this community (we need member.id → user_id)
+  const { data: members } = await supabase
     .from("community_members")
-    .select("user_id, member_roles(community_roles(name, color))")
+    .select("id, user_id")
     .eq("community_id", communityId);
 
+  if (!members || members.length === 0) { userRolesMap = {}; return; }
+
+  // Step 2: get all role assignments for those members
+  const memberIds = members.map(m => m.id);
+  const { data: assignments } = await supabase
+    .from("member_roles")
+    .select("member_id, role_id")
+    .in("member_id", memberIds);
+
+  // Step 3: build lookup maps
+  const memberIdToUserId = {};
+  members.forEach(m => { memberIdToUserId[m.id] = m.user_id; });
+
+  const roleById = {};
+  allRoles.forEach(r => { roleById[r.id] = { name: r.name, color: r.color }; });
+
+  // Step 4: assemble userRolesMap
   userRolesMap = {};
-  (data || []).forEach(m => {
-    const roles = (m.member_roles || []).map(mr => mr.community_roles).filter(Boolean);
-    if (roles.length > 0) userRolesMap[m.user_id] = roles;
+  (assignments || []).forEach(a => {
+    const userId = memberIdToUserId[a.member_id];
+    const role   = roleById[a.role_id];
+    if (!userId || !role) return;
+    if (!userRolesMap[userId]) userRolesMap[userId] = [];
+    userRolesMap[userId].push(role);
   });
 }
 
