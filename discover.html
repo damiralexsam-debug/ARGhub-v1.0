@@ -440,7 +440,8 @@
 
 <!-- SEARCH & FILTER -->
 <div class="discover-controls">
-  <input id="searchBar" type="text" placeholder="Search communities..." oninput="renderPage(1)" autocomplete="off">
+  <input id="searchBar" type="text" placeholder="Search communities..." oninput="renderPage(1)" autocomplete="new-password" name="community-search-no-fill">
+<script>document.addEventListener("DOMContentLoaded", () => { document.getElementById("searchBar").value = ""; });</script>
   <div class="filter-wrapper">
     <button class="filter-btn active-all" id="filterBtn" onclick="toggleDropdown()">Filter ▾</button>
     <div class="filter-dropdown" id="filterDropdown">

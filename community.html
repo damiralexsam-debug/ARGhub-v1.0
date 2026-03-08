@@ -318,6 +318,7 @@ let currentUserName = null;
 let isCreator       = false;
 let allRoles        = [];
 let allMembers      = [];
+let userRolesMap    = {}; // user_id → [{ name, color }, ...]
 
 async function init() {
   if (!communityId) { window.location.href = "discover.html"; return; }
@@ -378,6 +379,7 @@ async function init() {
 
   await loadChannels();
   await loadRoles();
+  await loadUserRolesMap();
 }
 
 function showGate(gateId) {
@@ -459,6 +461,20 @@ async function loadRoles() {
   const { data } = await supabase.from("community_roles").select("*").eq("community_id", communityId);
   allRoles = data || [];
   renderAdminRoleList();
+}
+
+// Builds a map of user_id → [{ name, color }] so messages can show role tags
+async function loadUserRolesMap() {
+  const { data } = await supabase
+    .from("community_members")
+    .select("user_id, member_roles(community_roles(name, color))")
+    .eq("community_id", communityId);
+
+  userRolesMap = {};
+  (data || []).forEach(m => {
+    const roles = (m.member_roles || []).map(mr => mr.community_roles).filter(Boolean);
+    if (roles.length > 0) userRolesMap[m.user_id] = roles;
+  });
 }
 
 function renderAdminRoleList() {
@@ -563,22 +579,29 @@ window.closeAssignRole = () => document.getElementById("assignRoleModal").classL
 window.assignRole = async function(memberId, roleId) {
   await supabase.from("member_roles").upsert({ member_id: memberId, role_id: roleId });
   window.closeAssignRole();
+  await loadUserRolesMap();
+  if (activeChannelId) await loadMessages(activeChannelId);
   window.openMembersModal();
 };
 
 window.removeRole = async function(memberId, roleId) {
   await supabase.from("member_roles").delete().eq("member_id", memberId).eq("role_id", roleId);
+  await loadUserRolesMap();
+  if (activeChannelId) await loadMessages(activeChannelId);
   window.openMembersModal();
 };
 
 window.banMember = async function(userId, name) {
-  if (!confirm(`Ban ${name} from this community?`)) return;
+  if (!confirm(`Ban ${name}? They will be removed from the community and cannot rejoin.`)) return;
+  // Insert ban record
   await supabase.from("community_bans").insert({ community_id: communityId, user_id: userId, banned_by: currentUser.id });
+  // Remove from community_members — DB trigger auto-decrements member count
+  await supabase.from("community_members").delete().eq("community_id", communityId).eq("user_id", userId);
   window.openMembersModal();
 };
 
 window.unbanMember = async function(userId, name) {
-  if (!confirm(`Unban ${name}?`)) return;
+  if (!confirm(`Unban ${name}? They will be able to rejoin the community.`)) return;
   await supabase.from("community_bans").delete().eq("community_id", communityId).eq("user_id", userId);
   window.openMembersModal();
 };
@@ -606,6 +629,13 @@ function buildMessageEl(msg) {
   const initial  = (msg.author||"?")[0].toUpperCase();
   const isMe     = currentUser && msg.user_id === currentUser.id;
   const isSystem = msg.author === "System";
+
+  // Role tags for this user
+  const roles = (!isSystem && msg.user_id) ? (userRolesMap[msg.user_id] || []) : [];
+  const roleTags = roles.map(r =>
+    `<span style="font-size:10px;padding:1px 8px;border-radius:10px;background:${r.color}28;color:${r.color};border:1px solid ${r.color}55;font-weight:bold;letter-spacing:0.5px;white-space:nowrap;">${r.name}</span>`
+  ).join("");
+
   let content = "";
   if (msg.content) content += `<div class="msg-text" ${isSystem?'style="color:#555;font-style:italic;"':''}>${linkify(escapeHtml(msg.content))}</div>`;
   if (msg.file_url) {
@@ -620,7 +650,7 @@ function buildMessageEl(msg) {
     : `color:${isMe?'#0a0a0a':'#88aaff'};background:${isMe?'#1a3d1a':'#0a0a2a'};border-color:${isMe?'#2a5a2a':'#1a1a3a'};`;
   const authorStyle = isSystem ? 'style="color:#444;"' : `class="msg-author ${isMe?'is-me':'is-other'}"`;
   el.innerHTML = `<div class="msg-avatar" style="${avatarStyle}">${isSystem?'⚙':initial}</div>
-    <div class="msg-body"><div class="msg-header"><span ${authorStyle}>${escapeHtml(msg.author)}</span><span class="msg-time">${time}</span></div>${content}</div>`;
+    <div class="msg-body"><div class="msg-header"><span ${authorStyle}>${escapeHtml(msg.author)}</span>${roleTags}<span class="msg-time">${time}</span></div>${content}</div>`;
   return el;
 }
 
