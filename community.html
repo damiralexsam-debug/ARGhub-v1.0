@@ -377,9 +377,9 @@ async function init() {
     if (membership) document.getElementById("leaveBtn").style.display = "block";
   }
 
-  await loadChannels();
   await loadRoles();
   await loadUserRolesMap();
+  await loadChannels();
 }
 
 function showGate(gateId) {
