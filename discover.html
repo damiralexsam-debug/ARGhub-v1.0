@@ -546,29 +546,6 @@
     <p class="cc-success" id="ecSuccess" style="color:orange;">✓ Community updated!</p>
 
     <button class="cc-submit" style="border-color:orange;color:orange;" onclick="saveEditCommunity()">Save Changes →</button>
-    <button class="cc-submit" style="border-color:red;color:red;margin-top:10px;" onclick="deleteCommunity()">🗑 Delete Community</button>
-  </div>
-</div>
-
-<!-- JOIN INFO MODAL -->
-<div class="cc-overlay" id="joinInfoModal" onclick="if(event.target===this)closeJoinInfo()">
-  <div class="cc-box" style="max-width:460px;">
-    <button class="cc-close" onclick="closeJoinInfo()">✕</button>
-    <h2 class="cc-title" id="joinInfoName" style="color:white;margin-bottom:4px;"></h2>
-    <p style="font-size:12px;color:#555;letter-spacing:1px;margin-bottom:20px;" id="joinInfoType"></p>
-
-    <div id="joinInfoArg" style="display:none;background:#0f0f0f;border:1px solid #1a3d1a;border-radius:10px;padding:16px;margin-bottom:20px;">
-      <p style="font-size:10px;color:#555;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">Linked ARG</p>
-      <p style="font-size:15px;font-weight:700;color:white;margin-bottom:6px;" id="joinInfoArgName"></p>
-      <p style="font-size:12px;color:#aaa;margin-bottom:12px;" id="joinInfoArgDesc"></p>
-      <a id="joinInfoArgLink" href="featured.html" style="font-size:12px;color:lime;letter-spacing:1px;text-decoration:none;">View in Featured →</a>
-    </div>
-
-    <div id="joinInfoNoArg" style="display:none;color:#333;font-size:13px;margin-bottom:20px;padding:12px;background:#0f0f0f;border:1px solid #1a1a1a;border-radius:8px;">
-      No ARG linked to this community yet.
-    </div>
-
-    <button class="cc-submit" id="joinInfoBtn" onclick="confirmJoin()" style="margin-top:0;">Join Community →</button>
   </div>
 </div>
 
@@ -679,22 +656,19 @@ function renderPage(page) {
       const typeLabel = c.type === "Invite" ? "INVITE ONLY" : c.type.toUpperCase();
       const realBadge = c.real ? `<span style="font-size:10px; color:lime; margin-left:6px; letter-spacing:1px;">✦ REAL</span>` : "";
 
-      // Bottom action area differs based on community type and whether it's real
+      // Bottom action area
       let actions = "";
       if (!c.real) {
-        // Placeholder — just a static join button
+        // Placeholder — static join
         actions = `<button class="join-btn" onclick="handleJoin(event)">Join</button>`;
-      } else if (c.type === "Invite") {
-        // Invite only — locked gate + edit button for owner (shown by markUserCards)
-        actions = `
-          <button class="join-btn edit-community-btn" onclick="openEditCommunity(event,'${c.id}')" style="border-color:orange;color:orange;display:none;" id="edit-${c.id}">✎ Edit</button>
-          <button class="join-btn" style="border-color:#555;color:#555;cursor:not-allowed;" disabled>🔒 Invite Only</button>`;
       } else {
-        // Real public community — edit button (hidden until markUserCards) + join/info modal
-        actions = `
-          <button class="join-btn edit-community-btn" onclick="openEditCommunity(event,'${c.id}')" style="border-color:orange;color:orange;display:none;" id="edit-${c.id}">✎ Edit</button>
-          <button class="join-btn" id="joinbtn-${c.id}" onclick="handleJoinReal(event,'${c.id}','${c.name.replace(/'/g,"\\'")}')">Join</button>
-        `;
+        // ALL real communities get edit button (hidden until markUserCards) + a join/open button
+        // For Invite Only, the join button starts as locked — markUserCards replaces it with Open for owner/member
+        const editBtn = `<button class="join-btn edit-community-btn" onclick="openEditCommunity(event,'${c.id}')" style="border-color:orange;color:orange;display:none;" id="edit-${c.id}">✎ Edit</button>`;
+        const joinBtn = c.type === "Invite"
+          ? `<button class="join-btn" id="joinbtn-${c.id}" style="border-color:#555;color:#555;cursor:not-allowed;" disabled>🔒 Invite Only</button>`
+          : `<button class="join-btn" id="joinbtn-${c.id}" onclick="handleJoinReal(event,'${c.id}','${c.name.replace(/'/g,"\\'")}')">Join</button>`;
+        actions = `${editBtn}${joinBtn}`;
       }
 
       const card = document.createElement("div");
@@ -762,9 +736,6 @@ renderPage(1);
 <script type="module">
   import { supabase, requireAuth, getUser } from "./supabase-auth.js";
 
-  let _joinCommunityId   = null;
-  let _joinCommunityName = null;
-
   // ── Placeholder join (no Supabase) ──
   window.handleJoin = function(e) {
     const btn = e.target;
@@ -777,92 +748,48 @@ renderPage(1);
     });
   };
 
-  // ── Real community — always open info modal first ──
+  // ── Real community join ──
   window.handleJoinReal = function(e, communityId, communityName) {
-    e && e.stopPropagation && e.stopPropagation();
+    const btn = e.target;
     requireAuth(async () => {
-      _joinCommunityId   = communityId;
-      _joinCommunityName = communityName;
+      const user = await getUser();
 
-      // Load community + linked ARG info
-      const { data: community } = await supabase
-        .from("communities").select("*, args(id, name, description)")
-        .eq("id", communityId).single();
+      // Check if already a member
+      const { data: existing } = await supabase
+        .from("community_members")
+        .select("id")
+        .eq("community_id", communityId)
+        .eq("user_id", user.id)
+        .single();
 
-      document.getElementById("joinInfoName").textContent = communityName;
-      document.getElementById("joinInfoType").textContent =
-        community?.type === "Invite" ? "🔒 INVITE ONLY" : "🌐 PUBLIC";
-
-      const arg = community?.args;
-      if (arg) {
-        document.getElementById("joinInfoArg").style.display   = "block";
-        document.getElementById("joinInfoNoArg").style.display = "none";
-        document.getElementById("joinInfoArgName").textContent = arg.name;
-        document.getElementById("joinInfoArgDesc").textContent = arg.description || "";
-        document.getElementById("joinInfoArgLink").href        = `featured.html`;
-      } else {
-        document.getElementById("joinInfoArg").style.display   = "none";
-        document.getElementById("joinInfoNoArg").style.display = "block";
+      if (existing) {
+        // Already joined — go straight to community page
+        window.location.href = `community.html?id=${communityId}`;
+        return;
       }
 
-      // Check if already member/creator — change button label
-      const user = await getUser();
-      const { data: existing } = await supabase
-        .from("community_members").select("id")
-        .eq("community_id", communityId).eq("user_id", user.id).maybeSingle();
-      const { data: comm2 } = await supabase
-        .from("communities").select("user_id").eq("id", communityId).single();
-      const alreadyIn = !!existing || (comm2 && comm2.user_id === user.id);
+      // Insert membership
+      const { error } = await supabase.from("community_members").insert({
+        community_id: communityId,
+        user_id:      user.id
+      });
 
-      const btn = document.getElementById("joinInfoBtn");
-      btn.textContent = alreadyIn ? "Open Community →" : "Join Community →";
-      btn.disabled    = false;
+      if (error) { alert("Failed to join. Try again."); return; }
 
-      document.getElementById("joinInfoModal").classList.add("open");
+      // Visual feedback then redirect to community page
+      btn.textContent = "Joined ✓";
+      btn.style.background = "lime";
+      btn.style.color = "black";
+      btn.style.borderColor = "lime";
+      btn.disabled = true;
+
+      setTimeout(() => {
+        window.location.href = `community.html?id=${communityId}`;
+      }, 600);
     });
   };
 
-  window.closeJoinInfo = function() {
-    document.getElementById("joinInfoModal").classList.remove("open");
-  };
-
-  window.confirmJoin = async function() {
-    const user = await getUser();
-    if (!user || !_joinCommunityId) return;
-
-    const btn = document.getElementById("joinInfoBtn");
-    btn.textContent = "Opening...";
-    btn.disabled    = true;
-
-    // Check if creator
-    const { data: comm } = await supabase
-      .from("communities").select("user_id").eq("id", _joinCommunityId).single();
-    const isCreator = comm && comm.user_id === user.id;
-
-    // Check if already a member
-    const { data: existing } = await supabase
-      .from("community_members").select("id")
-      .eq("community_id", _joinCommunityId).eq("user_id", user.id).maybeSingle();
-
-    // Only insert if new member (not creator, not already joined)
-    if (!isCreator && !existing) {
-      const { error } = await supabase.from("community_members").insert({
-        community_id: _joinCommunityId,
-        user_id:      user.id
-      });
-      if (error) {
-        alert("Failed to join. Try again.");
-        btn.textContent = "Join Community →";
-        btn.disabled    = false;
-        return;
-      }
-    }
-
-    window.closeJoinInfo();
-    setTimeout(() => { window.location.href = `community.html?id=${_joinCommunityId}`; }, 200);
-  };
-
-  // ── Mark cards for current user ──
+  // ── Mark cards for current user (show edit btn, show "Open" if joined) ──
   window.markUserCards = async function() {
     const user = await getUser();
     if (!user) return;
@@ -882,21 +809,21 @@ renderPage(1);
       const nameEl = card.querySelector(".community-name");
       const name   = nameEl ? nameEl.childNodes[0].textContent.trim() : "";
 
-      // Show edit for ALL owned communities (Public AND Invite Only)
+      // Show edit for all owned communities (Public AND Invite Only)
       if (ownedIds.includes(id)) {
         const editBtn = card.querySelector(`#edit-${id}`);
         if (editBtn) editBtn.style.display = "inline-block";
       }
 
-      // Swap join→Open for joined members OR creator — always opens info modal
-      if (joinedIds.includes(id) || ownedIds.includes(id)) {
-        const joinBtn = card.querySelector(`#joinbtn-${id}`)
-          || card.querySelector(".join-btn:not(.edit-community-btn):not([disabled])");
+      // For creator or joined member — unlock and swap to Open →
+      if (ownedIds.includes(id) || joinedIds.includes(id)) {
+        const joinBtn = document.getElementById(`joinbtn-${id}`);
         if (joinBtn) {
           joinBtn.textContent       = "Open →";
           joinBtn.style.background  = "lime";
           joinBtn.style.color       = "black";
           joinBtn.style.borderColor = "lime";
+          joinBtn.style.cursor      = "pointer";
           joinBtn.disabled          = false;
           joinBtn.onclick = (e) => { e.stopPropagation(); window.handleJoinReal(e, id, name); };
         }
@@ -909,6 +836,7 @@ renderPage(1);
     e.stopPropagation();
     const { data, error } = await supabase.from("communities").select("*").eq("id", id).single();
     if (error || !data) { alert("Couldn't load community."); return; }
+
     document.getElementById("ecId").value    = id;
     document.getElementById("ecName").value  = data.name;
     document.getElementById("ecDesc").value  = data.description || "";
@@ -916,6 +844,7 @@ renderPage(1);
     document.getElementById("ecType").value  = data.type;
     document.getElementById("ecError").style.display   = "none";
     document.getElementById("ecSuccess").style.display = "none";
+
     document.getElementById("editCommunityModal").classList.add("open");
   };
 
@@ -930,25 +859,24 @@ renderPage(1);
     const type  = document.getElementById("ecType").value;
     const errEl = document.getElementById("ecError");
     errEl.style.display = "none";
+
     const { error } = await supabase.from("communities").update({
       description: desc  || null,
       rules:       rules || null,
       type
     }).eq("id", id);
-    if (error) { errEl.textContent = "Save failed. Try again."; errEl.style.display = "block"; return; }
-    document.getElementById("ecSuccess").style.display = "block";
-    setTimeout(() => { window.closeEditCommunity(); if (typeof loadCommunities === "function") loadCommunities(); }, 1000);
-  };
 
-  // ── Delete community ──
-  window.deleteCommunity = async function() {
-    const id   = document.getElementById("ecId").value;
-    const name = document.getElementById("ecName").value;
-    if (!confirm(`Are you sure you want to delete "${name}"? This cannot be undone.`)) return;
-    const { error } = await supabase.from("communities").delete().eq("id", id);
-    if (error) { alert("Delete failed. Try again."); return; }
-    window.closeEditCommunity();
-    if (typeof loadCommunities === "function") loadCommunities();
+    if (error) {
+      errEl.textContent   = "Save failed. Try again.";
+      errEl.style.display = "block";
+      return;
+    }
+
+    document.getElementById("ecSuccess").style.display = "block";
+    setTimeout(() => {
+      window.closeEditCommunity();
+      if (typeof loadCommunities === "function") loadCommunities();
+    }, 1000);
   };
 </script>
 <script type="module" src="discover-communities.js"></script>
