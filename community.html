@@ -185,6 +185,7 @@
   <span class="top-bar-type" id="communityType"></span>
   <span class="top-bar-members" id="communityMembers"></span>
   <div class="top-bar-spacer"></div>
+  <button id="leaveBtn" onclick="leaveCommunity()" style="display:none;padding:5px 14px;border-radius:7px;border:1px solid #333;background:transparent;color:#555;font-family:'Roboto Slab',serif;font-size:12px;cursor:pointer;transition:0.2s;" onmouseover="this.style.borderColor='red';this.style.color='red'" onmouseout="this.style.borderColor='#333';this.style.color='#555'">Leave</button>
   <div class="top-bar-user" id="topBarUser" onclick="window.__authModal && window.__authModal.open()" style="display:none;">
     <div class="top-bar-user-dot"></div>
     <span id="topBarUserName">...</span>
@@ -366,6 +367,14 @@ async function init() {
   }
 
   if (isCreator) document.getElementById("adminBtn").style.display = "block";
+
+  // Show leave button for members who aren't the creator
+  if (currentUser && !isCreator) {
+    const { data: membership } = await supabase
+      .from("community_members").select("id")
+      .eq("community_id", communityId).eq("user_id", currentUser.id).maybeSingle();
+    if (membership) document.getElementById("leaveBtn").style.display = "block";
+  }
 
   await loadChannels();
   await loadRoles();
@@ -584,11 +593,12 @@ async function loadMessages(channelId) {
 
 function buildMessageEl(msg) {
   const el = document.createElement("div"); el.className = "msg-group";
-  const time = new Date(msg.created_at).toLocaleTimeString("en-US", { hour:"2-digit", minute:"2-digit" });
-  const initial = (msg.author||"?")[0].toUpperCase();
-  const isMe = currentUser && msg.user_id === currentUser.id;
+  const time     = new Date(msg.created_at).toLocaleTimeString("en-US", { hour:"2-digit", minute:"2-digit" });
+  const initial  = (msg.author||"?")[0].toUpperCase();
+  const isMe     = currentUser && msg.user_id === currentUser.id;
+  const isSystem = msg.author === "System";
   let content = "";
-  if (msg.content) content += `<div class="msg-text">${linkify(escapeHtml(msg.content))}</div>`;
+  if (msg.content) content += `<div class="msg-text" ${isSystem?'style="color:#555;font-style:italic;"':''}>${linkify(escapeHtml(msg.content))}</div>`;
   if (msg.file_url) {
     const type = msg.file_type || "";
     if (type.startsWith("image/")) content += `<img class="msg-img" src="${msg.file_url}" loading="lazy" onclick="openLightbox('${msg.file_url}')">`;
@@ -596,8 +606,12 @@ function buildMessageEl(msg) {
     else if (type.startsWith("audio/")) content += `<audio class="msg-audio" controls preload="metadata"><source src="${msg.file_url}" type="${type}"></audio>`;
     else content += `<a class="msg-file" href="${msg.file_url}" target="_blank" download="${escapeHtml(msg.file_name||'file')}"><span class="msg-file-icon">${getFileIcon(type)}</span><span class="msg-file-info"><span class="msg-file-name">${escapeHtml(msg.file_name||'File')}</span><span class="msg-file-size">Click to download</span></span></a>`;
   }
-  el.innerHTML = `<div class="msg-avatar" style="color:${isMe?'#0a0a0a':'#88aaff'};background:${isMe?'#1a3d1a':'#0a0a2a'};border-color:${isMe?'#2a5a2a':'#1a1a3a'};">${initial}</div>
-    <div class="msg-body"><div class="msg-header"><span class="msg-author ${isMe?'is-me':'is-other'}">${escapeHtml(msg.author)}</span><span class="msg-time">${time}</span></div>${content}</div>`;
+  const avatarStyle = isSystem
+    ? 'color:#444;background:#111;border-color:#222;'
+    : `color:${isMe?'#0a0a0a':'#88aaff'};background:${isMe?'#1a3d1a':'#0a0a2a'};border-color:${isMe?'#2a5a2a':'#1a1a3a'};`;
+  const authorStyle = isSystem ? 'style="color:#444;"' : `class="msg-author ${isMe?'is-me':'is-other'}"`;
+  el.innerHTML = `<div class="msg-avatar" style="${avatarStyle}">${isSystem?'⚙':initial}</div>
+    <div class="msg-body"><div class="msg-header"><span ${authorStyle}>${escapeHtml(msg.author)}</span><span class="msg-time">${time}</span></div>${content}</div>`;
   return el;
 }
 
@@ -641,6 +655,24 @@ function scrollToBottom() { const w=document.getElementById("messagesWrap"); w.s
 function escapeHtml(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 function linkify(text) { return text.replace(/(https?:\/\/[^\s<>"]+)/g,'<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'); }
 function getFileIcon(t) { if(!t)return"📄"; if(t.startsWith("image/"))return"🖼️"; if(t.startsWith("audio/"))return"🎵"; if(t.startsWith("video/"))return"🎬"; if(t.includes("pdf"))return"📕"; if(t.includes("zip")||t.includes("rar"))return"🗜️"; return"📄"; }
+
+window.leaveCommunity = async function() {
+  if (!confirm("Leave this community? You can rejoin anytime.")) return;
+  await supabase.from("community_members")
+    .delete().eq("community_id", communityId).eq("user_id", currentUser.id);
+
+  // Post system message
+  if (activeChannelId) {
+    await supabase.from("messages").insert({
+      channel_id: activeChannelId,
+      user_id:    currentUser.id,
+      author:     "System",
+      content:    `${currentUserName || currentUser.email.split("@")[0]} left the community.`
+    });
+  }
+
+  window.location.href = "discover.html";
+};
 
 init();
 </script>

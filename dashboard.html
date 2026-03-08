@@ -259,18 +259,31 @@ async function loadJoinedCommunities() {
   }
 
   box.innerHTML = all.map(c => `
-    <a class="joined-community-card" href="community.html?id=${c.id}">
-      <div class="joined-community-card-name">${c.name}</div>
-      <div class="joined-community-card-meta">
-        <span>👥 ${c.members} members</span>
-        <span style="color:${c.role === 'Creator' ? 'orange' : 'lime'}">${c.role}</span>
-      </div>
-      <div class="joined-community-card-open">Open →</div>
-    </a>
+    <div style="position:relative;">
+      <a class="joined-community-card" href="community.html?id=${c.id}">
+        <div class="joined-community-card-name">${c.name}</div>
+        <div class="joined-community-card-meta">
+          <span>👥 ${c.members} members</span>
+          <span style="color:${c.role === 'Creator' ? 'orange' : 'lime'}">${c.role}</span>
+        </div>
+        <div class="joined-community-card-open">Open →</div>
+      </a>
+      ${c.role === 'Member' ? `<button onclick="quitCommunity(event,'${c.id}','${c.name.replace(/'/g,"\\'")}')" style="position:absolute;top:8px;right:8px;background:none;border:1px solid #333;color:#555;border-radius:5px;font-size:11px;padding:3px 8px;cursor:pointer;font-family:'Roboto Slab',serif;transition:0.2s;" onmouseover="this.style.borderColor='red';this.style.color='red'" onmouseout="this.style.borderColor='#333';this.style.color='#555'">Leave</button>` : ""}
+    </div>
   `).join("");
 }
 
 loadJoinedCommunities();
+
+window.quitCommunity = async function(e, communityId, communityName) {
+  e.preventDefault();
+  e.stopPropagation();
+  if (!confirm(`Leave "${communityName}"? You can rejoin anytime.`)) return;
+  const user = await getUser();
+  await supabase.from("community_members")
+    .delete().eq("community_id", communityId).eq("user_id", user.id);
+  loadJoinedCommunities();
+};
 </script>
 </body>
 </html>
