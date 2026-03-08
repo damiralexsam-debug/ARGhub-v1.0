@@ -4,24 +4,839 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <style>
+    .cs-hero{text-align:center;padding:48px 20px 32px;border-bottom:1px solid #1a1a1a}
+    .cs-hero h1{font-size:42px;letter-spacing:2px;margin:0 0 10px}
+    .cs-hero p{color:#888;font-size:15px;max-width:640px;margin:0 auto 28px;line-height:1.7}
+    .cs-tabs{display:flex;justify-content:center;gap:12px}
+    .cs-tab{padding:10px 32px;border-radius:8px;border:1px solid #333;background:transparent;color:#888;font-family:'Roboto Slab',serif;font-size:14px;letter-spacing:1px;cursor:pointer;transition:.25s}
+    .cs-tab:hover{border-color:violet;color:violet;box-shadow:none!important}
+    .cs-tab.active{background:violet;border-color:violet;color:black;box-shadow:0 0 14px rgba(238,130,238,.4)}
+    .cs-section{display:none;padding:40px 60px 80px;max-width:1400px;margin:0 auto}
+    .cs-section.visible{display:block}
+    .cs-search-row{display:flex;align-items:center;gap:14px;margin-bottom:32px;flex-wrap:wrap}
+    .cs-search{flex:1;min-width:260px;padding:12px 18px;border-radius:10px;border:1px solid #333;background:#111;color:white;font-family:'Roboto Slab',serif;font-size:14px;outline:none;transition:.25s}
+    .cs-search:focus{border-color:violet;box-shadow:0 0 10px rgba(238,130,238,.15)}
+    .cs-search::placeholder{color:#444}
+    .cs-filter{padding:12px 16px;border-radius:10px;border:1px solid #333;background:#111;color:#aaa;font-family:'Roboto Slab',serif;font-size:13px;cursor:pointer;outline:none;transition:.25s}
+    .cs-filter:focus{border-color:violet}
+    .cs-count{color:#555;font-size:13px;letter-spacing:1px;white-space:nowrap}
+    .submit-card-btn{padding:11px 26px;border-radius:10px;border:1px solid violet;background:transparent;color:violet;font-family:'Roboto Slab',serif;font-size:13px;letter-spacing:1px;cursor:pointer;transition:.25s;white-space:nowrap}
+    .submit-card-btn:hover{background:violet;color:black;box-shadow:0 0 14px rgba(238,130,238,.35)!important}
+    .glossary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+    .gloss-card{background:#0f0f0f;border:1px solid #1e1e1e;border-radius:12px;padding:20px 22px;transition:.25s;animation:fadeUp .25s ease both}
+    .gloss-card:hover{border-color:violet;box-shadow:0 0 12px rgba(238,130,238,.12);transform:translateY(-2px)}
+    .gloss-term{font-size:17px;font-weight:700;color:white;margin-bottom:6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .gloss-abbr{font-size:11px;color:#555;border:1px solid #2a2a2a;border-radius:6px;padding:2px 8px;letter-spacing:1px;font-weight:400}
+    .gloss-cat{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:2px 10px;border-radius:20px;font-weight:700;margin-bottom:10px;display:inline-block}
+    .cat-core{background:rgba(238,130,238,.15);color:violet;border:1px solid rgba(238,130,238,.3)}
+    .cat-players{background:rgba(0,255,255,.1);color:cyan;border:1px solid rgba(0,255,255,.2)}
+    .cat-design{background:rgba(255,165,0,.12);color:orange;border:1px solid rgba(255,165,0,.25)}
+    .cat-community{background:rgba(0,255,0,.1);color:lime;border:1px solid rgba(0,255,0,.2)}
+    .cat-puzzle{background:rgba(255,255,0,.1);color:yellow;border:1px solid rgba(255,255,0,.2)}
+    .gloss-def{font-size:13px;color:#999;line-height:1.7}
+    .args-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:22px}
+    .arg-card{background:#0f0f0f;border:1px solid #1e1e1e;border-radius:14px;padding:24px 26px;transition:.25s;cursor:pointer;animation:fadeUp .25s ease both;position:relative;overflow:hidden}
+    .arg-card::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:var(--c,violet);opacity:.5;transition:.3s}
+    .arg-card:hover{border-color:#333;transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,.4)}
+    .arg-card:hover::before{opacity:1}
+    .arg-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+    .arg-card-name{font-size:19px;font-weight:700;color:white;line-height:1.2}
+    .arg-card-year{font-size:12px;color:#555;border:1px solid #222;border-radius:6px;padding:3px 10px;white-space:nowrap;flex-shrink:0}
+    .arg-tags{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap}
+    .arg-tag{font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:20px;font-weight:700;border:1px solid}
+    .tag-concluded{color:#aaa;border-color:#333;background:rgba(255,255,255,.04)}
+    .tag-ongoing{color:lime;border-color:rgba(0,255,0,.3);background:rgba(0,255,0,.07)}
+    .tag-mystery{color:violet;border-color:rgba(238,130,238,.35);background:rgba(238,130,238,.06)}
+    .tag-horror{color:#ff4444;border-color:rgba(255,68,68,.3);background:rgba(255,68,68,.06)}
+    .tag-puzzle{color:yellow;border-color:rgba(255,255,0,.3);background:rgba(255,255,0,.06)}
+    .tag-music{color:cyan;border-color:rgba(0,255,255,.3);background:rgba(0,255,255,.06)}
+    .tag-scifi{color:#88aaff;border-color:rgba(136,170,255,.3);background:rgba(136,170,255,.06)}
+    .tag-irl{color:orange;border-color:rgba(255,165,0,.3);background:rgba(255,165,0,.06)}
+    .tag-fiction{color:#ff88cc;border-color:rgba(255,136,204,.3);background:rgba(255,136,204,.06)}
+    .arg-desc{font-size:13px;color:#888;line-height:1.75;margin-bottom:16px}
+    .arg-notable{font-size:12px;color:#555;border-top:1px solid #1a1a1a;padding-top:12px;line-height:1.6}
+    .arg-notable span{color:#777}
+    .arg-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:8px;border-top:1px solid #111}
+    .arg-card-submitter{font-size:11px;color:#444}
+    .arg-card-hint{font-size:11px;color:#2a2a2a;letter-spacing:1px}
+    .arg-card:hover .arg-card-hint{color:#555}
+    .arg-staff-badge{font-size:10px;color:violet;border:1px solid rgba(238,130,238,.3);border-radius:4px;padding:1px 7px;letter-spacing:1px}
+    .cs-pagination{display:flex;justify-content:center;gap:8px;margin-top:40px;flex-wrap:wrap}
+    .cs-page-btn{padding:8px 16px;border-radius:8px;border:1px solid #333;background:transparent;color:#666;font-family:'Roboto Slab',serif;font-size:13px;cursor:pointer;transition:.2s}
+    .cs-page-btn:hover{border-color:violet;color:violet;box-shadow:none!important}
+    .cs-page-btn.current{background:violet;border-color:violet;color:black}
+    .cs-page-btn:disabled{opacity:.3;cursor:not-allowed}
+    .cs-empty{text-align:center;color:#444;padding:60px 20px;font-size:15px;letter-spacing:1px}
+    .cs-intro{background:#0a0a0a;border:1px solid #1a1a1a;border-radius:12px;padding:20px 24px;margin-bottom:32px;font-size:13px;color:#666;line-height:1.8;border-left:3px solid violet}
+    .cs-intro strong{color:#aaa}
+    .cs-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;justify-content:center;align-items:flex-start;overflow-y:auto;padding:40px 20px}
+    .cs-overlay.open{display:flex}
+    .cs-box{background:#111;border:1px solid #282828;border-radius:16px;padding:36px 40px;width:620px;max-width:100%;position:relative;animation:fadeUp .3s ease both;margin:auto}
+    .cs-box-wide{width:820px}
+    .cs-modal-title{color:violet;font-size:20px;letter-spacing:1px;margin:0 0 24px}
+    .cs-close{position:absolute;top:16px;right:20px;background:none;border:none;color:#555;font-size:22px;cursor:pointer;transition:.2s;font-family:'Roboto Slab',serif}
+    .cs-close:hover{color:white;box-shadow:none!important}
+    .cs-field{display:flex;flex-direction:column;gap:6px;margin-bottom:18px}
+    .cs-field label{font-size:12px;color:#888;letter-spacing:1px;text-transform:uppercase}
+    .cs-field input,.cs-field textarea,.cs-field select{padding:11px 14px;border-radius:8px;border:1px solid #282828;background:#1a1a1a;color:white;font-family:'Roboto Slab',serif;font-size:14px;outline:none;transition:.3s;resize:vertical}
+    .cs-field input:focus,.cs-field textarea:focus,.cs-field select:focus{border-color:violet;box-shadow:0 0 8px rgba(238,130,238,.1)}
+    .cs-field textarea{min-height:90px}
+    .cs-field-hint{font-size:11px;color:#555;margin-top:2px}
+    .cs-field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .cs-tag-grid{display:flex;gap:8px;flex-wrap:wrap}
+    .cs-tag-cb{display:none}
+    .cs-tag-label{padding:5px 14px;border-radius:20px;border:1px solid #333;color:#666;font-size:12px;cursor:pointer;transition:.2s;letter-spacing:.5px;user-select:none}
+    .cs-tag-label:hover{border-color:#666;color:#aaa}
+    .cs-tag-cb:checked+.cs-tag-label{border-color:violet;color:violet;background:rgba(238,130,238,.1)}
+    .cs-links-list{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
+    .cs-link-row{display:flex;gap:8px}
+    .cs-link-row input{flex:1;padding:9px 12px;border-radius:7px;border:1px solid #282828;background:#1a1a1a;color:white;font-family:'Roboto Slab',serif;font-size:13px;outline:none}
+    .cs-link-row input:focus{border-color:violet}
+    .cs-link-del{background:none;border:1px solid #333;color:#555;border-radius:7px;padding:8px 12px;cursor:pointer;transition:.2s;font-size:14px}
+    .cs-link-del:hover{border-color:#ff4444;color:#ff4444;box-shadow:none!important}
+    .cs-add-link{background:none;border:1px solid #282828;color:#666;border-radius:7px;padding:8px 16px;cursor:pointer;font-family:'Roboto Slab',serif;font-size:12px;letter-spacing:1px;transition:.2s}
+    .cs-add-link:hover{border-color:violet;color:violet;box-shadow:none!important}
+    .cs-btn-row{display:flex;gap:10px;margin-top:6px;flex-wrap:wrap}
+    .cs-submit-btn{flex:1;padding:13px;border-radius:10px;border:1px solid violet;background:transparent;color:violet;font-family:'Roboto Slab',serif;font-size:14px;cursor:pointer;transition:.25s;letter-spacing:1px}
+    .cs-submit-btn:hover{background:violet;color:black}
+    .cs-submit-btn:disabled{opacity:.4;cursor:not-allowed}
+    .cs-cancel-btn{padding:13px 20px;border-radius:10px;border:1px solid #333;background:transparent;color:#666;font-family:'Roboto Slab',serif;font-size:14px;cursor:pointer;transition:.25s}
+    .cs-cancel-btn:hover{border-color:#888;color:#aaa;box-shadow:none!important}
+    .cs-delete-btn{padding:13px 20px;border-radius:10px;border:1px solid rgba(255,68,68,.4);background:transparent;color:#ff4444;font-family:'Roboto Slab',serif;font-size:14px;cursor:pointer;transition:.25s}
+    .cs-delete-btn:hover{background:rgba(255,68,68,.1)}
+    .cs-error{color:#ff6666;font-size:13px;margin-top:8px;display:none}
+    .cs-success{color:lime;font-size:13px;margin-top:8px;display:none}
+    .cs-color-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .cs-swatch{width:26px;height:26px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:.2s}
+    .cs-swatch.sel{border-color:white;transform:scale(1.2)}
+    .det-name{font-size:28px;font-weight:700;color:white;margin-bottom:8px}
+    .det-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+    .det-year{font-size:13px;color:#555;border:1px solid #222;border-radius:6px;padding:3px 10px}
+    .det-sec{margin-bottom:20px}
+    .det-sec h3{font-size:12px;color:#555;letter-spacing:2px;text-transform:uppercase;margin:0 0 10px}
+    .det-sec p{font-size:14px;color:#aaa;line-height:1.8;margin:0;white-space:pre-wrap}
+    .det-links{display:flex;flex-direction:column;gap:8px}
+    .det-link{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;background:#1a1a1a;border:1px solid #282828;border-radius:8px;color:#88aaff;text-decoration:none;font-size:13px;transition:.2s}
+    .det-link:hover{border-color:#555;color:white}
+    .det-div{border:none;border-top:1px solid #1e1e1e;margin:20px 0}
+    .det-credits{font-size:12px;color:#444;line-height:1.8}
+    .det-credits span{color:#666}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  </style>
 </head>
 <body>
 
 <a href="index.html"><img src="images and logos/ARGhub_3.png" width="200" class="site-logo"></a>
 <h2 class="tagline">This is not a game. This is a website.</h2>
-
 <nav class="navbar">
-  <a href="discover.html"    class="navbtn discover">Discover</a>
-  <a href="pricing.html"     class="navbtn pricing">Pricing</a>
-  <a href="featured.html"    class="navbtn featured">Featured</a>
-  <a href="dashboard.html"   class="navbtn dashboard">Dashboard</a>
-  <a href="recting.html"     class="navbtn recting">Recting</a>
-  <a                         class="navbtn context-active">Context Slips</a>
+  <a href="discover.html"  class="navbtn discover">Discover</a>
+  <a href="pricing.html"   class="navbtn pricing">Pricing</a>
+  <a href="featured.html"  class="navbtn featured">Featured</a>
+  <a href="dashboard.html" class="navbtn dashboard">Dashboard</a>
+  <a href="recting.html"   class="navbtn recting">Recting</a>
+  <a                       class="navbtn context-active">Context Slips</a>
 </nav>
 
-<br>
-<h1 style="text-align:center;">The Context Slips.</h1>
-<br>
+<div class="cs-hero">
+  <h1>The Context Slips.</h1>
+  <p>The canonical reference for everything ARG — terminology used by solvers and puppetmasters alike, and a record of the games that built this community. New to the rabbit hole? Start here.</p>
+  <div class="cs-tabs">
+    <button class="cs-tab active" onclick="switchTab('glossary',this)">📖 Glossary</button>
+    <button class="cs-tab"        onclick="switchTab('notable',this)">🏆 Notable ARGs</button>
+  </div>
+</div>
+
+<!-- GLOSSARY -->
+<div class="cs-section visible" id="sec-glossary">
+  <div class="cs-search-row">
+    <input class="cs-search" id="glossSearch" type="text" placeholder="Search terms..." oninput="filterGlossary()">
+    <select class="cs-filter" id="glossCatFilter" onchange="filterGlossary()">
+      <option value="">All Categories</option>
+      <option value="core">Core Concepts</option>
+      <option value="players">Player Roles</option>
+      <option value="design">Game Design</option>
+      <option value="puzzle">Puzzle & Mechanics</option>
+      <option value="community">Community</option>
+    </select>
+    <span class="cs-count" id="glossCount"></span>
+  </div>
+  <div class="glossary-grid" id="glossaryGrid"></div>
+  <div class="cs-empty" id="glossEmpty" style="display:none;">No terms match your search.</div>
+</div>
+
+<!-- NOTABLE ARGs -->
+<div class="cs-section" id="sec-notable">
+  <div class="cs-intro">
+    <strong>A living record.</strong> Staff-verified entries cover the ARGs that shaped the medium from 2001 onwards. Community members can submit cards for ARGs not yet listed — every submission is credited to its author. Click any card to read the full story.
+  </div>
+  <div class="cs-search-row">
+    <input class="cs-search" id="argSearch" type="text" placeholder="Search ARGs by name or description..." oninput="filterAndPage(1)">
+    <select class="cs-filter" id="argTagFilter" onchange="filterAndPage(1)">
+      <option value="">All Tags</option>
+      <option value="puzzle">Puzzle</option>
+      <option value="horror">Horror</option>
+      <option value="scifi">Sci-Fi</option>
+      <option value="music">Music</option>
+      <option value="irl">IRL</option>
+      <option value="mystery">Mystery</option>
+      <option value="fiction">Collaborative Fiction</option>
+    </select>
+    <select class="cs-filter" id="argStatusFilter" onchange="filterAndPage(1)">
+      <option value="">All Statuses</option>
+      <option value="concluded">Concluded</option>
+      <option value="ongoing">Ongoing</option>
+      <option value="mystery">Unknown</option>
+    </select>
+    <button class="submit-card-btn" onclick="openSubmit()">+ Submit a Card</button>
+    <span class="cs-count" id="argCount"></span>
+  </div>
+  <div class="args-grid" id="argsGrid"></div>
+  <div class="cs-empty" id="argEmpty" style="display:none;">No ARGs match your search.</div>
+  <div class="cs-pagination" id="argPag"></div>
+</div>
+
+<!-- SUBMIT MODAL -->
+<div class="cs-overlay" id="submitModal" onclick="if(event.target===this)closeSubmit()">
+  <div class="cs-box">
+    <button class="cs-close" onclick="closeSubmit()">✕</button>
+    <div id="scForm">
+      <p class="cs-modal-title">Submit an ARG Card</p>
+      <div class="cs-field-row">
+        <div class="cs-field"><label>ARG Name *</label><input id="scName" maxlength="80" placeholder="e.g. The Black Watchmen"></div>
+        <div class="cs-field"><label>Year(s)</label><input id="scYear" maxlength="20" placeholder="e.g. 2015–2017"></div>
+      </div>
+      <div class="cs-field"><label>ARG Creator(s)</label><input id="scCreator" maxlength="120" placeholder="Who made this ARG?"></div>
+      <div class="cs-field">
+        <label>Status</label>
+        <select id="scStatus"><option value="concluded">Concluded</option><option value="ongoing">Ongoing</option><option value="mystery">Unknown Origin</option></select>
+      </div>
+      <div class="cs-field">
+        <label>Tags</label>
+        <div class="cs-tag-grid">
+          <input type="checkbox" class="cs-tag-cb" id="st1" value="puzzle"><label for="st1" class="cs-tag-label">Puzzle</label>
+          <input type="checkbox" class="cs-tag-cb" id="st2" value="horror"><label for="st2" class="cs-tag-label">Horror</label>
+          <input type="checkbox" class="cs-tag-cb" id="st3" value="scifi"><label for="st3" class="cs-tag-label">Sci-Fi</label>
+          <input type="checkbox" class="cs-tag-cb" id="st4" value="music"><label for="st4" class="cs-tag-label">Music</label>
+          <input type="checkbox" class="cs-tag-cb" id="st5" value="irl"><label for="st5" class="cs-tag-label">IRL</label>
+          <input type="checkbox" class="cs-tag-cb" id="st6" value="mystery"><label for="st6" class="cs-tag-label">Mystery</label>
+          <input type="checkbox" class="cs-tag-cb" id="st7" value="fiction"><label for="st7" class="cs-tag-label">Collaborative Fiction</label>
+        </div>
+      </div>
+      <div class="cs-field"><label>Accent Color</label><div class="cs-color-row" id="scSwatches"></div><input type="hidden" id="scColor" value="violet"></div>
+      <div class="cs-field"><label>Short Description (shown on card) *</label><textarea id="scDesc" maxlength="500" placeholder="A 2–3 sentence overview of this ARG..."></textarea></div>
+      <div class="cs-field"><label>Notable Fact</label><input id="scNotable" maxlength="200" placeholder="One memorable fact or achievement"></div>
+      <div class="cs-field"><label>Full Story (shown in detail view)</label><textarea id="scStory" style="min-height:120px" maxlength="3000" placeholder="Full history, narrative arc, and context..."></textarea></div>
+      <div class="cs-field"><label>Ciphers & Mechanics Used</label><textarea id="scCiphers" maxlength="600" placeholder="e.g. OutGuess steganography, Vigenère cipher, GPS dead drops..."></textarea></div>
+      <div class="cs-field">
+        <label>External Links</label>
+        <div class="cs-links-list" id="scLinks"></div>
+        <button class="cs-add-link" onclick="addLink('scLinks')">+ Add Link</button>
+        <span class="cs-field-hint">Wikipedia, wikis, video docs, Archive.org links, etc.</span>
+      </div>
+      <div class="cs-error" id="scErr"></div>
+      <div class="cs-btn-row">
+        <button class="cs-submit-btn" id="scBtn" onclick="submitCard()">Submit Card</button>
+        <button class="cs-cancel-btn" onclick="closeSubmit()">Cancel</button>
+      </div>
+    </div>
+    <div id="scDone" style="display:none;text-align:center;padding:40px 20px">
+      <div style="font-size:48px;margin-bottom:16px">🏆</div>
+      <p style="color:lime;font-size:18px;letter-spacing:1px;margin-bottom:8px">Card Submitted!</p>
+      <p style="color:#666;font-size:14px">Your ARG card is now live in the Notable ARGs archive.</p>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="cs-overlay" id="editModal" onclick="if(event.target===this)closeEdit()">
+  <div class="cs-box">
+    <button class="cs-close" onclick="closeEdit()">✕</button>
+    <p class="cs-modal-title">Edit ARG Card</p>
+    <input type="hidden" id="ecId">
+    <div class="cs-field-row">
+      <div class="cs-field"><label>ARG Name *</label><input id="ecName" maxlength="80"></div>
+      <div class="cs-field"><label>Year(s)</label><input id="ecYear" maxlength="20"></div>
+    </div>
+    <div class="cs-field"><label>ARG Creator(s)</label><input id="ecCreator" maxlength="120"></div>
+    <div class="cs-field">
+      <label>Status</label>
+      <select id="ecStatus"><option value="concluded">Concluded</option><option value="ongoing">Ongoing</option><option value="mystery">Unknown Origin</option></select>
+    </div>
+    <div class="cs-field">
+      <label>Tags</label>
+      <div class="cs-tag-grid">
+        <input type="checkbox" class="cs-tag-cb" id="et1" value="puzzle"><label for="et1" class="cs-tag-label">Puzzle</label>
+        <input type="checkbox" class="cs-tag-cb" id="et2" value="horror"><label for="et2" class="cs-tag-label">Horror</label>
+        <input type="checkbox" class="cs-tag-cb" id="et3" value="scifi"><label for="et3" class="cs-tag-label">Sci-Fi</label>
+        <input type="checkbox" class="cs-tag-cb" id="et4" value="music"><label for="et4" class="cs-tag-label">Music</label>
+        <input type="checkbox" class="cs-tag-cb" id="et5" value="irl"><label for="et5" class="cs-tag-label">IRL</label>
+        <input type="checkbox" class="cs-tag-cb" id="et6" value="mystery"><label for="et6" class="cs-tag-label">Mystery</label>
+        <input type="checkbox" class="cs-tag-cb" id="et7" value="fiction"><label for="et7" class="cs-tag-label">Collaborative Fiction</label>
+      </div>
+    </div>
+    <div class="cs-field"><label>Accent Color</label><div class="cs-color-row" id="ecSwatches"></div><input type="hidden" id="ecColor" value="violet"></div>
+    <div class="cs-field"><label>Short Description *</label><textarea id="ecDesc" maxlength="500"></textarea></div>
+    <div class="cs-field"><label>Notable Fact</label><input id="ecNotable" maxlength="200"></div>
+    <div class="cs-field"><label>Full Story</label><textarea id="ecStory" style="min-height:120px" maxlength="3000"></textarea></div>
+    <div class="cs-field"><label>Ciphers & Mechanics Used</label><textarea id="ecCiphers" maxlength="600"></textarea></div>
+    <div class="cs-field">
+      <label>External Links</label>
+      <div class="cs-links-list" id="ecLinks"></div>
+      <button class="cs-add-link" onclick="addLink('ecLinks')">+ Add Link</button>
+    </div>
+    <div class="cs-error" id="ecErr"></div>
+    <div class="cs-btn-row">
+      <button class="cs-submit-btn" onclick="saveEdit()">Save Changes</button>
+      <button class="cs-cancel-btn" onclick="closeEdit()">Cancel</button>
+      <button class="cs-delete-btn" onclick="deleteCard()">Delete Card</button>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="cs-overlay" id="detailModal" onclick="if(event.target===this)closeDetail()">
+  <div class="cs-box cs-box-wide">
+    <button class="cs-close" onclick="closeDetail()">✕</button>
+    <div id="detContent"></div>
+  </div>
+</div>
+
 <script type="module" src="supabase-auth.js"></script>
+
+<script>
+// ─────────────────────────────────────────────
+// STAFF DATA (fact-checked)
+// ─────────────────────────────────────────────
+const STAFF_ARGS = [
+  {isStaff:true,id:"s1",name:"The Beast",year:"2001",color:"#8844ff",tags:["puzzle","scifi"],status:"concluded",
+  argCreator:"Jordan Weisman, Elan Lee, Sean Stewart & Pete Fenlon (Microsoft — they later founded 42 Entertainment)",
+  desc:"The first mainstream ARG, developed by a Microsoft team to promote Steven Spielberg's A.I. Artificial Intelligence. Set in the year 2142, it centred on the murder of Evan Chan and unfolded across 40+ interconnected websites, phone hotlines, fax numbers, and live events — all presented as reality.",
+  notable:"Solved by <span>The Cloudmakers</span>, a Yahoo Group founded by Cabel Sasser (grew to 7,480 members). 'The Beast' was the internal codename — named because the design document contained 666 items. The same team later founded 42 Entertainment.",
+  story:"The Beast ran for 12 weeks from March 8, 2001, timed to promote A.I. Artificial Intelligence. Three rabbit holes were planted: Jeanine Salla's name appeared as 'Sentient Machine Therapist' in film credits; a phone number was encoded in a trailer; a promotional poster read 'Evan Chan was murdered. Jeanine is the key.' The game unfolded across 40+ Warner Bros.-registered websites under fictional names (all beginning 'Ghaepetto'). Players solved puzzles involving multilingual texts (German, Japanese, Chinese), Enigma machine ciphers, and collaborative database-building. The Cloudmakers Yahoo Group exchanged 42,209 messages. Producers later estimated over 3 million people engaged globally. The game's name was never disclosed to players during its run.",
+  ciphers:"WWII Enigma machine ciphers, multilingual puzzles, website DNS/WHOIS analysis, steganographic image analysis.",
+  links:[{title:"Wikipedia",url:"https://en.wikipedia.org/wiki/The_Beast_(game)"},{title:"Unfiction Archive",url:"https://www.unfiction.com/history/the-beast/"},{title:"50 Years of Text Games",url:"https://if50.substack.com/p/2001-the-beast"}],
+  cardAuthor:"ARGhub Staff"},
+
+  {isStaff:true,id:"s2",name:"I Love Bees",year:"2004",color:"#ffaa00",tags:["puzzle","scifi","irl"],status:"concluded",
+  argCreator:"42 Entertainment (commissioned by Microsoft, approved by Bungie)",
+  desc:"42 Entertainment's ARG promoting Halo 2. It began with 20 honey jars FedExed to ARG veterans, then exploded when ilovebees.com flickered in a Halo 2 trailer. The site appeared hacked by an AI named Melissa, stranded from 2552, who guided players through 777 GPS-linked payphones across the US and London.",
+  notable:"777 payphone 'axons' rang at scheduled times — live voice actors played Melissa, questioning callers on the spot. A player in Florida answered during <span>Hurricane Ivan</span>; the operator broke character to tell them to find safety. Halo 2 earned $125 million on launch day.",
+  story:"I Love Bees launched on July 27, 2004. The rabbit hole was a one-frame flash of 'ilovebees.com' in a Halo 2 theatrical trailer. The site showed a bee-keeper's website 'hacked' by the AI Melissa (from the Halo universe), whose memory was fragmented across the site. On August 10, GPS coordinates for 777 payphones were posted. Answering each at a scheduled time provided a 30-second audio clip; combined, these formed a full audio drama revealing how the Covenant discovered Earth. When 777 axons were answered, Melissa began responding live through the phones via voice actors. Over 3 million people visited the site. The ARG was later confirmed as official Halo canon.",
+  ciphers:"GPS coordinate decoding, audio drama reconstruction from 30-second payphone clips, encrypted website code, live voice-actor phone interactions.",
+  links:[{title:"Wikipedia",url:"https://en.wikipedia.org/wiki/I_Love_Bees"},{title:"Halopedia",url:"https://www.halopedia.org/I_love_bees"},{title:"42 Entertainment",url:"https://42entertainment.com/work/ilovebees"}],
+  cardAuthor:"ARGhub Staff"},
+
+  {isStaff:true,id:"s3",name:"Year Zero",year:"2007",color:"#ff4444",tags:["puzzle","music","scifi"],status:"concluded",
+  argCreator:"Trent Reznor & Rob Sheridan (Nine Inch Nails), developed with 42 Entertainment",
+  desc:"Nine Inch Nails' ARG for the Year Zero album depicted a dystopian 2022 America under a theocratic surveillance state. It launched when highlighted letters on a tour t-shirt spelled 'iamtryingtobelieve.com', then escalated through USB drives left in concert bathrooms containing unreleased tracks with spectrogram-hidden phone numbers.",
+  notable:"Reznor funded the game himself, calling it the art form rather than marketing. The game culminated in a <span>fake SWAT raid</span> on a live 'resistance meeting' in LA attended by fans who had received burner phones in 'Art is Resistance' kits weeks earlier. 3 million participants engaged globally.",
+  story:"The ARG launched in February 2007 when a NIN tour t-shirt's highlighted letters spelled 'iamtryingtobelieve.com', leading to an interconnected web of dystopian-universe websites. The first USB drive was found in the bathroom of NIN's Lisbon concert on Valentine's Day, February 14, 2007, containing an unreleased track. A second drive in Barcelona contained 'Me, I'm Not' plus a burst of static — run through a spectrogram, it revealed a phone number. Clues continued through tour flyers, email blasts, street murals, and hidden within the album's own tracks (Morse code in track 14 revealed 'grace the teacher', a website URL). In April 2007, a SWAT team staged a raid on a fan resistance meeting in Los Angeles in-fiction. Reznor paid for the entire campaign himself, deliberately keeping it secret from his record label Interscope.",
+  ciphers:"Spectrogram analysis of audio static bursts, Morse code hidden in album tracks, highlighted-letter cipher on merchandise, phone number decryption, steganographic image analysis.",
+  links:[{title:"Wikipedia",url:"https://en.wikipedia.org/wiki/Year_Zero_(album)"},{title:"NIN Wiki",url:"https://www.nin.wiki/Year_Zero"},{title:"Campaign Timeline",url:"https://en.wikipedia.org/wiki/Campaign_timeline_of_Year_Zero"}],
+  cardAuthor:"ARGhub Staff"},
+
+  {isStaff:true,id:"s4",name:"Marble Hornets",year:"2009–2014",color:"#888888",tags:["horror","mystery"],status:"concluded",
+  argCreator:"Troy Wagner & Joseph DeLage (later producing under THAC), filmed in Alabama",
+  desc:"A YouTube found-footage series by Troy Wagner and Joseph DeLage, depicting student filmmaker Jay uncovering abandoned tapes of a project haunted by a faceless entity called The Operator. The series ran 87 numbered 'entries' across 5 years, with a cryptic companion channel called totheark posting encoded video responses.",
+  notable:"<span>totheark</span> first responded after Entry #9 on July 22, 2009 — its videos contained codes for the solver community to decrypt. By 2013, the series had 250,000 subscribers and 55 million views. It codified the Slender Man mythos and founded the analog horror genre.",
+  story:"Troy Wagner, a film student at the University of Alabama, uploaded the first Marble Hornets video on June 20, 2009 — ten days after Eric Knudsen created the original Slender Man images on Something Awful. The series followed Jay, who obtains abandoned tapes from his friend Alex Kralie and begins posting them, attracting The Operator (their name for Slender Man). An anonymous channel called totheark appeared after Entry #9, posting cryptic video responses containing encoded messages for the community to solve. The series also had a Twitter account used as a supplemental narrative layer. It concluded with Entry #87 on June 20, 2014 — exactly 5 years after the first video. The series directly inspired EverymanHYBRID, TribeTwelve, and DarkHarvest00, and is cited as the origin of modern analog horror.",
+  ciphers:"Video noise/distortion analysis, encoded messages in totheark response videos, QR codes in video frames, Twitter narrative layer requiring real-time monitoring.",
+  links:[{title:"Wikipedia",url:"https://en.wikipedia.org/wiki/Marble_Hornets"},{title:"YouTube Channel",url:"https://www.youtube.com/@MarbleHornets"},{title:"IMDb",url:"https://www.imdb.com/title/tt1885304/"}],
+  cardAuthor:"ARGhub Staff"},
+
+  {isStaff:true,id:"s5",name:"Cicada 3301",year:"2012–2014",color:"violet",tags:["puzzle","mystery"],status:"mystery",
+  argCreator:"Unknown — claims to be an organization seeking individuals for ideals of privacy and information freedom",
+  desc:"Three annual puzzle events (January 4 of 2012, 2013, and 2014), beginning with anonymous 4chan posts and escalating through OutGuess steganography, Tor sites, bootable Linux ISOs, audio steganography, GPS-linked QR codes on five continents, and a 74-page runic book called the Liber Primus. The 2014 puzzle remains largely unsolved.",
+  notable:"The <span>Liber Primus</span> — a 74-page book in an undeciphered runic script — was introduced in 2014. Only 18 of its pages have been decoded. Marcus Wanner, a 15-year-old who solved the 2012 puzzle, was later interviewed by Rolling Stone. Last verified PGP message: April 2017.",
+  story:"On January 4, 2012, an anonymous image appeared on 4chan's /b/ board: 'Hello. We are looking for highly intelligent individuals.' Opening it with OutGuess steganography software revealed hidden text leading to a Tor site. Physical QR code posters then appeared on telephone poles across the US, Poland, South Korea, Australia, and Spain. Winners of the 2012 puzzle were invited to a private forum and questioned about information freedom and online privacy before being tasked with building cryptographic software (CAKES — Cicada Anonymous Key Escrow System). On February 5, 2012, a PGP-signed message declared: 'We have now found the individuals we sought.' The 2013 puzzle incorporated Aleister Crowley's Book of the Law and a custom Linux OS ('Cicada OS'). The 2014 puzzle introduced the Liber Primus, 74 pages of runes — only 18 pages decoded to date. No verified puzzles after 2014; last PGP message April 2017.",
+  ciphers:"OutGuess steganography, RSA encryption, Aleister Crowley's Book of the Law as cipher key, Liber Primus runic script (largely unsolved), audio steganography, GPS-linked QR codes on 5 continents, bootable Linux ISO puzzle layers.",
+  links:[{title:"Wikipedia",url:"https://en.wikipedia.org/wiki/Cicada_3301"},{title:"Uncovering Cicada Wiki",url:"https://uncovering-cicada.fandom.com/wiki/Uncovering_Cicada_Wiki"}],
+  cardAuthor:"ARGhub Staff"},
+
+  {isStaff:true,id:"s6",name:"SCP Foundation",year:"2008–ongoing",color:"#aaaaaa",tags:["horror","fiction"],status:"ongoing",
+  argCreator:"Originated with Moto42 (pen name S D Locke) on Something Awful (2007); community-run since 2008",
+  desc:"A collaborative fiction wiki presenting itself as the internal documents of a secret organization that contains anomalous objects. Written in clinical bureaucratic prose, each entry reads as a genuine classified report. Thousands of authors have contributed over 7,000 entries in English alone.",
+  notable:"SCP-173, the original entry by Moto42, was posted on Something Awful in 2007. The wiki now has <span>official translated branches in 20+ languages</span>. While not a traditional ARG, its total commitment to the fictional frame has made it a foundational influence on ARG and analog horror culture.",
+  story:"SCP-173, the 'sculpture' entry, was posted by user Moto42 (S D Locke) to the Something Awful forums in 2007. The format — clinical, detached bureaucratic language for impossibly strange phenomena — was adopted by others, and a dedicated wiki launched around 2008. The Foundation's in-universe mythology expanded to include a full organizational structure, tale series, competitive SCPs, and crossover events. The English wiki now hosts over 7,000 entries. Unlike a traditional ARG, the SCP Foundation does not present itself as reality in the real world — but its internal fictional consistency and collaborative structure are deeply influential on the ARG community.",
+  ciphers:"Not a puzzle game. Some individual SCP entries contain encoded messages or Easter eggs, but the Foundation itself has no overarching cipher mechanic.",
+  links:[{title:"SCP Foundation Wiki",url:"https://scp-wiki.wikidot.com/"},{title:"Wikipedia",url:"https://en.wikipedia.org/wiki/SCP_Foundation"}],
+  cardAuthor:"ARGhub Staff"},
+
+  {isStaff:true,id:"s7",name:"The Jejune Institute",year:"2008–2011",color:"#ff9944",tags:["irl","puzzle","mystery"],status:"concluded",
+  argCreator:"Jeff Hull (artist), operating as Nonchalance LLC, San Francisco",
+  desc:"A San Francisco IRL ARG by artist Jeff Hull. Players were recruited through street posters into a fictional 'noncorporation' and led through citywide scavenger hunts involving real actors, hidden rooms, live induction ceremonies, and an ongoing mystery about a missing girl named Eva.",
+  notable:"Documented in the 2013 film <span>The Institute</span> (directed by Spencer McCall). Thousands of San Franciscans participated without realising they were in an art project. The rival fictional faction, the Elsewhere Public Works Agency, was operated by Hull himself to create narrative conflict.",
+  story:"Jeff Hull launched the Jejune Institute in 2008 through flyers and street posters directing people to a real office on the 16th floor of a San Francisco high-rise. Inside, visitors were inducted into a fictional organization. The game unfolded across the city through missions, actors playing characters on the street, physical dead drops, and an evolving narrative about a disappeared woman named Eva. A competing fictional faction, the Elsewhere Public Works Agency (also run by Hull), created drama. The game ran until 2011. Filmmaker Spencer McCall documented the experience over 3 years, capturing players who genuinely weren't sure if it was real — the documentary The Institute premiered at SXSW 2013.",
+  ciphers:"Real-world scavenger hunt navigation, actor-led street missions, physical dead drops and hidden rooms within San Francisco locations.",
+  links:[{title:"Wikipedia",url:"https://en.wikipedia.org/wiki/The_Jejune_Institute"},{title:"The Institute (2013)",url:"https://www.imdb.com/title/tt2446242/"}],
+  cardAuthor:"ARGhub Staff"},
+
+  {isStaff:true,id:"s8",name:"Petscop",year:"2017–2019",color:"#44aaff",tags:["horror","mystery"],status:"concluded",
+  argCreator:"Tony Domenico (solo creator, revealed on Twitter November 14, 2019)",
+  desc:"A YouTube horror web series by Tony Domenico presenting a fictional lost 1997 PlayStation game being explored by a narrator named Paul. As the series progresses, the game reveals a dark narrative about child abuse, family trauma, and a character named Marvin. Note: creator Tony Domenico stated this is not technically an ARG — the audience had no direct influence on the story.",
+  notable:"Tony Domenico maintained complete anonymity for the series' <span>30-month run</span>. The series gained mainstream attention in August 2017 via Game Theorists coverage (3M+ views). A fan recreation called 'Giftscop' was later built so the fictional game could be played.",
+  story:"The Petscop YouTube channel launched March 11, 2017. 24 episodes ran from March 12, 2017 to September 2, 2019. The series follows Paul, who finds a copy of an unreleased 1997 game and uploads recordings. After entering a cheat code, Paul accesses a dark hidden area called the Newmaker Plane. The game's narrative builds toward a story about Marvin, who kidnaps his daughter Care for 'rebirthing' (a real-world controversial therapeutic technique), and the game's connection to family trauma. Channel descriptions updated between episodes extended the fiction in-universe. On November 14, 2019, Tony Domenico revealed himself on Twitter, confirming he built the entire game, voiced all characters, and composed all music. He noted the Candace Newmaker references were intentional but that he later regretted their inclusion.",
+  ciphers:"Not technically an ARG — no active puzzles for solvers. Community analysis involved frame-by-frame video analysis, pattern recognition in channel descriptions, and timeline reconstruction from in-universe clues.",
+  links:[{title:"Wikipedia",url:"https://en.wikipedia.org/wiki/Petscop"},{title:"Petscop Wiki",url:"https://petscop.fandom.com/wiki/Petscop"},{title:"YouTube Channel",url:"https://www.youtube.com/@petscop"}],
+  cardAuthor:"ARGhub Staff"},
+
+  {isStaff:true,id:"s9",name:"The Black Watchmen",year:"2015–2017",color:"#33ff88",tags:["puzzle","irl","scifi"],status:"concluded",
+  argCreator:"Alice & Smith (Montreal studio)",
+  desc:"A subscription-based commercial ARG by Montreal studio Alice & Smith. Players joined a fictional secret intelligence agency and received real physical packages — encrypted mission briefs, USB drives, and artifacts — alongside community-wide operations with live characters and real-time consequences.",
+  notable:"One of the first successful <span>subscription ARG models</span> — players paid ongoing fees for a high-quality live experience. The studio followed with a successor game, NITE Team 4 (2019), proving the commercial model could sustain multiple entries.",
+  story:"The Black Watchmen launched in early access in 2015. Players were recruited as agents into a fictional intelligence division via an ARG-format website. Real packages arrived by mail containing classified mission documents, encrypted USB drives, and physical props. Seasonal missions required community-wide coordination through live chat events, character phone calls, and time-sensitive real-world operations. The game ran until 2017 and built a dedicated subscriber base. Alice & Smith later launched NITE Team 4, a desktop game with ARG-adjacent mechanics that proved the model could sustain a commercial sequel.",
+  ciphers:"Physical dead drops and package encryption, USB drive puzzle layers, live phone interactions with characters, GPS-based real-world missions, community-solved cipher chains.",
+  links:[{title:"Wikipedia",url:"https://en.wikipedia.org/wiki/The_Black_Watchmen"},{title:"Alice & Smith",url:"https://www.aliceandsmith.com/"}],
+  cardAuthor:"ARGhub Staff"},
+
+  {isStaff:true,id:"s10",name:"17776",year:"2017",color:"#ffdd44",tags:["scifi","fiction"],status:"concluded",
+  argCreator:"Jon Bois (SB Nation)",
+  desc:"Jon Bois's multimedia narrative about three AI satellites watching immortal humans play absurdist forms of football across the continental United States. Presented as a website that gradually revealed itself as an interactive story using text, animated GIFs, YouTube embeds, Google Maps, and the scroll itself as narrative tools.",
+  notable:"Not strictly an ARG, but widely cited across the community as a masterwork of <span>web-native storytelling</span>. Bois described it as a story about what humans do when there's nothing left to achieve. A sequel, '20020', was published in 2020.",
+  story:"17776 was published on SB Nation in July 2017. The piece begins as what appears to be a normal sports article — then text starts behaving strangely, YouTube videos play, and the reader realises the scroll itself is the mechanic. Three AI probes (Nine, Ten, Juice) have been watching humans play endless, absurd football games across thousands of years in a world where no one dies. Bois uses every capability of the browser as a storytelling tool. It contains no puzzles and requires no interaction, but its community response was enormous. Essays analysing its narrative structure circulated for years. A companion piece, '20020', extended the universe in 2020.",
+  ciphers:"No cipher mechanics. The only 'puzzle' is recognising that the page is a story — the browser scroll and embedded media are the narrative delivery mechanism.",
+  links:[{title:"Read 17776",url:"https://www.sbnation.com/a/17776-football"},{title:"Wikipedia",url:"https://en.wikipedia.org/wiki/17776"}],
+  cardAuthor:"ARGhub Staff"}
+];
+
+// ─────────────────────────────────────────────
+// GLOBALS
+// ─────────────────────────────────────────────
+const SWATCHES = ["violet","#ff4444","#ffaa00","#ffdd44","#88ff44","#44aaff","#ff88cc","#aaaaaa","#33ff88","#cc44ff"];
+const TAG_CLS  = {concluded:"tag-concluded",ongoing:"tag-ongoing",mystery:"tag-mystery",horror:"tag-horror",puzzle:"tag-puzzle",music:"tag-music",scifi:"tag-scifi",irl:"tag-irl",fiction:"tag-fiction"};
+const TAG_LBL  = {concluded:"Concluded",ongoing:"Ongoing",mystery:"Unknown Origin",horror:"Horror",puzzle:"Puzzle",music:"Music",scifi:"Sci-Fi",irl:"IRL",fiction:"Collaborative Fiction"};
+const CAT_MAP  = {core:["Core Concepts","cat-core"],players:["Player Roles","cat-players"],design:["Game Design","cat-design"],puzzle:["Puzzle & Mechanics","cat-puzzle"],community:["Community","cat-community"]};
+const PER_PAGE = 9;
+
+let allARGs     = [...STAFF_ARGS]; // filled by module after Supabase load
+let filtered    = [];
+let curPage     = 1;
+let argMap      = {};              // id → data, safe lookup instead of JSON in onclick
+let currentUser = null;
+
+// Module posts user here
+window.__setUser = u => currentUser = u;
+
+// ─────────────────────────────────────────────
+// TAB
+// ─────────────────────────────────────────────
+function switchTab(tab, btn) {
+  document.querySelectorAll(".cs-section").forEach(s => s.classList.remove("visible"));
+  document.querySelectorAll(".cs-tab").forEach(t => t.classList.remove("active"));
+  document.getElementById("sec-"+tab).classList.add("visible");
+  btn.classList.add("active");
+}
+
+// ─────────────────────────────────────────────
+// UTILS
+// ─────────────────────────────────────────────
+function esc(s){ return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function ea(s) { return String(s||"").replace(/"/g,"&quot;").replace(/'/g,"&#39;"); }
+
+function tagHtml(tags,status) {
+  return [status,...(tags||[])].map(t=>`<span class="arg-tag ${TAG_CLS[t]||''}">${TAG_LBL[t]||esc(t)}</span>`).join("");
+}
+
+// ─────────────────────────────────────────────
+// GLOSSARY
+// ─────────────────────────────────────────────
+const GLOSSARY = [
+  {term:"ARG",abbr:"Alternate Reality Game",cat:"core",def:"A transmedia interactive narrative that uses the real world as a platform. Players receive clues through websites, email, phone calls, physical locations, and more — all presented as reality rather than fiction."},
+  {term:"TINAG",abbr:"This Is Not A Game",cat:"core",def:"The foundational philosophy of ARG design and play. All in-game elements are presented as real, and players treat them as such. Breaking TINAG — explicitly acknowledging the game as fiction — is considered a violation of the experience."},
+  {term:"Rabbit Hole",cat:"core",def:"The entry point into an ARG. The first clue, anomaly, or breadcrumb that draws a player in. Named after Alice's dive into Wonderland. A well-designed rabbit hole is enigmatic enough to compel investigation but not so obscure it's missed entirely."},
+  {term:"Trailhead",cat:"core",def:"The official or intended starting point of an ARG as defined by the puppetmaster. Often synonymous with rabbit hole, but trailhead implies deliberate placement — the point from which the experience is designed to begin."},
+  {term:"Fourth Wall",cat:"core",def:"The conceptual boundary between the ARG's fictional world and reality. ARGs deliberately break this wall — characters email players, phone lines ring, websites exist on the real internet. A game that keeps the wall intact isn't truly an ARG."},
+  {term:"Curtain",cat:"core",def:'The metaphorical veil separating the fiction from the puppetmasters behind it. "Behind the curtain" refers to the real-world production side of the ARG. Maintaining the curtain is essential to TINAG — players should never see the scaffolding.'},
+  {term:"Transmedia",cat:"core",def:"Storytelling that unfolds across multiple platforms simultaneously — websites, video, audio, physical mail, phone calls, social media. Each medium adds a unique layer to the narrative. ARGs are inherently transmedia by design."},
+  {term:"In-Game / Out-Of-Game",abbr:"IG / OOG",cat:"core",def:'IG refers to anything within the fiction — character accounts, in-universe websites, clues. OOG refers to real-world meta discussion about the game itself. Solver communities rigorously separate the two to preserve immersion.'},
+  {term:"Puppetmaster",abbr:"PM",cat:"design",def:"The creator, author, and orchestrator of an ARG. The puppetmaster designs the narrative, plants clues, controls in-game characters, and responds in real time to player actions. The role demands both storytelling skill and operational agility."},
+  {term:"Breadcrumb",cat:"design",def:"A subtle, intentional hint or clue planted by the puppetmaster to guide solvers toward the next puzzle or story beat. Good breadcrumbs feel like organic discoveries — the solver should feel clever for finding them."},
+  {term:"Red Herring",cat:"design",def:"A deliberate false lead embedded in the game to mislead, challenge, or slow solvers. Used sparingly by skilled puppetmasters — too many frustrate players, but a well-placed one adds tension and makes real discoveries more satisfying."},
+  {term:"Mechanic",cat:"design",def:"A specific type of puzzle, interaction, or gameplay pattern used in an ARG. Common mechanics include phone hotlines, cipher decryption, steganography, social engineering, and physical dead drops."},
+  {term:"Dead Drop",cat:"design",def:"A physical location where in-game materials (USB drives, printed letters, artifacts) are secretly left for players to find. Dead drops add real-world stakes and excitement to an ARG."},
+  {term:"Sock Puppet",cat:"design",def:"A fake persona or character account operated by the puppetmaster to interact with players as a real person. Sock puppets are the backbone of TINAG — the fictional characters must feel real to maintain immersion."},
+  {term:"Artifact",cat:"design",def:"Any in-game object, document, recording, or media that exists within the ARG's fictional world — digital (encrypted files, audio) or physical (letters, USB drives). Artifacts are discovered, collected, and analyzed by solvers."},
+  {term:"Oracle",cat:"design",def:"A term for the puppetmaster communicating through in-game channels — dropping hints or advancing the narrative through a character or anonymous message. The oracle guides without breaking the curtain."},
+  {term:"Puzzle Layer",cat:"design",def:"A distinct depth of puzzle or narrative within an ARG. Surface layers are accessible to casual players; deeper layers reward dedicated solvers. Well-designed ARGs reward different levels of engagement without locking casual players out."},
+  {term:"Solver",cat:"players",def:"A player who actively participates in cracking puzzles, decoding clues, and advancing the ARG narrative. Solvers are the engine of ARG communities — they share findings, collaborate on decryption, and collectively piece together the story."},
+  {term:"Lurker",cat:"players",def:"A passive follower who reads solver community posts and follows the narrative without actively contributing. Lurkers make up the vast majority of an ARG's audience — they enjoy the story without posting solutions."},
+  {term:"Hivemind",cat:"players",def:"The collective problem-solving intelligence of the solver community. When a puzzle stumps individuals, the hivemind distributes the work — different people bring different expertise (cryptography, linguistics, steganography) to bear simultaneously."},
+  {term:"Newbie / Fresher",cat:"players",def:"A newcomer to an ARG community or to ARGs in general. Freshers are welcomed but guided toward OOG orientation first, since accidentally breaking TINAG in a live game can disrupt the experience for everyone."},
+  {term:"Cipher",cat:"puzzle",def:"An encoding system used to hide messages within text. Common in ARGs: Caesar shifts, Vigenère, Morse code, binary, and bespoke custom ciphers. Recognizing which cipher is in use is often the first half of the puzzle."},
+  {term:"Steganography",cat:"puzzle",def:"The practice of hiding data within other data — concealing messages inside image files, audio tracks, or video. A favourite ARG mechanic: run a JPEG through OutGuess or a similar tool and find a phone number hidden in the image."},
+  {term:"Spectrogram",cat:"puzzle",def:"A visual representation of audio frequency over time. ARGs frequently hide images, text, or URLs in audio spectrograms — something invisible to the ear becomes visible when audio is run through spectrum analysis software."},
+  {term:"OSINT",abbr:"Open Source Intelligence",cat:"puzzle",def:"Using publicly available information to gather intelligence. In ARGs, solvers use OSINT techniques — WHOIS lookups, reverse image search, geolocation, social media analysis — to find information hidden in real-world public records."},
+  {term:"OutGuess",cat:"puzzle",def:"A free steganography program used to conceal information in image files by altering redundant bits. It became famous as the primary tool required for the first Cicada 3301 puzzle in 2012, and has been used in numerous ARGs since."},
+  {term:"GKW",abbr:"Guys with Keys",cat:"puzzle",def:"A bottleneck mechanic where puzzle progress requires physical-world intervention only the puppetmaster can provide — unlocking a location, sending a physical package, or activating a phone line. GKW moments create tense real-time waiting in solver communities."},
+  {term:"Unfiction",cat:"community",def:"The pioneering online forum for ARG discussion, active from the early 2000s. Unfiction was the original home for ARG solvers — aggregating clues, hosting wikis, and defining the vocabulary of the hobby before social media existed."},
+  {term:"Trailhead Post",cat:"community",def:'An OOG post shared in a solver community pointing to a newly discovered rabbit hole. The accepted format is typically "I found this — thoughts?" with a link, maintaining plausible TINAG while flagging something worth investigating.'},
+  {term:"Wiki",cat:"community",def:"The collaborative documentation hub of an active ARG community. Solvers maintain wikis to track discovered clues, decoded messages, character profiles, and timelines — essential for complex ARGs spanning months or years."},
+  {term:"Gamerunner",cat:"community",def:"An alternative term for puppetmaster, common in tabletop-adjacent circles. Implies a slightly more operational focus — less auteur storyteller, more logistics coordinator managing a live experience."}
+];
+
+function renderGlossary(items) {
+  const grid = document.getElementById("glossaryGrid");
+  const empty= document.getElementById("glossEmpty");
+  document.getElementById("glossCount").textContent = items.length+" term"+(items.length===1?"":"s");
+  if(!items.length){grid.innerHTML="";empty.style.display="block";return;}
+  empty.style.display="none";
+  grid.innerHTML=items.map((g,i)=>{
+    const [lbl,cls]=CAT_MAP[g.cat]||["",""];
+    const ab=g.abbr?`<span class="gloss-abbr">${esc(g.abbr)}</span>`:"";
+    return `<div class="gloss-card" style="animation-delay:${i*.03}s">
+      <div class="gloss-term">${esc(g.term)}${ab}</div>
+      <span class="gloss-cat ${cls}">${lbl}</span>
+      <p class="gloss-def">${esc(g.def)}</p>
+    </div>`;
+  }).join("");
+}
+
+function filterGlossary(){
+  const q=document.getElementById("glossSearch").value.toLowerCase().trim();
+  const c=document.getElementById("glossCatFilter").value;
+  renderGlossary(GLOSSARY.filter(g=>
+    (!q||g.term.toLowerCase().includes(q)||(g.abbr||"").toLowerCase().includes(q)||g.def.toLowerCase().includes(q))&&
+    (!c||g.cat===c)
+  ));
+}
+
+// ─────────────────────────────────────────────
+// ARG GRID + PAGINATION
+// ─────────────────────────────────────────────
+function filterAndPage(pg){
+  curPage=pg;
+  const q=document.getElementById("argSearch").value.toLowerCase().trim();
+  const tg=document.getElementById("argTagFilter").value;
+  const st=document.getElementById("argStatusFilter").value;
+  filtered=allARGs.filter(a=>
+    (!q||(a.name||"").toLowerCase().includes(q)||(a.desc||"").toLowerCase().includes(q)||(a.tags||[]).some(t=>t.includes(q)))&&
+    (!tg||(a.tags||[]).includes(tg))&&
+    (!st||a.status===st)
+  );
+  renderARGPage();
+}
+
+function renderARGPage(){
+  const grid=document.getElementById("argsGrid");
+  const empty=document.getElementById("argEmpty");
+  const pag=document.getElementById("argPag");
+  const total=filtered.length;
+  const pages=Math.ceil(total/PER_PAGE);
+  document.getElementById("argCount").textContent=total+" ARG"+(total===1?"":"s");
+
+  if(!total){grid.innerHTML="";empty.style.display="block";pag.innerHTML="";return;}
+  empty.style.display="none";
+
+  const start=(curPage-1)*PER_PAGE;
+  const slice=filtered.slice(start,start+PER_PAGE);
+
+  // Build argMap for safe lookups
+  slice.forEach(a=>{argMap[a.id]=a;});
+
+  grid.innerHTML=slice.map((a,i)=>{
+    const staffBadge=a.isStaff?'<span class="arg-staff-badge">★ STAFF</span>':'';
+    const submitter=!a.isStaff?`<span class="arg-card-submitter">by ${esc(a.cardAuthor||"anonymous")}</span>`:'';
+    return `<div class="arg-card" style="--c:${ea(a.color||'violet')};animation-delay:${i*.04}s" onclick="openDetail('${ea(a.id)}')">
+      <div class="arg-card-top">
+        <div class="arg-card-name">${esc(a.name)}</div>
+        <span class="arg-card-year">${esc(a.year||"")}</span>
+      </div>
+      <div class="arg-tags">${tagHtml(a.tags,a.status)}</div>
+      <p class="arg-desc">${esc(a.desc)}</p>
+      ${a.notable?`<div class="arg-notable">⬡ ${a.notable}</div>`:""}
+      <div class="arg-card-footer">${submitter}${staffBadge}<span class="arg-card-hint">Click to read more →</span></div>
+    </div>`;
+  }).join("");
+
+  // Pagination
+  pag.innerHTML="";
+  if(pages<=1)return;
+  const mk=(txt,pg,dis,cur)=>{
+    const b=document.createElement("button");
+    b.className="cs-page-btn"+(cur?" current":"");
+    b.textContent=txt; b.disabled=dis;
+    b.onclick=()=>filterAndPage(pg);
+    pag.appendChild(b);
+  };
+  mk("← Prev",curPage-1,curPage===1,false);
+  for(let p=1;p<=pages;p++) mk(p,p,false,p===curPage);
+  mk("Next →",curPage+1,curPage===pages,false);
+}
+
+// Called by module after Supabase load
+window.__refreshARGs = function(supabaseCards){
+  allARGs=[...STAFF_ARGS,...supabaseCards];
+  filterAndPage(curPage>1&&(curPage-1)*PER_PAGE>=allARGs.length?1:curPage);
+};
+
+// ─────────────────────────────────────────────
+// COLOR SWATCHES
+// ─────────────────────────────────────────────
+function buildSwatches(wrpId,hidId){
+  const w=document.getElementById(wrpId);
+  if(!w)return;
+  SWATCHES.forEach((c,i)=>{
+    const d=document.createElement("div");
+    d.className="cs-swatch"+(i===0?" sel":"");
+    d.style.background=c; d.title=c;
+    d.onclick=()=>{
+      w.querySelectorAll(".cs-swatch").forEach(s=>s.classList.remove("sel"));
+      d.classList.add("sel");
+      document.getElementById(hidId).value=c;
+    };
+    w.appendChild(d);
+  });
+}
+buildSwatches("scSwatches","scColor");
+buildSwatches("ecSwatches","ecColor");
+
+// ─────────────────────────────────────────────
+// LINK ROWS
+// ─────────────────────────────────────────────
+function addLink(listId,title="",url=""){
+  const list=document.getElementById(listId);
+  const row=document.createElement("div");
+  row.className="cs-link-row";
+  row.innerHTML=`<input type="text" placeholder="Label" value="${ea(title)}" maxlength="60">
+    <input type="url"  placeholder="https://..." value="${ea(url)}" maxlength="300">
+    <button class="cs-link-del" onclick="this.parentElement.remove()">✕</button>`;
+  list.appendChild(row);
+}
+
+function getLinks(listId){
+  return [...document.querySelectorAll(`#${listId} .cs-link-row`)].map(r=>{
+    const inp=r.querySelectorAll("input");
+    return {title:inp[0].value.trim()||inp[1].value.trim(), url:inp[1].value.trim()};
+  }).filter(l=>l.url);
+}
+
+// ─────────────────────────────────────────────
+// SUBMIT MODAL
+// ─────────────────────────────────────────────
+function openSubmit(){
+  window.__requireAuth&&window.__requireAuth(()=>{
+    ["scName","scYear","scCreator","scDesc","scNotable","scStory","scCiphers"].forEach(id=>document.getElementById(id).value="");
+    document.getElementById("scStatus").value="concluded";
+    document.getElementById("scColor").value="violet";
+    document.querySelectorAll("#submitModal .cs-tag-cb").forEach(cb=>cb.checked=false);
+    document.querySelectorAll("#scSwatches .cs-swatch").forEach((s,i)=>s.classList.toggle("sel",i===0));
+    document.getElementById("scLinks").innerHTML="";
+    document.getElementById("scErr").style.display="none";
+    document.getElementById("scForm").style.display="block";
+    document.getElementById("scDone").style.display="none";
+    document.getElementById("scBtn").disabled=false;
+    document.getElementById("scBtn").style.opacity="1";
+    document.getElementById("submitModal").classList.add("open");
+  });
+}
+function closeSubmit(){ document.getElementById("submitModal").classList.remove("open"); }
+
+// ─────────────────────────────────────────────
+// DETAIL MODAL
+// ─────────────────────────────────────────────
+function openDetail(id){
+  const a=argMap[id];
+  if(!a)return;
+  const linksHtml=(a.links||[]).length
+    ?(a.links||[]).map(l=>`<a class="det-link" href="${ea(l.url)}" target="_blank" rel="noopener">🔗 ${esc(l.title||l.url)}</a>`).join("")
+    :'<p style="color:#444;font-size:13px">No links provided.</p>';
+  const isOwn=currentUser&&a.user_id&&currentUser.id===a.user_id;
+  const editBtn=isOwn&&!a.isStaff
+    ?`<button class="cs-submit-btn" style="margin-top:20px" onclick="openEdit('${ea(id)}')">✎ Edit This Card</button>`:
+    "";
+  document.getElementById("detContent").innerHTML=`
+    <div style="border-top:3px solid ${ea(a.color||'violet')};padding-top:18px;margin-bottom:16px">
+      <div class="det-name">${esc(a.name)}</div>
+      <div class="det-meta">
+        ${a.year?`<span class="det-year">${esc(a.year)}</span>`:""}
+        <div class="arg-tags" style="margin:0">${tagHtml(a.tags,a.status)}</div>
+        ${a.isStaff?'<span class="arg-staff-badge">★ STAFF</span>':""}
+      </div>
+    </div>
+    ${a.desc?`<div class="det-sec"><h3>Overview</h3><p>${esc(a.desc)}</p></div>`:""}
+    ${a.story?`<div class="det-sec"><h3>Full Story</h3><p>${esc(a.story)}</p></div>`:""}
+    ${a.ciphers?`<div class="det-sec"><h3>Ciphers & Mechanics</h3><p>${esc(a.ciphers)}</p></div>`:""}
+    <div class="det-sec"><h3>External Links</h3><div class="det-links">${linksHtml}</div></div>
+    <hr class="det-div">
+    <div class="det-credits">
+      ${a.argCreator?`<div>ARG created by: <span>${esc(a.argCreator)}</span></div>`:""}
+      ${a.isStaff?'<div>Card by: <span>ARGhub Staff</span></div>':`<div>Card submitted by: <span>${esc(a.cardAuthor||"anonymous")}</span></div>`}
+    </div>
+    ${editBtn}
+  `;
+  document.getElementById("detailModal").classList.add("open");
+}
+function closeDetail(){ document.getElementById("detailModal").classList.remove("open"); }
+
+// ─────────────────────────────────────────────
+// EDIT MODAL
+// ─────────────────────────────────────────────
+function openEdit(id){
+  const a=argMap[id];
+  if(!a||a.isStaff)return;
+  document.getElementById("ecId").value      =a.id;
+  document.getElementById("ecName").value    =a.name;
+  document.getElementById("ecYear").value    =a.year||"";
+  document.getElementById("ecCreator").value =a.argCreator||"";
+  document.getElementById("ecDesc").value    =a.desc||"";
+  document.getElementById("ecNotable").value =a.notable||"";
+  document.getElementById("ecStory").value   =a.story||"";
+  document.getElementById("ecCiphers").value =a.ciphers||"";
+  document.getElementById("ecStatus").value  =a.status||"concluded";
+  document.getElementById("ecColor").value   =a.color||"violet";
+  document.getElementById("ecErr").style.display="none";
+  document.querySelectorAll("#editModal .cs-tag-cb").forEach(cb=>cb.checked=(a.tags||[]).includes(cb.value));
+  document.querySelectorAll("#ecSwatches .cs-swatch").forEach(sw=>sw.classList.toggle("sel",sw.title===(a.color||"violet")));
+  const list=document.getElementById("ecLinks");
+  list.innerHTML="";
+  (a.links||[]).forEach(l=>addLink("ecLinks",l.title,l.url));
+  document.getElementById("editModal").classList.add("open");
+}
+function closeEdit(){ document.getElementById("editModal").classList.remove("open"); }
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+renderGlossary(GLOSSARY);
+filterAndPage(1);
+</script>
+
+<!-- MODULE: Supabase operations -->
+<script type="module">
+import { supabase, requireAuth, getUser, getDisplayName, onAuthChange } from "./supabase-auth.js";
+
+// Keep currentUser in sync with non-module
+onAuthChange(u=>window.__setUser(u));
+(async()=>{ window.__setUser(await getUser()); })();
+
+// Expose requireAuth to non-module onclick handlers
+window.__requireAuth = cb => requireAuth(cb);
+
+// ─── LOAD FROM SUPABASE ───
+async function load(){
+  const {data,error}=await supabase.from("context_slips_args").select("*").order("created_at",{ascending:false});
+  if(error){console.error("CS load error:",error);}
+  const cards=(data||[]).map(r=>({
+    id:r.id, user_id:r.user_id,
+    name:r.name, year:r.year||"",
+    color:r.color||"violet", tags:r.tags||[], status:r.status||"concluded",
+    desc:r.description||"", notable:r.notable||"",
+    argCreator:r.arg_creator||"", story:r.story||"",
+    ciphers:r.ciphers_used||"", links:Array.isArray(r.links)?r.links:[],
+    cardAuthor:r.card_author||"anonymous", isStaff:false
+  }));
+  window.__refreshARGs(cards);
+}
+load();
+
+// ─── SUBMIT CARD ───
+window.submitCard=async function(){
+  const err=document.getElementById("scErr");
+  err.style.display="none";
+  const name=document.getElementById("scName").value.trim();
+  const desc=document.getElementById("scDesc").value.trim();
+  if(!name){err.textContent="Please enter the ARG name.";err.style.display="block";return;}
+  if(!desc){err.textContent="Please add a short description.";err.style.display="block";return;}
+
+  const user=await getUser();
+  if(!user){window.__authModal.open();return;}
+
+  // Check staff names
+  const staffNames=(window.STAFF_ARGS||[]).map(a=>(a.name||"").toLowerCase().trim());
+  if(staffNames.includes(name.toLowerCase().trim())){
+    err.textContent=`"${name}" already exists as a staff entry. No duplicates allowed.`;
+    err.style.display="block";return;
+  }
+  // Check Supabase for duplicates
+  const {data:dup}=await supabase.from("context_slips_args").select("id").ilike("name",name).maybeSingle();
+  if(dup){err.textContent=`An ARG card named "${name}" already exists.`;err.style.display="block";return;}
+
+  const tags=[...document.querySelectorAll("#submitModal .cs-tag-cb:checked")].map(c=>c.value);
+  const links=window.__getLinks("scLinks");
+  const cardAuthor=await getDisplayName();
+
+  document.getElementById("scBtn").disabled=true;
+  document.getElementById("scBtn").style.opacity="0.5";
+
+  const {error}=await supabase.from("context_slips_args").insert({
+    user_id:user.id, name,
+    year:document.getElementById("scYear").value.trim()||null,
+    color:document.getElementById("scColor").value,
+    tags, status:document.getElementById("scStatus").value,
+    description:desc,
+    notable:document.getElementById("scNotable").value.trim()||null,
+    story:document.getElementById("scStory").value.trim()||null,
+    ciphers_used:document.getElementById("scCiphers").value.trim()||null,
+    links, arg_creator:document.getElementById("scCreator").value.trim()||null,
+    card_author:cardAuthor||user.email.split("@")[0]
+  });
+
+  if(error){
+    err.textContent="Something went wrong. Please try again.";
+    err.style.display="block";
+    document.getElementById("scBtn").disabled=false;
+    document.getElementById("scBtn").style.opacity="1";
+    console.error(error);return;
+  }
+  document.getElementById("scForm").style.display="none";
+  document.getElementById("scDone").style.display="block";
+  setTimeout(()=>{window.closeSubmit();load();},1800);
+};
+
+// ─── SAVE EDIT ───
+window.saveEdit=async function(){
+  const err=document.getElementById("ecErr");
+  err.style.display="none";
+  const id=document.getElementById("ecId").value;
+  const name=document.getElementById("ecName").value.trim();
+  const desc=document.getElementById("ecDesc").value.trim();
+  if(!name){err.textContent="ARG name required.";err.style.display="block";return;}
+  if(!desc){err.textContent="Description required.";err.style.display="block";return;}
+  const tags=[...document.querySelectorAll("#editModal .cs-tag-cb:checked")].map(c=>c.value);
+  const links=window.__getLinks("ecLinks");
+  const {error}=await supabase.from("context_slips_args").update({
+    name, year:document.getElementById("ecYear").value.trim()||null,
+    arg_creator:document.getElementById("ecCreator").value.trim()||null,
+    description:desc,
+    notable:document.getElementById("ecNotable").value.trim()||null,
+    story:document.getElementById("ecStory").value.trim()||null,
+    ciphers_used:document.getElementById("ecCiphers").value.trim()||null,
+    status:document.getElementById("ecStatus").value,
+    color:document.getElementById("ecColor").value,
+    tags, links
+  }).eq("id",id);
+  if(error){err.textContent="Save failed. Try again.";err.style.display="block";return;}
+  window.closeEdit();
+  window.closeDetail();
+  await load();
+};
+
+// ─── DELETE ───
+window.deleteCard=async function(){
+  const id=document.getElementById("ecId").value;
+  const name=document.getElementById("ecName").value;
+  if(!confirm(`Delete the card for "${name}"? This cannot be undone.`))return;
+  const {error}=await supabase.from("context_slips_args").delete().eq("id",id);
+  if(error){alert("Delete failed. Try again.");return;}
+  window.closeEdit();
+  window.closeDetail();
+  await load();
+};
+</script>
+
+<script>
+// Bridge: expose non-module helpers to module scope
+window.__getLinks = getLinks;
+window.STAFF_ARGS  = STAFF_ARGS;
+window.openDetail  = openDetail;
+window.openEdit    = openEdit;
+window.closeSubmit = closeSubmit;
+window.closeDetail = closeDetail;
+window.closeEdit   = closeEdit;
+window.addLink     = addLink;
+window.filterAndPage = filterAndPage;
+</script>
+
 </body>
 </html>
