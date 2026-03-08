@@ -140,7 +140,7 @@ window.submitCommunity = async function() {
     description: desc    || null,
     type,
     author,
-    members:     1
+    members:     0   // trigger on community_members will increment this to 1 when creator row is inserted
   }).select("id").single();
 
   if (error) {

@@ -769,22 +769,13 @@ renderPage(1);
         return;
       }
 
-      // Insert membership
+      // Insert membership — the DB trigger (trg_member_count) auto-increments members count
       const { error } = await supabase.from("community_members").insert({
         community_id: communityId,
         user_id:      user.id
       });
 
       if (error) { alert("Failed to join. Try again."); return; }
-
-      // Increment the members count in the communities table
-      const { data: commData } = await supabase
-        .from("communities").select("members").eq("id", communityId).single();
-      if (commData) {
-        await supabase.from("communities")
-          .update({ members: (commData.members || 0) + 1 })
-          .eq("id", communityId);
-      }
 
       // Visual feedback then redirect to community page
       btn.textContent = "Joined ✓";
