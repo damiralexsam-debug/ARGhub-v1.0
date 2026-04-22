@@ -10,6 +10,13 @@ const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// CONSTANTS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+const MODERATOR_EMAIL = "damiralexsam@gmail.com";
+const MAX_COINS       = 5; // max a moderator can grant per user
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // SESSION HELPERS
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -27,17 +34,14 @@ export function onAuthChange(callback) {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // DISPLAY NAME
 // Priority: Google full_name → profiles table → email prefix
-// Exported so dashboard-post.js can use it for the author field
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 export async function getDisplayName() {
   const user = await getUser();
   if (!user) return null;
 
-  // Google OAuth stores the real name here automatically
   if (user.user_metadata?.full_name) return user.user_metadata.full_name;
 
-  // Email/password users: we store their chosen name in the profiles table
   const { data } = await supabase
     .from("profiles")
     .select("display_name")
@@ -46,8 +50,27 @@ export async function getDisplayName() {
 
   if (data?.display_name) return data.display_name;
 
-  // Absolute fallback
   return user.email.split("@")[0];
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// COINS HELPER
+// Reads from promotion_tickets table: { user_id, coins }
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+export async function getCoins(userId) {
+  const { data } = await supabase
+    .from("promotion_tickets")
+    .select("coins")
+    .eq("user_id", userId)
+    .maybeSingle();
+  return data?.coins ?? 0;
+}
+
+export async function setCoins(userId, coins) {
+  await supabase
+    .from("promotion_tickets")
+    .upsert({ user_id: userId, coins }, { onConflict: "user_id" });
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -75,10 +98,14 @@ function injectAuthModal() {
       border: 1px solid #333;
       border-radius: 16px;
       padding: 40px 44px;
-      width: 440px;
+      width: 460px;
+      max-height: 92vh;
+      overflow-y: auto;
       position: relative;
       animation: authFadeUp 0.3s ease both;
       font-family: 'Roboto Slab', serif;
+      scrollbar-width: thin;
+      scrollbar-color: #333 transparent;
     }
     @keyframes authFadeUp {
       from { opacity: 0; transform: translateY(20px); }
@@ -151,20 +178,157 @@ function injectAuthModal() {
     .auth-error   { color: red;  font-size: 12px; margin-top: 8px; display: none; text-align: center; }
     .auth-success { color: lime; font-size: 13px; margin-top: 8px; display: none; text-align: center; }
 
-    /* Logged-in view inside modal */
-    #authLoggedIn { display: none; text-align: center; }
+    /* ── LOGGED IN VIEW ── */
+    #authLoggedIn { display: none; }
+    #authLoggedIn .auth-profile-header {
+      text-align: center;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #1a1a1a;
+      margin-bottom: 20px;
+    }
     #authLoggedIn p { color: #aaa; font-size: 13px; margin-bottom: 4px; }
     #authLoggedIn .auth-name        { color: white; font-size: 22px; font-weight: 700; display: block; margin-bottom: 4px; }
-    #authLoggedIn .auth-email-small { color: #555;  font-size: 12px; display: block; margin-bottom: 22px; }
+    #authLoggedIn .auth-email-small { color: #555;  font-size: 12px; display: block; margin-bottom: 16px; }
+
+    /* coin meter */
+    .auth-coin-meter {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: #0a0a0a;
+      border: 1px solid #2a2a1a;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+    }
+    .auth-coin-icon { font-size: 22px; }
+    .auth-coin-info { flex: 1; text-align: left; }
+    .auth-coin-label { font-size: 10px; color: #555; letter-spacing: 2px; text-transform: uppercase; }
+    .auth-coin-value { font-size: 20px; font-weight: 900; color: #ffcc00; letter-spacing: 1px; }
+    .auth-coin-pips {
+      display: flex;
+      gap: 5px;
+    }
+    .auth-coin-pip {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      border: 1px solid #333;
+      background: #1a1a1a;
+      transition: 0.2s;
+    }
+    .auth-coin-pip.filled {
+      background: #ffcc00;
+      border-color: #ffcc00;
+      box-shadow: 0 0 6px #ffcc00;
+    }
+
     .auth-signout {
+      width: 100%;
       padding: 11px 28px; border-radius: 8px;
       border: 1px solid red; background: transparent; color: red;
       font-family: 'Roboto Slab', serif; font-size: 14px;
-      cursor: pointer; transition: 0.2s;
+      cursor: pointer; transition: 0.2s; margin-top: 8px;
     }
     .auth-signout:hover { background: red; color: white; box-shadow: none !important; }
 
-    /* Fixed top-right button — solid background so it never blends into scroll content */
+    /* ── MODERATOR PANEL ── */
+    .mod-panel {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #2a1a00;
+    }
+    .mod-panel-title {
+      font-size: 10px;
+      color: orange;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .mod-panel-title::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: #2a1a00;
+    }
+    .mod-search-wrap {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .mod-input {
+      flex: 1;
+      padding: 9px 12px;
+      border-radius: 7px;
+      border: 1px solid #2a2a2a;
+      background: #1a1a1a;
+      color: white;
+      font-family: 'Roboto Slab', serif;
+      font-size: 13px;
+      outline: none;
+      transition: 0.2s;
+    }
+    .mod-input:focus { border-color: orange; }
+    .mod-search-btn {
+      padding: 9px 14px;
+      border-radius: 7px;
+      border: 1px solid orange;
+      background: transparent;
+      color: orange;
+      font-family: 'Roboto Slab', serif;
+      font-size: 13px;
+      cursor: pointer;
+      transition: 0.2s;
+      white-space: nowrap;
+    }
+    .mod-search-btn:hover { background: orange; color: black; box-shadow: none !important; }
+
+    .mod-user-card {
+      display: none;
+      background: #0f0f0f;
+      border: 1px solid #2a2a2a;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-top: 8px;
+    }
+    .mod-user-card.visible { display: block; }
+    .mod-user-card-name { font-size: 15px; font-weight: 700; color: white; margin-bottom: 4px; }
+    .mod-user-card-email { font-size: 11px; color: #555; margin-bottom: 12px; }
+    .mod-coin-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .mod-coin-current {
+      font-size: 13px;
+      color: #ffcc00;
+      flex: 1;
+    }
+    .mod-coin-btns { display: flex; gap: 6px; }
+    .mod-coin-btn {
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid #333;
+      background: transparent;
+      color: #aaa;
+      font-family: 'Roboto Slab', serif;
+      font-size: 13px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .mod-coin-btn.add { border-color: #ffcc00; color: #ffcc00; }
+    .mod-coin-btn.sub { border-color: #555; color: #555; }
+    .mod-coin-btn.add:hover { background: #ffcc00; color: black; box-shadow: none !important; }
+    .mod-coin-btn.sub:hover { background: #333; color: white; box-shadow: none !important; }
+    .mod-coin-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .mod-msg { font-size: 12px; margin-top: 8px; display: none; }
+    .mod-msg.ok  { color: lime; }
+    .mod-msg.err { color: red; }
+
+    /* Fixed top-right button */
     #navUserBtn {
       padding: 7px 16px; border-radius: 8px;
       border: 1px solid #444; background: #0a0a0a; color: #aaa;
@@ -202,7 +366,7 @@ function injectAuthModal() {
           <p class="auth-error" id="siError"></p>
         </div>
 
-        <!-- SIGN UP — name field added -->
+        <!-- SIGN UP -->
         <div id="formSignUp" style="display:none;">
           <div class="auth-field">
             <label>Your Name</label>
@@ -236,11 +400,52 @@ function injectAuthModal() {
 
       <!-- LOGGED IN -->
       <div id="authLoggedIn">
-        <p>Signed in as</p>
-        <span class="auth-name"        id="authUserName"></span>
-        <span class="auth-email-small" id="authUserEmail"></span>
-        <button class="auth-signout" onclick="window.__authModal.signOut()">Sign Out</button>
+        <div class="auth-profile-header">
+          <p>Signed in as</p>
+          <span class="auth-name" id="authUserName"></span>
+          <span class="auth-email-small" id="authUserEmail"></span>
+
+          <!-- COIN METER -->
+          <div class="auth-coin-meter">
+            <div class="auth-coin-icon">🪙</div>
+            <div class="auth-coin-info">
+              <div class="auth-coin-label">Promotion Tickets</div>
+              <div class="auth-coin-value" id="authCoinValue">0</div>
+            </div>
+            <div class="auth-coin-pips" id="authCoinPips">
+              <div class="auth-coin-pip" data-pip="1"></div>
+              <div class="auth-coin-pip" data-pip="2"></div>
+              <div class="auth-coin-pip" data-pip="3"></div>
+              <div class="auth-coin-pip" data-pip="4"></div>
+              <div class="auth-coin-pip" data-pip="5"></div>
+            </div>
+          </div>
+
+          <button class="auth-signout" onclick="window.__authModal.signOut()">Sign Out</button>
+        </div>
+
+        <!-- MODERATOR PANEL — only visible to damiralexsam@gmail.com -->
+        <div class="mod-panel" id="modPanel" style="display:none;">
+          <div class="mod-panel-title">⚡ Moderator — Grant Coins</div>
+          <div class="mod-search-wrap">
+            <input class="mod-input" id="modSearchInput" placeholder="Search by email or username...">
+            <button class="mod-search-btn" onclick="window.__authModal._modSearch()">Find</button>
+          </div>
+          <div class="mod-user-card" id="modUserCard">
+            <div class="mod-user-card-name" id="modCardName"></div>
+            <div class="mod-user-card-email" id="modCardEmail"></div>
+            <div class="mod-coin-row">
+              <div class="mod-coin-current">🪙 <span id="modCardCoins">0</span> / ${MAX_COINS} coins</div>
+              <div class="mod-coin-btns">
+                <button class="mod-coin-btn sub" id="modSubBtn" onclick="window.__authModal._modAdjust(-1)">− 1</button>
+                <button class="mod-coin-btn add" id="modAddBtn" onclick="window.__authModal._modAdjust(+1)">+ 1</button>
+              </div>
+            </div>
+            <div class="mod-msg" id="modMsg"></div>
+          </div>
+        </div>
       </div>
+
     </div>
   </div>
   `;
@@ -252,7 +457,9 @@ function injectAuthModal() {
 // AUTH MODAL CONTROLLER
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-let pendingCallback = null;
+let pendingCallback  = null;
+let _modTargetUserId = null;
+let _modTargetCoins  = 0;
 
 window.__authModal = {
   open(callback) {
@@ -281,15 +488,117 @@ window.__authModal = {
     const user = await getUser();
     const forms    = document.getElementById("authForms");
     const loggedIn = document.getElementById("authLoggedIn");
+
     if (user) {
       forms.style.display    = "none";
       loggedIn.style.display = "block";
+
       const name = await getDisplayName();
       document.getElementById("authUserName").textContent  = name;
       document.getElementById("authUserEmail").textContent = user.email;
+
+      // Load and render coin meter
+      const coins = await getCoins(user.id);
+      this._renderCoins(coins);
+
+      // Show mod panel only for the designated moderator
+      const modPanel = document.getElementById("modPanel");
+      if (user.email === MODERATOR_EMAIL) {
+        modPanel.style.display = "block";
+      } else {
+        modPanel.style.display = "none";
+      }
+
     } else {
       forms.style.display    = "block";
       loggedIn.style.display = "none";
+    }
+  },
+
+  _renderCoins(coins) {
+    document.getElementById("authCoinValue").textContent = coins;
+    document.querySelectorAll(".auth-coin-pip").forEach(pip => {
+      const n = parseInt(pip.dataset.pip);
+      pip.classList.toggle("filled", n <= coins);
+    });
+  },
+
+  // ── MOD PANEL: search for a user by email ──
+  async _modSearch() {
+    const query   = document.getElementById("modSearchInput").value.trim().toLowerCase();
+    const card    = document.getElementById("modUserCard");
+    const msgEl   = document.getElementById("modMsg");
+    msgEl.style.display = "none";
+    card.classList.remove("visible");
+    _modTargetUserId = null;
+
+    if (!query) return;
+
+    // Search profiles table by display_name or we match email via auth
+    // We search profiles first (display_name), then try email match via a separate query
+    const { data: byName } = await supabase
+      .from("profiles")
+      .select("id, display_name")
+      .ilike("display_name", `%${query}%`)
+      .limit(5);
+
+    // Also try exact email match via auth.users — not directly queryable from client,
+    // so we search profiles by email column if it exists, otherwise just use display_name
+    const { data: byEmail } = await supabase
+      .from("profiles")
+      .select("id, display_name, email")
+      .ilike("email", `%${query}%`)
+      .limit(5);
+
+    const results = [...(byName || []), ...(byEmail || [])];
+    const unique  = results.filter((r, i, arr) => arr.findIndex(x => x.id === r.id) === i);
+
+    if (unique.length === 0) {
+      msgEl.textContent   = "No user found with that name or email.";
+      msgEl.className     = "mod-msg err";
+      msgEl.style.display = "block";
+      return;
+    }
+
+    // Just take the first match for now
+    const target = unique[0];
+    _modTargetUserId = target.id;
+    _modTargetCoins  = await getCoins(target.id);
+
+    document.getElementById("modCardName").textContent  = target.display_name || "Unknown";
+    document.getElementById("modCardEmail").textContent = target.email || target.id.slice(0,8) + "...";
+    document.getElementById("modCardCoins").textContent = _modTargetCoins;
+
+    const addBtn = document.getElementById("modAddBtn");
+    const subBtn = document.getElementById("modSubBtn");
+    addBtn.disabled = _modTargetCoins >= MAX_COINS;
+    subBtn.disabled = _modTargetCoins <= 0;
+
+    card.classList.add("visible");
+  },
+
+  // ── MOD PANEL: grant or remove a coin ──
+  async _modAdjust(delta) {
+    if (!_modTargetUserId) return;
+    const msgEl = document.getElementById("modMsg");
+    msgEl.style.display = "none";
+
+    const newCoins = Math.max(0, Math.min(MAX_COINS, _modTargetCoins + delta));
+    await setCoins(_modTargetUserId, newCoins);
+    _modTargetCoins = newCoins;
+
+    document.getElementById("modCardCoins").textContent = newCoins;
+    document.getElementById("modAddBtn").disabled = newCoins >= MAX_COINS;
+    document.getElementById("modSubBtn").disabled = newCoins <= 0;
+
+    msgEl.textContent   = delta > 0 ? `✓ Granted 1 coin. Total: ${newCoins}` : `✓ Removed 1 coin. Total: ${newCoins}`;
+    msgEl.className     = "mod-msg ok";
+    msgEl.style.display = "block";
+
+    // If they adjusted their own coins, refresh the meter
+    const self = await getUser();
+    if (self && self.id === _modTargetUserId) {
+      this._renderCoins(newCoins);
     }
   },
 
@@ -323,8 +632,6 @@ window.__authModal = {
       return;
     }
 
-    // data: { full_name } stores the name in auth user_metadata
-    // Email confirmation must be OFF in Supabase (Auth → Settings) for immediate login
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -337,19 +644,13 @@ window.__authModal = {
       return;
     }
 
-    // Also store in profiles table as backup
     if (data.user) {
-      await supabase.from("profiles").upsert({ id: data.user.id, display_name: name });
+      await supabase.from("profiles").upsert({ id: data.user.id, display_name: name, email });
     }
 
-    // Keep the modal open and show the confirmation message.
-    // The user must confirm their email before they get an active session.
-    // Once they click the link in their email, Supabase sets the session
-    // and onAuthChange fires automatically, closing the modal then.
-    sucEl.textContent   = "✓ Check your Spam folder! Confirm your email to finish signing up. Click 'No-Spam' to ensure that future emails get sent into your inbox.";
+    sucEl.textContent   = "✓ Check your Spam folder! Confirm your email to finish signing up.";
     sucEl.style.display = "block";
 
-    // Disable the button so they don't spam-submit
     document.querySelector("#formSignUp .auth-submit").disabled = true;
     document.querySelector("#formSignUp .auth-submit").style.opacity = "0.4";
   },
@@ -384,8 +685,9 @@ async function updateNavBtn(user) {
   const btn = document.getElementById("navUserBtn");
   if (!btn) return;
   if (user) {
-    const name = await getDisplayName();
-    btn.textContent = "👤 " + name;
+    const name  = await getDisplayName();
+    const coins = await getCoins(user.id);
+    btn.textContent = `👤 ${name}  🪙 ${coins}`;
     btn.classList.add("signed-in");
   } else {
     btn.textContent = "Sign In";
@@ -414,12 +716,9 @@ supabase.auth.onAuthStateChange((event, session) => {
   const modal = document.getElementById("authModal");
 
   if (event === "SIGNED_IN") {
-    // Fired both on normal login AND when user clicks confirmation link
     if (modal?.classList.contains("open")) {
       window.__authModal._onSuccess();
     } else {
-      // They confirmed from their email and landed on the page fresh
-      // Just update the nav button — they're already logged in
       updateNavBtn(user);
     }
   }

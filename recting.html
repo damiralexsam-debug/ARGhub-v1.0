@@ -5,485 +5,173 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <style>
-    /* ── RECTING ROOM LAYOUT ── */
     .recting-wrap {
       display: flex;
-      gap: 0;
+      gap: 24px;
       max-width: 1400px;
       margin: 0 auto;
       padding: 0 20px 60px;
       flex-wrap: wrap;
     }
-
-    /* ── LEFT: STREAM + SCHEDULE ── */
     .recting-main {
-      flex: 1;
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
+      flex: 1; min-width: 0;
+      display: flex; flex-direction: column; gap: 24px;
     }
-
-    /* ── STREAM EMBED ── */
     .stream-box {
-      background: #0a0a0a;
-      border: 1px solid #1a1a1a;
-      border-radius: 12px;
-      overflow: hidden;
-      position: relative;
+      background: #0a0a0a; border: 1px solid #1a1a1a;
+      border-radius: 12px; overflow: hidden;
     }
-
     .stream-label {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 16px;
-      background: #111;
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 16px; background: #111;
       border-bottom: 1px solid #1a1a1a;
-      font-size: 12px;
-      color: #555;
-      letter-spacing: 2px;
-      text-transform: uppercase;
+      font-size: 12px; color: #555; letter-spacing: 2px; text-transform: uppercase;
     }
-
     .live-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #333;
-      flex-shrink: 0;
-      transition: 0.3s;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #333; flex-shrink: 0; transition: 0.3s;
     }
-    .live-dot.live {
-      background: red;
-      box-shadow: 0 0 8px red;
-      animation: pulse 1.5s infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
-
-    .stream-embed-wrap {
-      position: relative;
-      padding-bottom: 56.25%;
-      height: 0;
-    }
-    .stream-embed-wrap iframe {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-
+    .live-dot.live { background: red; box-shadow: 0 0 8px red; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .stream-embed-wrap { position: relative; padding-bottom: 56.25%; height: 0; }
+    .stream-embed-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
     .stream-offline {
-      aspect-ratio: 16/9;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      background: #0a0a0a;
-      color: #333;
-      font-size: 14px;
-      letter-spacing: 2px;
+      aspect-ratio: 16/9; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 12px;
+      color: #333; font-size: 14px; letter-spacing: 2px;
     }
     .stream-offline-icon { font-size: 48px; opacity: 0.3; }
 
-    /* ── SCHEDULE ── */
-    .schedule-box {
-      background: #111;
-      border: 1px solid #1a1a1a;
-      border-radius: 12px;
-      overflow: hidden;
-    }
-
+    .schedule-box { background: #111; border: 1px solid #1a1a1a; border-radius: 12px; overflow: hidden; }
     .schedule-header {
-      padding: 14px 18px;
-      background: #0f0f0f;
+      padding: 14px 18px; background: #0f0f0f;
       border-bottom: 1px solid #1a1a1a;
-      font-size: 12px;
-      color: pink;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      font-size: 12px; color: pink; letter-spacing: 2px; text-transform: uppercase;
     }
-
-    .schedule-list {
-      display: flex;
-      flex-direction: column;
-    }
-
+    .schedule-list { display: flex; flex-direction: column; }
     .schedule-item {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 14px 18px;
-      border-bottom: 1px solid #0f0f0f;
-      transition: 0.15s;
-      animation: fadeUp 0.3s ease both;
+      display: flex; align-items: center; gap: 16px;
+      padding: 14px 18px; border-bottom: 1px solid #0f0f0f;
+      transition: 0.15s; animation: fadeUp 0.3s ease both;
     }
     .schedule-item:last-child { border-bottom: none; }
     .schedule-item:hover { background: #0f0f0f; }
-
-    .schedule-date {
-      text-align: center;
-      min-width: 48px;
-      flex-shrink: 0;
-    }
-    .schedule-date-day   { font-size: 20px; font-weight: 900; color: pink; line-height: 1; }
+    .schedule-date { text-align: center; min-width: 48px; flex-shrink: 0; }
+    .schedule-date-day { font-size: 20px; font-weight: 900; color: pink; line-height: 1; }
     .schedule-date-month { font-size: 10px; color: #555; letter-spacing: 1px; text-transform: uppercase; }
-
     .schedule-info { flex: 1; min-width: 0; }
     .schedule-title { font-size: 14px; font-weight: 700; color: white; }
-    .schedule-time  { font-size: 12px; color: #555; margin-top: 2px; }
+    .schedule-time { font-size: 12px; color: #555; margin-top: 2px; }
     .schedule-tag {
-      font-size: 10px;
-      padding: 2px 8px;
-      border-radius: 10px;
-      font-weight: bold;
-      letter-spacing: 1px;
-      border: 1px solid pink;
-      color: pink;
-      background: #1a0a10;
-      white-space: nowrap;
-      flex-shrink: 0;
+      font-size: 10px; padding: 2px 8px; border-radius: 10px;
+      font-weight: bold; letter-spacing: 1px;
+      border: 1px solid pink; color: pink; background: #1a0a10;
+      white-space: nowrap; flex-shrink: 0;
     }
+    .schedule-empty { padding: 32px; text-align: center; color: #333; font-size: 13px; letter-spacing: 1px; }
 
-    .schedule-empty {
-      padding: 32px;
-      text-align: center;
-      color: #333;
-      font-size: 13px;
-      letter-spacing: 1px;
-    }
+    .recting-side { width: 340px; flex-shrink: 0; }
 
-    /* ── RIGHT: CHAT + SHOUTOUTS ── */
-    .recting-side {
-      width: 340px;
-      flex-shrink: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      margin-left: 20px;
-    }
-
-    /* ── SHOUTOUTS ── */
-    .shoutout-box {
-      background: #111;
-      border: 1px solid #2a1a0a;
-      border-radius: 12px;
-      overflow: hidden;
-    }
-
+    .shoutout-box { background: #111; border: 1px solid #2a1a0a; border-radius: 12px; overflow: hidden; }
     .shoutout-header {
-      padding: 12px 16px;
-      background: #0f0f0f;
+      padding: 12px 16px; background: #0f0f0f;
       border-bottom: 1px solid #1a1a1a;
-      font-size: 12px;
-      color: orange;
-      letter-spacing: 2px;
-      text-transform: uppercase;
+      font-size: 12px; color: orange; letter-spacing: 2px; text-transform: uppercase;
     }
-
     .shoutout-form {
-      padding: 14px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      border-bottom: 1px solid #1a1a1a;
+      padding: 14px 16px; display: flex; flex-direction: column;
+      gap: 10px; border-bottom: 1px solid #1a1a1a;
     }
-
     .shoutout-input {
-      width: 100%;
-      padding: 9px 12px;
-      border-radius: 7px;
-      border: 1px solid #2a2a2a;
-      background: #1a1a1a;
-      color: white;
-      font-family: 'Roboto Slab', serif;
-      font-size: 13px;
-      outline: none;
-      transition: 0.2s;
-      resize: none;
+      width: 100%; padding: 9px 12px; border-radius: 7px;
+      border: 1px solid #2a2a2a; background: #1a1a1a;
+      color: white; font-family: 'Roboto Slab', serif;
+      font-size: 13px; outline: none; transition: 0.2s; resize: none;
     }
     .shoutout-input:focus { border-color: orange; }
-
-    .shoutout-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .shoutout-price {
-      font-size: 12px;
-      color: #555;
-    }
+    .shoutout-footer { display: flex; align-items: center; justify-content: space-between; }
+    .shoutout-price { font-size: 12px; color: #555; }
     .shoutout-price span { color: orange; font-weight: bold; }
-
     .shoutout-submit {
-      padding: 7px 16px;
-      border-radius: 7px;
-      border: 1px solid orange;
-      background: transparent;
-      color: orange;
-      font-family: 'Roboto Slab', serif;
-      font-size: 13px;
-      cursor: pointer;
-      transition: 0.2s;
+      padding: 7px 16px; border-radius: 7px;
+      border: 1px solid orange; background: transparent; color: orange;
+      font-family: 'Roboto Slab', serif; font-size: 13px;
+      cursor: pointer; transition: 0.2s;
     }
     .shoutout-submit:hover { background: orange; color: black; box-shadow: none !important; }
-
     .shoutout-queue {
-      max-height: 160px;
-      overflow-y: auto;
-      scrollbar-width: thin;
-      scrollbar-color: #222 transparent;
+      max-height: 400px; overflow-y: auto;
+      scrollbar-width: thin; scrollbar-color: #222 transparent;
     }
-
     .shoutout-item {
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
-      padding: 10px 14px;
-      border-bottom: 1px solid #0f0f0f;
-      font-size: 13px;
-      animation: fadeUp 0.25s ease both;
+      display: flex; gap: 10px; align-items: flex-start;
+      padding: 10px 14px; border-bottom: 1px solid #0f0f0f;
+      font-size: 13px; animation: fadeUp 0.25s ease both;
     }
     .shoutout-item:last-child { border-bottom: none; }
     .shoutout-item-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
     .shoutout-item-body { flex: 1; min-width: 0; }
     .shoutout-item-from { font-size: 11px; color: orange; font-weight: bold; }
-    .shoutout-item-msg  { color: #ccc; line-height: 1.5; word-break: break-word; }
-
+    .shoutout-item-msg { color: #ccc; line-height: 1.5; word-break: break-word; }
     .shoutout-empty { padding: 20px; text-align: center; color: #333; font-size: 12px; letter-spacing: 1px; }
 
-    /* ── LIVE CHAT ── */
-    .chat-box {
-      background: #111;
-      border: 1px solid #1a1a1a;
-      border-radius: 12px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      height: 420px;
-    }
-
-    .chat-header {
-      padding: 12px 16px;
-      background: #0f0f0f;
-      border-bottom: 1px solid #1a1a1a;
-      font-size: 12px;
-      color: #666;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-shrink: 0;
-    }
-
-    .chat-messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      scrollbar-width: thin;
-      scrollbar-color: #222 transparent;
-    }
-
-    .chat-msg {
-      font-size: 13px;
-      line-height: 1.5;
-      color: #ccc;
-      animation: fadeUp 0.2s ease both;
-      word-break: break-word;
-    }
-    .chat-msg-name { font-weight: 700; margin-right: 6px; }
-    .chat-msg-name.is-me { color: lime; }
-    .chat-msg-name.other { color: #88aaff; }
-
-    .chat-input-wrap {
-      flex-shrink: 0;
-      padding: 10px;
-      border-top: 1px solid #1a1a1a;
-      display: flex;
-      gap: 8px;
-    }
-
-    .chat-input {
-      flex: 1;
-      padding: 8px 12px;
-      border-radius: 7px;
-      border: 1px solid #2a2a2a;
-      background: #1a1a1a;
-      color: white;
-      font-family: 'Roboto Slab', serif;
-      font-size: 13px;
-      outline: none;
-      transition: 0.2s;
-    }
-    .chat-input:focus { border-color: #555; }
-
-    .chat-send {
-      background: none;
-      border: none;
-      color: #333;
-      font-size: 18px;
-      cursor: pointer;
-      padding: 0 4px;
-      transition: 0.2s;
-      flex-shrink: 0;
-    }
-    .chat-send:hover { color: pink; box-shadow: none !important; }
-    .chat-send.ready { color: pink; }
-
-    .chat-signin-note {
-      padding: 10px;
-      border-top: 1px solid #1a1a1a;
-      text-align: center;
-      font-size: 12px;
-      color: #444;
-      flex-shrink: 0;
-    }
-    .chat-signin-note button {
-      margin-left: 6px;
-      background: none;
-      border: 1px solid #444;
-      color: #888;
-      border-radius: 5px;
-      padding: 3px 10px;
-      font-family: 'Roboto Slab', serif;
-      font-size: 11px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .chat-signin-note button:hover { border-color: pink; color: pink; box-shadow: none !important; }
-
-    /* ── ADMIN PANEL ── */
     .admin-recting-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.9);
-      z-index: 9999;
-      justify-content: center;
-      align-items: center;
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.9); z-index: 9999;
+      justify-content: center; align-items: center;
     }
     .admin-recting-overlay.open { display: flex; }
-
     .admin-recting-box {
-      background: #111;
-      border: 1px solid #333;
-      border-radius: 16px;
-      padding: 32px 36px;
-      width: 540px;
-      max-height: 90vh;
-      overflow-y: auto;
-      position: relative;
+      background: #111; border: 1px solid #333; border-radius: 16px;
+      padding: 32px 36px; width: 540px; max-height: 90vh;
+      overflow-y: auto; position: relative;
       animation: fadeUp 0.25s ease both;
+      scrollbar-width: thin; scrollbar-color: #333 transparent;
     }
-
     .admin-recting-title { color: orange; font-size: 18px; letter-spacing: 1px; margin: 0 0 24px; }
     .admin-recting-close {
       position: absolute; top: 16px; right: 20px;
       background: none; border: none; color: #555; font-size: 20px; cursor: pointer;
     }
     .admin-recting-close:hover { color: white; box-shadow: none !important; }
-
     .ar-section { margin-bottom: 28px; }
     .ar-section-title { font-size: 11px; color: #555; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
-
     .ar-input {
-      width: 100%;
-      padding: 10px 14px;
-      border-radius: 8px;
-      border: 1px solid #2a2a2a;
-      background: #1a1a1a;
-      color: white;
-      font-family: 'Roboto Slab', serif;
-      font-size: 13px;
-      outline: none;
-      transition: 0.2s;
-      margin-bottom: 8px;
+      width: 100%; padding: 10px 14px; border-radius: 8px;
+      border: 1px solid #2a2a2a; background: #1a1a1a;
+      color: white; font-family: 'Roboto Slab', serif;
+      font-size: 13px; outline: none; transition: 0.2s; margin-bottom: 8px;
     }
     .ar-input:focus { border-color: orange; }
-
     .ar-row { display: flex; gap: 8px; }
     .ar-row .ar-input { margin-bottom: 0; }
-
     .ar-btn {
-      padding: 9px 18px;
-      border-radius: 7px;
-      border: 1px solid orange;
-      background: transparent;
-      color: orange;
-      font-family: 'Roboto Slab', serif;
-      font-size: 13px;
-      cursor: pointer;
-      transition: 0.2s;
-      white-space: nowrap;
+      padding: 9px 18px; border-radius: 7px;
+      border: 1px solid orange; background: transparent; color: orange;
+      font-family: 'Roboto Slab', serif; font-size: 13px;
+      cursor: pointer; transition: 0.2s; white-space: nowrap;
     }
     .ar-btn:hover { background: orange; color: black; box-shadow: none !important; }
-    .ar-btn.danger { border-color: red; color: red; }
-    .ar-btn.danger:hover { background: red; color: white; }
-
     .ar-hint { font-size: 11px; color: #555; margin-bottom: 10px; }
-
     .ar-schedule-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 12px;
-      background: #1a1a1a;
-      border-radius: 7px;
-      margin-bottom: 6px;
-      font-size: 13px;
-      color: #ccc;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 12px; background: #1a1a1a; border-radius: 7px;
+      margin-bottom: 6px; font-size: 13px; color: #ccc;
     }
-
     .ar-shoutout-item {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 8px;
-      padding: 8px 12px;
-      background: #1a1a1a;
-      border-radius: 7px;
-      margin-bottom: 6px;
-      font-size: 13px;
-      color: #ccc;
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 8px; padding: 8px 12px; background: #1a1a1a; border-radius: 7px;
+      margin-bottom: 6px; font-size: 13px; color: #ccc;
     }
-
-    /* ── ADMIN TRIGGER ── */
     #adminRectingBtn {
-      display: none;
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      padding: 10px 18px;
-      border-radius: 8px;
-      border: 1px solid orange;
-      background: #0a0a0a;
-      color: orange;
-      font-family: 'Roboto Slab', serif;
-      font-size: 13px;
-      cursor: pointer;
-      transition: 0.2s;
-      z-index: 1000;
-      letter-spacing: 1px;
+      display: none; position: fixed; bottom: 20px; right: 20px;
+      padding: 10px 18px; border-radius: 8px;
+      border: 1px solid orange; background: #0a0a0a; color: orange;
+      font-family: 'Roboto Slab', serif; font-size: 13px;
+      cursor: pointer; transition: 0.2s; z-index: 1000; letter-spacing: 1px;
     }
     #adminRectingBtn:hover { background: orange; color: black; box-shadow: none !important; }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(8px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
   </style>
 </head>
 <body>
@@ -505,11 +193,8 @@
 <p style="text-align:center;color:#555;font-size:13px;letter-spacing:1px;margin-bottom:28px;">Live streams · Shout-outs · ARG discussions</p>
 
 <div class="recting-wrap">
-
-  <!-- LEFT COLUMN -->
   <div class="recting-main">
 
-    <!-- STREAM -->
     <div class="stream-box">
       <div class="stream-label">
         <div class="live-dot" id="liveDot"></div>
@@ -524,11 +209,8 @@
       </div>
     </div>
 
-    <!-- SCHEDULE -->
     <div class="schedule-box">
-      <div class="schedule-header">
-        <span>📅 Upcoming Broadcasts</span>
-      </div>
+      <div class="schedule-header">📅 Upcoming Broadcasts</div>
       <div class="schedule-list" id="scheduleList">
         <div class="schedule-empty">Loading schedule...</div>
       </div>
@@ -536,17 +218,14 @@
 
   </div>
 
-  <!-- RIGHT COLUMN -->
   <div class="recting-side">
-
-    <!-- SHOUT-OUTS -->
     <div class="shoutout-box">
       <div class="shoutout-header">📢 Shout-outs</div>
       <div class="shoutout-form">
         <input class="shoutout-input" id="shoutoutArg" placeholder="Your ARG name...">
         <textarea class="shoutout-input" id="shoutoutMsg" rows="3" placeholder="Your shout-out message (max 120 chars)..." maxlength="120"></textarea>
         <div class="shoutout-footer">
-          <span class="shoutout-price">Fee: <span>$5</span> Promotion Credit</span>
+          <span class="shoutout-price">Costs: <span>1 🪙</span> Promotion Ticket</span>
           <button class="shoutout-submit" onclick="submitShoutout()">Submit →</button>
         </div>
       </div>
@@ -554,52 +233,26 @@
         <div class="shoutout-empty">No shout-outs yet. Be first!</div>
       </div>
     </div>
-
-    <!-- CHAT -->
-    <div class="chat-box">
-      <div class="chat-header">
-        <div class="live-dot" id="chatDot"></div>
-        <span>Live Chat</span>
-      </div>
-      <div class="chat-messages" id="chatMessages">
-        <div style="text-align:center;color:#333;font-size:12px;padding:20px;letter-spacing:1px;">Loading chat...</div>
-      </div>
-      <div class="chat-input-wrap" id="chatInputWrap" style="display:none;">
-        <input class="chat-input" id="chatInput" placeholder="Say something..."
-          onkeydown="if(event.key==='Enter'){event.preventDefault();sendChat()}"
-          oninput="document.getElementById('chatSendBtn').classList.toggle('ready',!!this.value.trim())">
-        <button class="chat-send" id="chatSendBtn" onclick="sendChat()">➤</button>
-      </div>
-      <div class="chat-signin-note" id="chatSigninNote" style="display:none;">
-        Sign in to join the chat.
-        <button onclick="window.__authModal && window.__authModal.open()">Sign In</button>
-      </div>
-    </div>
-
   </div>
 </div>
 
-<!-- ADMIN PANEL TRIGGER (owner only) -->
 <button id="adminRectingBtn" onclick="openAdminRecting()">⚙ Manage Stream</button>
 
-<!-- ADMIN PANEL -->
 <div class="admin-recting-overlay" id="adminRectingOverlay" onclick="if(event.target===this)closeAdminRecting()">
   <div class="admin-recting-box">
     <button class="admin-recting-close" onclick="closeAdminRecting()">✕</button>
     <h2 class="admin-recting-title">⚙ Recting Room Admin</h2>
 
-    <!-- Stream URL -->
     <div class="ar-section">
       <div class="ar-section-title">YouTube Stream URL</div>
-      <p class="ar-hint">Paste a YouTube live stream or video URL. Leave blank to show offline.</p>
+      <p class="ar-hint">Paste a YouTube live stream URL. Leave blank to show offline.</p>
       <div class="ar-row">
         <input class="ar-input" id="arStreamUrl" placeholder="https://www.youtube.com/watch?v=...">
         <button class="ar-btn" onclick="saveStreamUrl()">Save</button>
       </div>
-      <p id="arStreamMsg" style="font-size:12px;color:lime;display:none;margin-top:6px;">✓ Stream URL saved!</p>
+      <p id="arStreamMsg" style="font-size:12px;color:lime;display:none;margin-top:6px;">✓ Saved!</p>
     </div>
 
-    <!-- Schedule -->
     <div class="ar-section">
       <div class="ar-section-title">Add to Schedule</div>
       <input class="ar-input" id="arSchedTitle" placeholder="Broadcast title...">
@@ -608,11 +261,9 @@
         <input class="ar-input" type="time" id="arSchedTime" style="flex:1;">
       </div>
       <button class="ar-btn" onclick="addScheduleItem()" style="width:100%;">+ Add to Schedule</button>
-
       <div style="margin-top:14px;" id="arScheduleList"></div>
     </div>
 
-    <!-- Shout-out queue management -->
     <div class="ar-section">
       <div class="ar-section-title">Shout-out Queue</div>
       <div id="arShoutoutList"><p style="color:#333;font-size:13px;">Loading...</p></div>
@@ -621,149 +272,71 @@
 </div>
 
 <script type="module">
-import { supabase, getUser, getDisplayName } from "./supabase-auth.js";
-
-/* ━━━━━━━━━━━━━━━━━━━━━━━━
-   SUPABASE TABLE SCHEMA NEEDED:
-   
-   recting_config  (id text PK, value text)
-     → rows: { id: 'stream_url', value: '...' }
-   
-   recting_schedule (id uuid, title text, date date, time time, created_at timestamptz)
-   
-   recting_shoutouts (id uuid, user_id uuid, arg_name text, message text, created_at timestamptz)
-   
-   recting_chat (id uuid, user_id uuid, author text, message text, created_at timestamptz)
-   ━━━━━━━━━━━━━━━━━━━━━━━━ */
-
-const ADMIN_USER_ID = null; // Set this to your Supabase user ID to restrict admin access
-// e.g. const ADMIN_USER_ID = "your-uuid-here";
+import { supabase, getUser, getDisplayName, getCoins, setCoins } from "./supabase-auth.js";
 
 let currentUser     = null;
 let currentUserName = null;
-let chatRealtime    = null;
-let shoutoutRealtime = null;
 
-// ── INIT ──
 async function init() {
   currentUser     = await getUser();
   currentUserName = currentUser ? await getDisplayName() : null;
-
-  // Show chat input or sign-in note
-  if (currentUser) {
-    document.getElementById("chatInputWrap").style.display  = "flex";
-  } else {
-    document.getElementById("chatSigninNote").style.display = "block";
-  }
-
-  // Show admin button if user is the designated admin
-  // For now, show to any logged-in user for testing — restrict later
-  if (currentUser) {
-    document.getElementById("adminRectingBtn").style.display = "block";
-  }
-
+  if (currentUser) document.getElementById("adminRectingBtn").style.display = "block";
   await loadStreamUrl();
   await loadSchedule();
   await loadShoutouts();
-  await loadChat();
-  subscribeChat();
   subscribeShoutouts();
 }
 
-// ── STREAM ──
 async function loadStreamUrl() {
   try {
-    const { data } = await supabase
-      .from("recting_config")
-      .select("value")
-      .eq("id", "stream_url")
-      .maybeSingle();
-
+    const { data } = await supabase.from("recting_config").select("value").eq("id","stream_url").maybeSingle();
     const url = data?.value || "";
     renderStream(url);
-
-    // Pre-fill admin input
     document.getElementById("arStreamUrl").value = url;
-  } catch(e) {
-    renderStream("");
-  }
+  } catch(e) { renderStream(""); }
 }
 
 function extractYouTubeId(url) {
   if (!url) return null;
-  const match = url.match(/(?:youtube\.com\/(?:watch\?v=|live\/)|youtu\.be\/)([^&?/\s]+)/);
-  return match ? match[1] : null;
+  const m = url.match(/(?:youtube\.com\/(?:watch\?v=|live\/)|youtu\.be\/)([^&?/\s]+)/);
+  return m ? m[1] : null;
 }
 
 function renderStream(url) {
   const container = document.getElementById("streamContainer");
   const dot       = document.getElementById("liveDot");
   const label     = document.getElementById("liveLabel");
-  const chatDot   = document.getElementById("chatDot");
-
-  const videoId = extractYouTubeId(url);
-  if (videoId) {
-    dot.classList.add("live");
-    chatDot.classList.add("live");
-    label.textContent = "LIVE NOW";
-    container.innerHTML = `
-      <div class="stream-embed-wrap">
-        <iframe src="https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen></iframe>
-      </div>`;
+  const id        = extractYouTubeId(url);
+  if (id) {
+    dot.classList.add("live"); label.textContent = "LIVE NOW";
+    container.innerHTML = `<div class="stream-embed-wrap"><iframe src="https://www.youtube.com/embed/${id}?autoplay=0&rel=0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe></div>`;
   } else {
-    dot.classList.remove("live");
-    chatDot.classList.remove("live");
-    label.textContent = "OFFLINE";
-    container.innerHTML = `
-      <div class="stream-offline">
-        <div class="stream-offline-icon">📡</div>
-        <span>No stream scheduled right now.</span>
-        <span style="font-size:11px;">Check the schedule below for upcoming broadcasts.</span>
-      </div>`;
+    dot.classList.remove("live"); label.textContent = "OFFLINE";
+    container.innerHTML = `<div class="stream-offline"><div class="stream-offline-icon">📡</div><span>No stream scheduled right now.</span><span style="font-size:11px;">Check the schedule below for upcoming broadcasts.</span></div>`;
   }
 }
 
-// ── SCHEDULE ──
 async function loadSchedule() {
   const list = document.getElementById("scheduleList");
   try {
-    const { data } = await supabase
-      .from("recting_schedule")
-      .select("*")
-      .order("date", { ascending: true })
-      .order("time", { ascending: true });
-
-    renderSchedule(data || [], list);
-    renderAdminSchedule(data || []);
-  } catch(e) {
-    list.innerHTML = `<div class="schedule-empty">Schedule unavailable.</div>`;
-  }
+    const { data } = await supabase.from("recting_schedule").select("*").order("date",{ascending:true}).order("time",{ascending:true});
+    renderSchedule(data||[], list);
+    renderAdminSchedule(data||[]);
+  } catch(e) { list.innerHTML = `<div class="schedule-empty">Schedule unavailable.</div>`; }
 }
 
 function renderSchedule(items, list) {
-  if (!items.length) {
-    list.innerHTML = `<div class="schedule-empty">No upcoming broadcasts scheduled. Check back soon!</div>`;
-    return;
-  }
+  if (!items.length) { list.innerHTML = `<div class="schedule-empty">No upcoming broadcasts scheduled. Check back soon!</div>`; return; }
   list.innerHTML = items.map(item => {
-    const d     = new Date(item.date + "T00:00:00");
-    const day   = d.getDate();
-    const month = d.toLocaleString("en-US", { month: "short" }).toUpperCase();
-    const time  = item.time ? item.time.slice(0,5) : "";
-    return `
-      <div class="schedule-item">
-        <div class="schedule-date">
-          <div class="schedule-date-day">${day}</div>
-          <div class="schedule-date-month">${month}</div>
-        </div>
-        <div class="schedule-info">
-          <div class="schedule-title">${escapeHtml(item.title)}</div>
-          <div class="schedule-time">${time ? "🕐 " + time + " (your local time)" : "Time TBD"}</div>
-        </div>
-        <span class="schedule-tag">LIVE</span>
-      </div>`;
+    const d = new Date(item.date+"T00:00:00");
+    const day = d.getDate();
+    const month = d.toLocaleString("en-US",{month:"short"}).toUpperCase();
+    const time = item.time ? item.time.slice(0,5) : "";
+    return `<div class="schedule-item">
+      <div class="schedule-date"><div class="schedule-date-day">${day}</div><div class="schedule-date-month">${month}</div></div>
+      <div class="schedule-info"><div class="schedule-title">${esc(item.title)}</div><div class="schedule-time">${time?"🕐 "+time+" (your local time)":"Time TBD"}</div></div>
+      <span class="schedule-tag">LIVE</span>
+    </div>`;
   }).join("");
 }
 
@@ -771,205 +344,93 @@ function renderAdminSchedule(items) {
   const list = document.getElementById("arScheduleList");
   if (!list) return;
   if (!items.length) { list.innerHTML = `<p style="color:#333;font-size:13px;">No items yet.</p>`; return; }
-  list.innerHTML = items.map(item => `
-    <div class="ar-schedule-item">
-      <span>${escapeHtml(item.title)} — ${item.date} ${item.time || ""}</span>
-      <button onclick="deleteScheduleItem('${item.id}')" style="background:none;border:none;color:#555;cursor:pointer;font-size:14px;transition:0.15s;" onmouseover="this.style.color='red'" onmouseout="this.style.color='#555'">✕</button>
-    </div>`).join("");
+  list.innerHTML = items.map(item => `<div class="ar-schedule-item"><span>${esc(item.title)} — ${item.date} ${item.time||""}</span><button onclick="deleteScheduleItem('${item.id}')" style="background:none;border:none;color:#555;cursor:pointer;font-size:14px;" onmouseover="this.style.color='red'" onmouseout="this.style.color='#555'">✕</button></div>`).join("");
 }
 
-// ── SHOUT-OUTS ──
 async function loadShoutouts() {
   const queue = document.getElementById("shoutoutQueue");
   try {
-    const { data } = await supabase
-      .from("recting_shoutouts")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(20);
-
-    renderShoutouts(data || [], queue);
-    renderAdminShoutouts(data || []);
-  } catch(e) {
-    queue.innerHTML = `<div class="shoutout-empty">Shout-outs unavailable.</div>`;
-  }
+    const { data } = await supabase.from("recting_shoutouts").select("*").order("created_at",{ascending:false}).limit(20);
+    renderShoutouts(data||[], queue);
+    renderAdminShoutouts(data||[]);
+  } catch(e) { queue.innerHTML = `<div class="shoutout-empty">Shout-outs unavailable.</div>`; }
 }
 
 function renderShoutouts(items, queue) {
-  if (!items.length) {
-    queue.innerHTML = `<div class="shoutout-empty">No shout-outs yet. Be first!</div>`;
-    return;
-  }
-  queue.innerHTML = items.map(item => `
-    <div class="shoutout-item">
-      <div class="shoutout-item-icon">📢</div>
-      <div class="shoutout-item-body">
-        <div class="shoutout-item-from">${escapeHtml(item.arg_name || "Unknown ARG")}</div>
-        <div class="shoutout-item-msg">${escapeHtml(item.message)}</div>
-      </div>
-    </div>`).join("");
+  if (!items.length) { queue.innerHTML = `<div class="shoutout-empty">No shout-outs yet. Be first!</div>`; return; }
+  queue.innerHTML = items.map(item => `<div class="shoutout-item"><div class="shoutout-item-icon">📢</div><div class="shoutout-item-body"><div class="shoutout-item-from">${esc(item.arg_name||"Unknown ARG")}</div><div class="shoutout-item-msg">${esc(item.message)}</div></div></div>`).join("");
 }
 
 function renderAdminShoutouts(items) {
   const list = document.getElementById("arShoutoutList");
   if (!list) return;
   if (!items.length) { list.innerHTML = `<p style="color:#333;font-size:13px;">No shout-outs yet.</p>`; return; }
-  list.innerHTML = items.map(item => `
-    <div class="ar-shoutout-item">
-      <div>
-        <div style="color:orange;font-size:12px;font-weight:bold;">${escapeHtml(item.arg_name || "")}</div>
-        <div style="color:#ccc;font-size:13px;">${escapeHtml(item.message)}</div>
-      </div>
-      <button onclick="deleteShoutout('${item.id}')" style="background:none;border:none;color:#555;cursor:pointer;font-size:14px;flex-shrink:0;" onmouseover="this.style.color='red'" onmouseout="this.style.color='#555'">✕</button>
-    </div>`).join("");
+  list.innerHTML = items.map(item => `<div class="ar-shoutout-item"><div><div style="color:orange;font-size:12px;font-weight:bold;">${esc(item.arg_name||"")}</div><div style="color:#ccc;font-size:13px;">${esc(item.message)}</div></div><button onclick="deleteShoutout('${item.id}')" style="background:none;border:none;color:#555;cursor:pointer;font-size:14px;flex-shrink:0;" onmouseover="this.style.color='red'" onmouseout="this.style.color='#555'">✕</button></div>`).join("");
 }
 
 function subscribeShoutouts() {
-  supabase.channel("recting-shoutouts")
-    .on("postgres_changes", { event: "INSERT", schema: "public", table: "recting_shoutouts" }, payload => {
-      loadShoutouts();
-    }).subscribe();
+  supabase.channel("recting-shoutouts").on("postgres_changes",{event:"INSERT",schema:"public",table:"recting_shoutouts"},()=>loadShoutouts()).subscribe();
 }
-
-// ── CHAT ──
-async function loadChat() {
-  const msgs = document.getElementById("chatMessages");
-  try {
-    const { data } = await supabase
-      .from("recting_chat")
-      .select("*")
-      .order("created_at", { ascending: true })
-      .limit(80);
-
-    msgs.innerHTML = "";
-    if (!data || data.length === 0) {
-      msgs.innerHTML = `<div style="text-align:center;color:#333;font-size:12px;padding:20px;letter-spacing:1px;">No messages yet — start the conversation!</div>`;
-      return;
-    }
-    (data || []).forEach(m => msgs.appendChild(buildChatMsg(m)));
-    scrollChat();
-  } catch(e) {
-    msgs.innerHTML = `<div style="text-align:center;color:#333;font-size:12px;padding:20px;">Chat unavailable.</div>`;
-  }
-}
-
-function buildChatMsg(msg) {
-  const el = document.createElement("div");
-  el.className = "chat-msg";
-  const isMe    = currentUser && msg.user_id === currentUser.id;
-  const nameClass = isMe ? "is-me" : "other";
-  el.innerHTML = `<span class="chat-msg-name ${nameClass}">${escapeHtml(msg.author)}</span>${escapeHtml(msg.message)}`;
-  return el;
-}
-
-function subscribeChat() {
-  chatRealtime = supabase.channel("recting-chat")
-    .on("postgres_changes", { event: "INSERT", schema: "public", table: "recting_chat" }, payload => {
-      const msgs = document.getElementById("chatMessages");
-      const empty = msgs.querySelector("div[style]");
-      if (empty) empty.remove();
-      msgs.appendChild(buildChatMsg(payload.new));
-      scrollChat();
-    }).subscribe();
-}
-
-function scrollChat() {
-  const msgs = document.getElementById("chatMessages");
-  msgs.scrollTop = msgs.scrollHeight;
-}
-
-// ── GLOBALS ──
-window.sendChat = async function() {
-  if (!currentUser) { window.__authModal && window.__authModal.open(); return; }
-  const input = document.getElementById("chatInput");
-  const msg   = input.value.trim();
-  if (!msg) return;
-  input.value = "";
-  document.getElementById("chatSendBtn").classList.remove("ready");
-
-  try {
-    await supabase.from("recting_chat").insert({
-      user_id: currentUser.id,
-      author:  currentUserName || currentUser.email.split("@")[0],
-      message: msg
-    });
-  } catch(e) {
-    console.error("Chat send failed:", e);
-  }
-};
 
 window.submitShoutout = async function() {
-  if (!currentUser) { window.__authModal && window.__authModal.open(); return; }
+  if (!currentUser) { window.__authModal&&window.__authModal.open(); return; }
   const argName = document.getElementById("shoutoutArg").value.trim();
   const message = document.getElementById("shoutoutMsg").value.trim();
-  if (!argName || !message) { alert("Please fill in both your ARG name and message."); return; }
-
+  if (!argName||!message) { alert("Please fill in both your ARG name and message."); return; }
+  const coins = await getCoins(currentUser.id);
+  if (coins < 1) { alert("You need at least 1 Promotion Ticket 🪙 to submit a shout-out. A moderator can grant you up to 5!"); return; }
+  await setCoins(currentUser.id, coins - 1);
   try {
-    await supabase.from("recting_shoutouts").insert({
-      user_id:  currentUser.id,
-      arg_name: argName,
-      message
-    });
+    await supabase.from("recting_shoutouts").insert({ user_id: currentUser.id, arg_name: argName, message });
     document.getElementById("shoutoutArg").value = "";
     document.getElementById("shoutoutMsg").value = "";
     await loadShoutouts();
   } catch(e) {
+    await setCoins(currentUser.id, coins); // refund
     alert("Shout-out submission failed. Try again.");
   }
 };
 
-// ── ADMIN ──
-window.openAdminRecting  = function() { document.getElementById("adminRectingOverlay").classList.add("open"); loadAdminData(); };
+window.openAdminRecting  = function() { document.getElementById("adminRectingOverlay").classList.add("open"); loadSchedule(); loadShoutouts(); };
 window.closeAdminRecting = function() { document.getElementById("adminRectingOverlay").classList.remove("open"); };
 
-async function loadAdminData() {
-  await loadSchedule();
-  await loadShoutouts();
-}
-
 window.saveStreamUrl = async function() {
-  const url    = document.getElementById("arStreamUrl").value.trim();
-  const msgEl  = document.getElementById("arStreamMsg");
+  const url = document.getElementById("arStreamUrl").value.trim();
+  const msgEl = document.getElementById("arStreamMsg");
   try {
-    await supabase.from("recting_config").upsert({ id: "stream_url", value: url });
+    await supabase.from("recting_config").upsert({ id:"stream_url", value:url });
     renderStream(url);
-    msgEl.style.display = "block";
-    setTimeout(() => msgEl.style.display = "none", 2000);
-  } catch(e) {
-    alert("Failed to save stream URL. Make sure the recting_config table exists.");
-  }
+    msgEl.style.display="block";
+    setTimeout(()=>msgEl.style.display="none",2000);
+  } catch(e) { alert("Failed to save. Make sure recting_config table exists."); }
 };
 
 window.addScheduleItem = async function() {
   const title = document.getElementById("arSchedTitle").value.trim();
   const date  = document.getElementById("arSchedDate").value;
   const time  = document.getElementById("arSchedTime").value;
-  if (!title || !date) { alert("Please enter a title and date."); return; }
+  if (!title||!date) { alert("Please enter a title and date."); return; }
   try {
-    await supabase.from("recting_schedule").insert({ title, date, time: time || null });
-    document.getElementById("arSchedTitle").value = "";
-    document.getElementById("arSchedDate").value  = "";
-    document.getElementById("arSchedTime").value  = "";
+    await supabase.from("recting_schedule").insert({ title, date, time:time||null });
+    document.getElementById("arSchedTitle").value="";
+    document.getElementById("arSchedDate").value="";
+    document.getElementById("arSchedTime").value="";
     await loadSchedule();
-  } catch(e) {
-    alert("Failed to add schedule item.");
-  }
+  } catch(e) { alert("Failed to add schedule item."); }
 };
 
 window.deleteScheduleItem = async function(id) {
   if (!confirm("Remove this from the schedule?")) return;
-  await supabase.from("recting_schedule").delete().eq("id", id);
+  await supabase.from("recting_schedule").delete().eq("id",id);
   await loadSchedule();
 };
 
 window.deleteShoutout = async function(id) {
-  await supabase.from("recting_shoutouts").delete().eq("id", id);
+  await supabase.from("recting_shoutouts").delete().eq("id",id);
   await loadShoutouts();
 };
 
-function escapeHtml(s) {
-  return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
-}
+function esc(s) { return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 
 init();
 </script>
