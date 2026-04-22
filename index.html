@@ -5,7 +5,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <style>
-    /* ── PAGE LOAD ANIMATIONS ── */
     @keyframes fadeDown {
       from { opacity: 0; transform: translateY(-18px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -26,13 +25,10 @@
     h1          { animation: fadeUp  0.6s ease 0.35s both; }
     h1 + h2     { animation: fadeUp  0.6s ease 0.45s both; }
     .buttonRow  { animation: fadeUp  0.7s ease 0.55s both; }
-
-    /* stagger the classic cards */
     .argCard.card1 { animation: fadeUp 0.6s ease 0.65s both; }
     .argCard.card2 { animation: fadeUp 0.6s ease 0.80s both; }
     .argCard.card3 { animation: fadeUp 0.6s ease 0.95s both; }
 
-    /* ── MANIFESTO ── */
     .manifesto {
       max-width: 720px;
       margin: 70px auto 60px;
@@ -41,17 +37,219 @@
       border-bottom: 1px solid #222;
       text-align: center;
     }
-    .manifesto p {
+    .manifesto p { font-size: 16px; color: #aaa; line-height: 2; margin: 0; }
+    .manifesto p em { color: white; font-style: normal; font-weight: 700; }
+
+    /* ── SHOP ENTRY ── */
+    .shop-entry {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin: 0 auto 60px;
+      animation: fadeUp 0.6s ease 1.1s both;
+    }
+    .shop-entry-label {
+      font-size: 11px;
+      color: #444;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+    .shop-open-btn {
+      padding: 16px 48px;
+      border-radius: 12px;
+      border: 1px solid #ffcc00;
+      background: transparent;
+      color: #ffcc00;
+      font-family: 'Roboto Slab', serif;
       font-size: 16px;
-      color: #aaa;
-      line-height: 2;
-      margin: 0;
+      cursor: pointer;
+      transition: 0.3s;
+      letter-spacing: 1px;
     }
-    .manifesto p em {
-      color: white;
-      font-style: normal;
-      font-weight: 700;
+    .shop-open-btn:hover {
+      background: #ffcc00;
+      color: black;
+      box-shadow: 0 0 24px rgba(255,204,0,0.4) !important;
     }
+
+    /* ── SHOP MODAL ── */
+    .shop-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.95);
+      z-index: 99990;
+      justify-content: center;
+      align-items: flex-start;
+      overflow-y: auto;
+      padding: 40px 20px 60px;
+    }
+    .shop-overlay.open { display: flex; }
+
+    .shop-box {
+      background: #0f0f0f;
+      border: 1px solid #2a2a1a;
+      border-radius: 20px;
+      width: 900px;
+      max-width: 100%;
+      margin: auto;
+      overflow: hidden;
+      animation: fadeUp 0.3s ease both;
+    }
+
+    .shop-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 32px;
+      border-bottom: 1px solid #1a1a1a;
+      background: #111;
+    }
+    .shop-header-left { display: flex; align-items: center; gap: 14px; }
+    .shop-header-title { font-size: 22px; font-weight: 900; color: #ffcc00; letter-spacing: 1px; }
+    .shop-header-coins {
+      display: flex; align-items: center; gap: 8px;
+      background: #0a0a0a; border: 1px solid #2a2a1a;
+      border-radius: 8px; padding: 7px 14px;
+      font-size: 14px; color: #ffcc00; font-weight: 700;
+    }
+    .shop-close {
+      background: none; border: none; color: #555;
+      font-size: 22px; cursor: pointer; transition: 0.2s;
+      font-family: 'Roboto Slab', serif;
+    }
+    .shop-close:hover { color: white; box-shadow: none !important; }
+
+    /* category tabs */
+    .shop-cats {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid #1a1a1a;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .shop-cat-btn {
+      padding: 14px 22px;
+      background: none; border: none;
+      color: #555; font-family: 'Roboto Slab', serif;
+      font-size: 13px; letter-spacing: 1px;
+      cursor: pointer; transition: 0.2s;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+    }
+    .shop-cat-btn:hover { color: #aaa; box-shadow: none !important; }
+    .shop-cat-btn.active { color: #ffcc00; border-bottom-color: #ffcc00; }
+
+    /* grid */
+    .shop-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 16px;
+      padding: 28px 32px;
+    }
+
+    .shop-item {
+      background: #111;
+      border: 1px solid #1e1e1e;
+      border-radius: 14px;
+      overflow: hidden;
+      transition: 0.25s;
+      cursor: pointer;
+      position: relative;
+    }
+    .shop-item:hover {
+      border-color: #ffcc00;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(255,204,0,0.1);
+    }
+    .shop-item.owned { border-color: lime; }
+    .shop-item.owned::after {
+      content: "✓ OWNED";
+      position: absolute; top: 8px; right: 8px;
+      font-size: 9px; color: lime; letter-spacing: 1px;
+      background: rgba(0,0,0,0.7); padding: 2px 6px; border-radius: 4px;
+    }
+
+    .shop-item-preview {
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 52px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* category-specific preview backgrounds */
+    .preview-icon-border   { background: #0a0a1a; }
+    .preview-animated      { background: #0a1a0a; }
+    .preview-banner        { background: #1a0a0a; }
+    .preview-coloured-font { background: #1a1a0a; }
+    .preview-profile-hat   { background: #0a1a1a; }
+    .preview-background    { background: #1a0a1a; }
+
+    /* animated shimmer for "animated skins" */
+    @keyframes shimmer {
+      0%   { filter: hue-rotate(0deg) brightness(1.2); }
+      50%  { filter: hue-rotate(180deg) brightness(1.6); }
+      100% { filter: hue-rotate(360deg) brightness(1.2); }
+    }
+    .shop-item[data-category="animated"] .shop-item-preview {
+      animation: shimmer 3s linear infinite;
+    }
+
+    .shop-item-body { padding: 12px 14px; }
+    .shop-item-name { font-size: 13px; font-weight: 700; color: white; margin-bottom: 4px; }
+    .shop-item-desc { font-size: 11px; color: #555; line-height: 1.5; margin-bottom: 10px; }
+    .shop-item-footer {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .shop-item-cost { font-size: 12px; color: #ffcc00; font-weight: bold; }
+    .shop-item-cost.free { color: lime; }
+    .shop-buy-btn {
+      padding: 5px 12px; border-radius: 6px;
+      border: 1px solid #ffcc00; background: transparent; color: #ffcc00;
+      font-family: 'Roboto Slab', serif; font-size: 11px;
+      cursor: pointer; transition: 0.2s;
+    }
+    .shop-buy-btn:hover { background: #ffcc00; color: black; box-shadow: none !important; }
+    .shop-buy-btn.owned-btn { border-color: lime; color: lime; cursor: default; }
+    .shop-buy-btn.owned-btn:hover { background: transparent; box-shadow: none !important; }
+
+    /* hover preview tooltip */
+    .shop-item:hover .shop-preview-tooltip { display: block; }
+    .shop-preview-tooltip {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%; transform: translateX(-50%);
+      background: #111;
+      border: 1px solid #ffcc00;
+      border-radius: 10px;
+      padding: 10px 14px;
+      width: 200px;
+      font-size: 12px;
+      color: #ccc;
+      line-height: 1.6;
+      z-index: 100;
+      pointer-events: none;
+      text-align: left;
+      white-space: normal;
+    }
+    .shop-preview-tooltip strong { color: white; display: block; margin-bottom: 4px; }
+
+    .shop-empty { text-align: center; color: #333; padding: 60px; font-size: 14px; letter-spacing: 1px; width: 100%; }
+
+    .shop-toast {
+      position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+      background: #111; border: 1px solid lime; border-radius: 10px;
+      padding: 12px 24px; font-size: 14px; color: lime;
+      z-index: 999999; animation: fadeUp 0.3s ease both;
+      display: none;
+    }
+    .shop-toast.show { display: block; }
   </style>
 </head>
 <body>
@@ -190,7 +388,7 @@
 
 </div>
 
-<!-- ── MANIFESTO ── -->
+<!-- MANIFESTO -->
 <div class="manifesto">
   <p>
     The ARG community has always lived in fragments —
@@ -204,7 +402,42 @@
   </p>
 </div>
 
-<br>
+<!-- SHOP ENTRY -->
+<div class="shop-entry">
+  <div class="shop-entry-label">— Cosmetic Shop —</div>
+  <button class="shop-open-btn" onclick="openShop()">🪙 Open the Shop</button>
+  <div style="font-size:12px;color:#333;letter-spacing:1px;">Spend Promotion Tickets on profile cosmetics</div>
+</div>
+
+<!-- SHOP MODAL -->
+<div class="shop-overlay" id="shopOverlay" onclick="handleShopOverlay(event)">
+  <div class="shop-box">
+
+    <div class="shop-header">
+      <div class="shop-header-left">
+        <div class="shop-header-title">🪙 The Shop</div>
+        <div class="shop-header-coins">🪙 <span id="shopCoinDisplay">0</span> tickets</div>
+      </div>
+      <button class="shop-close" onclick="closeShop()">✕</button>
+    </div>
+
+    <div class="shop-cats">
+      <button class="shop-cat-btn active" onclick="switchShopCat('all',this)">All</button>
+      <button class="shop-cat-btn" onclick="switchShopCat('icon-border',this)">🔲 Icon Borders</button>
+      <button class="shop-cat-btn" onclick="switchShopCat('animated',this)">✨ Animated Skins</button>
+      <button class="shop-cat-btn" onclick="switchShopCat('banner',this)">🖼 Banners</button>
+      <button class="shop-cat-btn" onclick="switchShopCat('coloured-font',this)">🎨 Coloured Font</button>
+      <button class="shop-cat-btn" onclick="switchShopCat('profile-hat',this)">🎩 Profile Hats</button>
+      <button class="shop-cat-btn" onclick="switchShopCat('background',this)">🌌 Backgrounds</button>
+    </div>
+
+    <div class="shop-grid" id="shopGrid"></div>
+
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="shop-toast" id="shopToast"></div>
 
 <script>
 function toggleBox(type) {
@@ -215,6 +448,188 @@ function toggleBox(type) {
   setTimeout(() => { box.style.opacity = "1"; }, 10);
 }
 </script>
+
+<script type="module">
+import { supabase, getUser, requireAuth, getCoins, setCoins } from "./supabase-auth.js";
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// SHOP CATALOGUE
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const CATALOGUE = [
+  // ICON BORDERS
+  { id:"ib_gold",    category:"icon-border",    name:"Gold Ring",        emoji:"🟡", cost:1, desc:"A gleaming gold border around your profile icon.", preview:"Thin gold ring frames your avatar everywhere it appears." },
+  { id:"ib_violet",  category:"icon-border",    name:"Violet Halo",      emoji:"🟣", cost:1, desc:"A violet glow border for your profile icon.", preview:"Soft violet ring visible in communities and profiles." },
+  { id:"ib_red",     category:"icon-border",    name:"Red Warning",      emoji:"🔴", cost:1, desc:"A bold red border — for those who want to be noticed.", preview:"Striking red ring that demands attention." },
+  { id:"ib_rainbow", category:"icon-border",    name:"Rainbow Edge",     emoji:"🌈", cost:2, desc:"A slow rainbow-cycling border around your avatar.", preview:"Cycles through all colours slowly. Very rare look." },
+  { id:"ib_glitch",  category:"icon-border",    name:"Glitch Frame",     emoji:"⚡", cost:3, desc:"An animated glitching border with static noise.", preview:"Flickers and glitches like corrupted footage. ARG energy." },
+
+  // ANIMATED SKINS
+  { id:"an_pulse",   category:"animated",       name:"Pulse",            emoji:"💫", cost:2, desc:"Your avatar icon pulses with a slow glow.", preview:"Gentle pulsing aura on your profile icon." },
+  { id:"an_static",  category:"animated",       name:"Static Noise",     emoji:"📺", cost:2, desc:"Your avatar has a static TV noise overlay.", preview:"Your icon flickers like an old CRT screen." },
+  { id:"an_fire",    category:"animated",       name:"On Fire",          emoji:"🔥", cost:3, desc:"A fire animation surrounds your profile icon.", preview:"Flame particles rise from the edges of your avatar." },
+  { id:"an_matrix",  category:"animated",       name:"Matrix Rain",      emoji:"🟩", cost:3, desc:"Green code rain falls over your avatar.", preview:"Cascading green characters flow over your icon." },
+  { id:"an_ghost",   category:"animated",       name:"Ghost Mode",       emoji:"👻", cost:4, desc:"Your avatar fades in and out like a ghost.", preview:"Your icon slowly fades to near-invisible and back." },
+
+  // BANNERS
+  { id:"bn_dark",    category:"banner",         name:"Void Banner",      emoji:"🌑", cost:1, desc:"A deep black banner with a subtle noise texture.", preview:"Clean dark profile banner, minimal and mysterious." },
+  { id:"bn_cipher",  category:"banner",         name:"Cipher Banner",    emoji:"🔐", cost:2, desc:"A banner covered in faint cipher text.", preview:"Faint Vigenère and Morse symbols fill your banner." },
+  { id:"bn_arg",     category:"banner",         name:"ARG Static",       emoji:"📡", cost:2, desc:"A banner with TV static and ARG symbols.", preview:"Looks like a corrupted broadcast background." },
+  { id:"bn_violet",  category:"banner",         name:"Violet Gradient",  emoji:"🟪", cost:1, desc:"A deep violet gradient banner.", preview:"Smooth violet-to-black gradient for your profile." },
+  { id:"bn_gold",    category:"banner",         name:"Gold Elite",       emoji:"🏆", cost:3, desc:"A premium gold-toned banner for top contributors.", preview:"Warm gold shimmer across your profile header." },
+
+  // COLOURED FONT
+  { id:"cf_lime",    category:"coloured-font",  name:"Lime Text",        emoji:"💚", cost:1, desc:"Your username shows in lime green everywhere.", preview:"Your name glows lime in chats and communities." },
+  { id:"cf_orange",  category:"coloured-font",  name:"Orange Text",      emoji:"🟠", cost:1, desc:"Your username displays in orange.", preview:"Warm orange nameplate visible to all." },
+  { id:"cf_violet",  category:"coloured-font",  name:"Violet Text",      emoji:"💜", cost:1, desc:"Your username shows in violet.", preview:"Mysterious violet text wherever your name appears." },
+  { id:"cf_red",     category:"coloured-font",  name:"Red Text",         emoji:"❤️", cost:1, desc:"Your username displays in red.", preview:"Bold red nameplate — hard to miss." },
+  { id:"cf_rainbow", category:"coloured-font",  name:"Rainbow Text",     emoji:"🌈", cost:3, desc:"Your username slowly cycles through rainbow colours.", preview:"Each letter shifts colour over time. Extremely rare." },
+  { id:"cf_glitch",  category:"coloured-font",  name:"Glitch Text",      emoji:"⚡", cost:4, desc:"Your username glitches and shifts characters occasionally.", preview:"Letters occasionally scramble and reassemble." },
+
+  // PROFILE HATS
+  { id:"ph_wizard",  category:"profile-hat",    name:"Wizard Hat",       emoji:"🧙", cost:1, desc:"A classic wizard hat perched on your avatar.", preview:"Pointy hat floats above your profile icon." },
+  { id:"ph_crown",   category:"profile-hat",    name:"Crown",            emoji:"👑", cost:2, desc:"A gold crown for those who earned it.", preview:"Royal crown sits above your avatar." },
+  { id:"ph_detective",category:"profile-hat",   name:"Detective",        emoji:"🕵️", cost:2, desc:"A detective hat — perfect for a puzzle solver.", preview:"Classic detective brim above your icon." },
+  { id:"ph_space",   category:"profile-hat",    name:"Space Helmet",     emoji:"👨‍🚀", cost:3, desc:"A full space helmet over your avatar.", preview:"Astronaut visor frames your face. ARG in space." },
+  { id:"ph_anon",    category:"profile-hat",    name:"Anonymous Mask",   emoji:"🎭", cost:3, desc:"The iconic white mask — for those who stay hidden.", preview:"Guy Fawkes mask overlaid on your avatar." },
+
+  // BACKGROUNDS
+  { id:"bg_stars",   category:"background",     name:"Starfield",        emoji:"🌌", cost:1, desc:"A deep space starfield profile background.", preview:"Scrolling stars behind your profile card." },
+  { id:"bg_matrix",  category:"background",     name:"Digital Rain",     emoji:"💻", cost:2, desc:"Green code rain as your profile background.", preview:"Matrix-style cascading characters behind your card." },
+  { id:"bg_void",    category:"background",     name:"The Void",         emoji:"⬛", cost:1, desc:"Pure darkness. No distractions.", preview:"Absolute black background — minimal and cold." },
+  { id:"bg_cipher",  category:"background",     name:"Cipher Wall",      emoji:"🔤", cost:2, desc:"A dense wall of ciphers and symbols.", preview:"Encrypted text fills your entire profile background." },
+  { id:"bg_glitch",  category:"background",     name:"Glitch Storm",     emoji:"📺", cost:3, desc:"A chaotic animated glitch effect behind your profile.", preview:"Your background corrupts and recovers on loop." },
+  { id:"bg_sunset",  category:"background",     name:"Neon Sunset",      emoji:"🌆", cost:2, desc:"A synthwave neon sunset background.", preview:"Purple and orange gradient horizon behind your card." },
+];
+
+let currentUser   = null;
+let userCoins     = 0;
+let ownedItems    = new Set();
+let activeCat     = "all";
+
+// ── OPEN / CLOSE ──
+window.openShop = function() {
+  requireAuth(async () => {
+    currentUser = await (await import("./supabase-auth.js")).getUser();
+    userCoins   = await getCoins(currentUser.id);
+    document.getElementById("shopCoinDisplay").textContent = userCoins;
+
+    // Load owned items
+    const { data } = await supabase
+      .from("cosmetics_owned")
+      .select("item_id")
+      .eq("user_id", currentUser.id);
+    ownedItems = new Set((data||[]).map(r => r.item_id));
+
+    renderShopGrid(activeCat);
+    document.getElementById("shopOverlay").classList.add("open");
+  });
+};
+
+window.closeShop = function() {
+  document.getElementById("shopOverlay").classList.remove("open");
+};
+
+window.handleShopOverlay = function(e) {
+  if (e.target === document.getElementById("shopOverlay")) closeShop();
+};
+
+window.switchShopCat = function(cat, btn) {
+  activeCat = cat;
+  document.querySelectorAll(".shop-cat-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  renderShopGrid(cat);
+};
+
+// ── RENDER ──
+function renderShopGrid(cat) {
+  const grid  = document.getElementById("shopGrid");
+  const items = cat === "all" ? CATALOGUE : CATALOGUE.filter(i => i.category === cat);
+
+  if (!items.length) {
+    grid.innerHTML = `<div class="shop-empty">Nothing here yet.</div>`;
+    return;
+  }
+
+  grid.innerHTML = items.map(item => {
+    const owned    = ownedItems.has(item.id);
+    const canAfford = userCoins >= item.cost;
+    const previewClass = `preview-${item.category}`;
+
+    return `
+      <div class="shop-item ${owned ? "owned" : ""}" data-category="${item.category}">
+        <div class="shop-item-preview ${previewClass}">
+          ${item.emoji}
+          <div class="shop-preview-tooltip">
+            <strong>${item.name}</strong>
+            ${item.preview}
+          </div>
+        </div>
+        <div class="shop-item-body">
+          <div class="shop-item-name">${item.name}</div>
+          <div class="shop-item-desc">${item.desc}</div>
+          <div class="shop-item-footer">
+            <div class="shop-item-cost ${item.cost === 0 ? "free" : ""}">
+              ${item.cost === 0 ? "FREE" : `🪙 ${item.cost}`}
+            </div>
+            ${owned
+              ? `<button class="shop-buy-btn owned-btn">Owned</button>`
+              : `<button class="shop-buy-btn" onclick="buyItem('${item.id}')" ${!canAfford ? "disabled style='opacity:0.4;cursor:not-allowed;'" : ""}>Buy</button>`
+            }
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+// ── BUY ──
+window.buyItem = async function(itemId) {
+  if (!currentUser) return;
+  const item = CATALOGUE.find(i => i.id === itemId);
+  if (!item) return;
+
+  // Re-check coins fresh
+  userCoins = await getCoins(currentUser.id);
+  if (userCoins < item.cost) {
+    showToast("❌ Not enough Promotion Tickets!", false);
+    return;
+  }
+
+  // Deduct coins
+  await setCoins(currentUser.id, userCoins - item.cost);
+  userCoins -= item.cost;
+
+  // Record ownership
+  const { error } = await supabase.from("cosmetics_owned").insert({
+    user_id: currentUser.id,
+    item_id: item.id,
+    category: item.category,
+    name: item.name
+  });
+
+  if (error) {
+    // Refund
+    await setCoins(currentUser.id, userCoins + item.cost);
+    showToast("❌ Purchase failed. Try again.", false);
+    return;
+  }
+
+  ownedItems.add(item.id);
+  document.getElementById("shopCoinDisplay").textContent = userCoins;
+  renderShopGrid(activeCat);
+  showToast(`✓ ${item.name} unlocked! Find it in your profile.`, true);
+};
+
+function showToast(msg, ok) {
+  const toast = document.getElementById("shopToast");
+  toast.textContent = msg;
+  toast.style.borderColor = ok ? "lime" : "red";
+  toast.style.color = ok ? "lime" : "red";
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 3000);
+}
+</script>
+
 <script type="module" src="supabase-auth.js"></script>
 </body>
 </html>
