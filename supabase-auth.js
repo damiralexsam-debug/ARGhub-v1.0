@@ -452,6 +452,7 @@ window.__authModal = {
       .limit(1);
 
     if (error || !data || data.length === 0) {
+      card.classList.add("visible");
       msgEl.textContent   = "No user found. Make sure they've signed up and their profile is saved.";
       msgEl.className     = "mod-msg err";
       msgEl.style.display = "block";
