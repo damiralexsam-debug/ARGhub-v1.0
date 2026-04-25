@@ -284,7 +284,7 @@ function injectAuthModal() {
           <span class="auth-name" id="authUserName"></span>
           <span class="auth-email-small" id="authUserEmail"></span>
           <div class="auth-coin-meter">
-            <div class="auth-coin-icon">🪙</div>
+            <div class="auth-coin-icon">✦</div>
             <div class="auth-coin-info">
               <div class="auth-coin-label">Promotion Tickets</div>
               <div class="auth-coin-value" id="authCoinValue">0</div>
@@ -315,7 +315,7 @@ function injectAuthModal() {
             <div class="mod-user-card-name" id="modCardName"></div>
             <div class="mod-user-card-email" id="modCardEmail"></div>
             <div class="mod-coin-row">
-              <div class="mod-coin-current">🪙 <span id="modCardCoins">0</span> coins</div>
+              <div class="mod-coin-current">✦ <span id="modCardCoins">0</span> coins</div>
               <div class="mod-coin-btns">
                 <button class="mod-coin-btn sub" id="modSubBtn" onclick="window.__authModal._modAdjust(-1)">− 1</button>
                 <button class="mod-coin-btn add" id="modAddBtn" onclick="window.__authModal._modAdjust(+5)">+ 5</button>
@@ -347,7 +347,17 @@ window.__authModal = {
     document.getElementById("authModal").classList.add("open");
     this._refreshView();
   },
-  close() { document.getElementById("authModal").classList.remove("open"); },
+  close() {
+    document.getElementById("authModal").classList.remove("open");
+    _modTargetUserId = null;
+    _modTargetCoins  = 0;
+    const card = document.getElementById("modUserCard");
+    if (card) card.classList.remove("visible");
+    const inp = document.getElementById("modSearchInput");
+    if (inp) inp.value = "";
+    const msg = document.getElementById("modMsg");
+    if (msg) msg.style.display = "none";
+  },
   handleOverlay(e) { if (e.target === document.getElementById("authModal")) this.close(); },
   switchTab(tab) {
     const s = tab === "signin";
@@ -481,8 +491,13 @@ window.__authModal = {
     msgEl.textContent   = delta > 0 ? `✓ Granted ${delta} coins. Total: ${newCoins}` : `✓ Removed 1 coin. Total: ${newCoins}`;
     msgEl.className     = "mod-msg ok";
     msgEl.style.display = "block";
+    clearTimeout(this._modMsgTimer);
+    this._modMsgTimer = setTimeout(() => { msgEl.style.display = "none"; }, 3000);
     const self = await getUser();
-    if (self && self.id === _modTargetUserId) this._renderCoins(newCoins);
+    if (self && self.id === _modTargetUserId) {
+      this._renderCoins(newCoins);
+      updateNavBtn(self);
+    }
   },
 
   async signIn() {
@@ -536,7 +551,7 @@ async function updateNavBtn(user) {
   if (user) {
     const name  = await getDisplayName();
     const coins = await getCoins(user.id);
-    btn.textContent = `👤 ${name}  🪙 ${coins}`;
+    btn.textContent = `👤 ${name}  ✦ ${coins}`;
     btn.classList.add("signed-in");
   } else {
     btn.textContent = "Sign In";
