@@ -10,7 +10,6 @@ const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
 
 const MODERATOR_EMAIL = "damiralexsam@gmail.com";
-const MAX_COINS       = 5;
 
 const CAT_LABELS = {
   "icon-border":   "🔲 Icon Borders",
@@ -316,10 +315,10 @@ function injectAuthModal() {
             <div class="mod-user-card-name" id="modCardName"></div>
             <div class="mod-user-card-email" id="modCardEmail"></div>
             <div class="mod-coin-row">
-              <div class="mod-coin-current">🪙 <span id="modCardCoins">0</span> / ${MAX_COINS} coins</div>
+              <div class="mod-coin-current">🪙 <span id="modCardCoins">0</span> coins</div>
               <div class="mod-coin-btns">
                 <button class="mod-coin-btn sub" id="modSubBtn" onclick="window.__authModal._modAdjust(-1)">− 1</button>
-                <button class="mod-coin-btn add" id="modAddBtn" onclick="window.__authModal._modAdjust(+1)">+ 1</button>
+                <button class="mod-coin-btn add" id="modAddBtn" onclick="window.__authModal._modAdjust(+5)">+ 5</button>
               </div>
             </div>
             <div class="mod-msg" id="modMsg"></div>
@@ -465,7 +464,6 @@ window.__authModal = {
     document.getElementById("modCardName").textContent  = target.display_name || "Unknown";
     document.getElementById("modCardEmail").textContent = target.email || target.id.slice(0,8)+"...";
     document.getElementById("modCardCoins").textContent = _modTargetCoins;
-    document.getElementById("modAddBtn").disabled = _modTargetCoins >= MAX_COINS;
     document.getElementById("modSubBtn").disabled = _modTargetCoins <= 0;
     card.classList.add("visible");
   },
@@ -474,13 +472,12 @@ window.__authModal = {
     if (!_modTargetUserId) return;
     const msgEl    = document.getElementById("modMsg");
     msgEl.style.display = "none";
-    const newCoins = Math.max(0, Math.min(MAX_COINS, _modTargetCoins + delta));
+    const newCoins = Math.max(0, _modTargetCoins + delta);
     await setCoins(_modTargetUserId, newCoins);
     _modTargetCoins = newCoins;
     document.getElementById("modCardCoins").textContent = newCoins;
-    document.getElementById("modAddBtn").disabled = newCoins >= MAX_COINS;
     document.getElementById("modSubBtn").disabled = newCoins <= 0;
-    msgEl.textContent   = delta > 0 ? `✓ Granted 1 coin. Total: ${newCoins}` : `✓ Removed 1 coin. Total: ${newCoins}`;
+    msgEl.textContent   = delta > 0 ? `✓ Granted ${delta} coins. Total: ${newCoins}` : `✓ Removed 1 coin. Total: ${newCoins}`;
     msgEl.className     = "mod-msg ok";
     msgEl.style.display = "block";
     const self = await getUser();
@@ -492,6 +489,7 @@ window.__authModal = {
     const pw    = document.getElementById("siPassword").value;
     const errEl = document.getElementById("siError");
     errEl.style.display = "none";
+    if (!email || !pw) { errEl.textContent = "Email and password are required."; errEl.style.display = "block"; return; }
     const { error } = await supabase.auth.signInWithPassword({ email, password: pw });
     if (error) { errEl.textContent = error.message; errEl.style.display = "block"; return; }
     this._onSuccess();
