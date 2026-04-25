@@ -562,7 +562,7 @@ window.openMembersModal = async function() {
     row.className = "member-row";
     row.innerHTML = `
       <div style="flex:1;min-width:0;">
-        <div class="member-row-name">${displayName}${isOwner?' <span style="color:#444;font-size:11px;">(you)</span>':""}${isBanned?' <span style="color:red;font-size:11px;">BANNED</span>':""}</div>
+        <div class="member-row-name" style="cursor:pointer;" onclick="window.openProfile && window.openProfile('${member.user_id}')">${displayName}${isOwner?' <span style="color:#444;font-size:11px;">(you)</span>':""}${isBanned?' <span style="color:red;font-size:11px;">BANNED</span>':""}</div>
         <div class="member-row-roles" style="margin-top:4px;">${memberRoleTags||'<span style="font-size:11px;color:#333;">No roles</span>'}</div>
       </div>
       <div class="member-row-actions">
@@ -670,8 +670,9 @@ function buildMessageEl(msg) {
     ? 'color:#444;background:#111;border-color:#222;'
     : `color:${isMe?'#0a0a0a':'#88aaff'};background:${isMe?'#1a3d1a':'#0a0a2a'};border-color:${isMe?'#2a5a2a':'#1a1a3a'};`;
   const authorStyle = isSystem ? 'style="color:#444;"' : `class="msg-author ${isMe?'is-me':'is-other'}"`;
+  const authorClick = (!isSystem && msg.user_id) ? `style="cursor:pointer;" onclick="window.openProfile && window.openProfile('${msg.user_id}')"` : "";
   el.innerHTML = `<div class="msg-avatar" style="${avatarStyle}">${isSystem?'⚙':initial}</div>
-    <div class="msg-body"><div class="msg-header"><span ${authorStyle}>${escapeHtml(msg.author)}</span>${roleTags}<span class="msg-time">${time}</span></div>${content}</div>`;
+    <div class="msg-body"><div class="msg-header"><span ${authorStyle} ${authorClick}>${escapeHtml(msg.author)}</span>${roleTags}<span class="msg-time">${time}</span></div>${content}</div>`;
   return el;
 }
 
@@ -736,5 +737,6 @@ window.leaveCommunity = async function() {
 
 init();
 </script>
+<script type="module" src="profile.js"></script>
 </body>
 </html>
