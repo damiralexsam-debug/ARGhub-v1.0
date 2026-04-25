@@ -405,7 +405,7 @@
 <!-- SHOP ENTRY -->
 <div class="shop-entry">
   <div class="shop-entry-label">— Cosmetic Shop —</div>
-  <button class="shop-open-btn" onclick="openShop()">🪙 Open the Shop</button>
+  <button class="shop-open-btn" onclick="openShop()">✦ Open the Shop</button>
   <div style="font-size:12px;color:#333;letter-spacing:1px;">Spend Promotion Tickets on profile cosmetics</div>
 </div>
 
@@ -415,8 +415,8 @@
 
     <div class="shop-header">
       <div class="shop-header-left">
-        <div class="shop-header-title">🪙 The Shop</div>
-        <div class="shop-header-coins">🪙 <span id="shopCoinDisplay">0</span> tickets</div>
+        <div class="shop-header-title">✦ The Shop</div>
+        <div class="shop-header-coins">✦ <span id="shopCoinDisplay">0</span> tickets</div>
       </div>
       <button class="shop-close" onclick="closeShop()">✕</button>
     </div>
@@ -569,7 +569,7 @@ function renderShopGrid(cat) {
           <div class="shop-item-desc">${item.desc}</div>
           <div class="shop-item-footer">
             <div class="shop-item-cost ${item.cost === 0 ? "free" : ""}">
-              ${item.cost === 0 ? "FREE" : `🪙 ${item.cost}`}
+              ${item.cost === 0 ? "FREE" : `✦ ${item.cost}`}
             </div>
             ${owned
               ? `<button class="shop-buy-btn owned-btn">Owned</button>`

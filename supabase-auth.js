@@ -50,7 +50,9 @@ export async function getCoins(userId) {
 }
 
 export async function setCoins(userId, coins) {
-  await supabase.from("promotion_tickets").upsert({ user_id: userId, coins }, { onConflict: "user_id" });
+  const { error } = await supabase.from("promotion_tickets").upsert({ user_id: userId, coins }, { onConflict: "user_id" });
+  if (error) console.error("[setCoins] upsert failed:", error);
+  return error;
 }
 
 export async function getActiveCosmetics(userId) {
@@ -289,13 +291,6 @@ function injectAuthModal() {
               <div class="auth-coin-label">Promotion Tickets</div>
               <div class="auth-coin-value" id="authCoinValue">0</div>
             </div>
-            <div class="auth-coin-pips" id="authCoinPips">
-              <div class="auth-coin-pip" data-pip="1"></div>
-              <div class="auth-coin-pip" data-pip="2"></div>
-              <div class="auth-coin-pip" data-pip="3"></div>
-              <div class="auth-coin-pip" data-pip="4"></div>
-              <div class="auth-coin-pip" data-pip="5"></div>
-            </div>
           </div>
           <button class="auth-signout" onclick="window.__authModal.signOut()">Sign Out</button>
         </div>
@@ -390,8 +385,6 @@ window.__authModal = {
 
   _renderCoins(coins) {
     document.getElementById("authCoinValue").textContent = coins;
-    document.querySelectorAll(".auth-coin-pip").forEach(p =>
-      p.classList.toggle("filled", parseInt(p.dataset.pip) <= coins));
   },
 
   async _loadWardrobe(userId) {
@@ -484,7 +477,15 @@ window.__authModal = {
     const msgEl    = document.getElementById("modMsg");
     msgEl.style.display = "none";
     const newCoins = Math.max(0, _modTargetCoins + delta);
-    await setCoins(_modTargetUserId, newCoins);
+    const saveErr = await setCoins(_modTargetUserId, newCoins);
+    if (saveErr) {
+      msgEl.textContent   = `❌ Save failed: ${saveErr.message}`;
+      msgEl.className     = "mod-msg err";
+      msgEl.style.display = "block";
+      clearTimeout(this._modMsgTimer);
+      this._modMsgTimer = setTimeout(() => { msgEl.style.display = "none"; }, 5000);
+      return;
+    }
     _modTargetCoins = newCoins;
     document.getElementById("modCardCoins").textContent = newCoins;
     document.getElementById("modSubBtn").disabled = newCoins <= 0;
