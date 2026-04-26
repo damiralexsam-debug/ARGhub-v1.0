@@ -1198,6 +1198,7 @@ supabase.auth.onAuthStateChange((event, session) => {
   updateNavBtn(user);
   const modal = document.getElementById("authModal");
   if (event === "SIGNED_IN") {
+    if (user) ensureProfile(user);
     if (modal?.classList.contains("open")) window.__authModal._onSuccess();
     else updateNavBtn(user);
   }
