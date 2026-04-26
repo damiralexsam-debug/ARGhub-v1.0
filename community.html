@@ -50,17 +50,7 @@
 
     .msg-group { display: flex; gap: 12px; padding: 4px 8px; border-radius: 6px; transition: background 0.1s; animation: fadeUp 0.18s ease both; }
     .msg-group:hover { background: #111; }
-    .msg-avatar { width: 38px; height: 38px; border-radius: 50%; background: #1a1a1a; border: 1px solid #2a2a2a; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; margin-top: 2px; transition: 0.2s; }
-    .msg-hat { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); font-size: 13px; line-height: 1; pointer-events: none; }
-    @keyframes anim-pulse-kf  { 0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,0.25)} 50%{box-shadow:0 0 0 6px rgba(255,255,255,0)} }
-    @keyframes anim-ghost-kf  { 0%,100%{opacity:1} 50%{opacity:0.15} }
-    @keyframes anim-fire-kf   { 0%,100%{box-shadow:0 0 6px #ff4400} 50%{box-shadow:0 0 14px #ff8800} }
-    @keyframes anim-static-kf { 0%{filter:contrast(1)} 50%{filter:contrast(1.4) saturate(0)} 100%{filter:contrast(1)} }
-    .anim-pulse  { animation: anim-pulse-kf  2s ease-in-out infinite; }
-    .anim-ghost  { animation: anim-ghost-kf  3s ease-in-out infinite; }
-    .anim-fire   { animation: anim-fire-kf   1s ease-in-out infinite; }
-    .anim-static { animation: anim-static-kf 0.4s steps(2) infinite; }
-    .anim-matrix { filter: hue-rotate(100deg) saturate(2); animation: anim-pulse-kf 1.5s ease-in-out infinite; }
+    .msg-avatar { width: 38px; height: 38px; border-radius: 50%; background: #1a1a1a; border: 1px solid #2a2a2a; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; margin-top: 2px; transition: border 0.2s, box-shadow 0.2s; }
     .msg-body { flex: 1; min-width: 0; }
     .msg-header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
     .msg-author { font-size: 14px; font-weight: 700; }
@@ -317,6 +307,7 @@
 
 <script type="module">
 import { supabase, getUser, getDisplayName, requireAuth } from "./supabase-auth.js";
+import { prefetchCosmetics, applyToAvatar, applyToName, applyByUid } from "./cosmetics.js";
 
 const params      = new URLSearchParams(window.location.search);
 const communityId = params.get("id");
@@ -330,68 +321,7 @@ let allRoles        = [];
 let allMembers      = [];
 let userRolesMap    = {}; // user_id → [{ name, color }, ...]
 
-// ── COSMETICS ──
-const COSMETIC_BORDER = {
-  ib_gold:    { border: "2px solid #ffcc00", shadow: "0 0 8px #ffcc0066" },
-  ib_violet:  { border: "2px solid #9b59b6", shadow: "0 0 8px #9b59b666" },
-  ib_red:     { border: "2px solid #e74c3c", shadow: "0 0 8px #e74c3c66" },
-  ib_rainbow: { border: "2px solid #ff69b4", shadow: "0 0 8px #ff69b466" },
-  ib_glitch:  { border: "2px solid #00ff00", shadow: "0 0 8px #00ff0066" },
-};
-const COSMETIC_FONT = {
-  cf_lime: "#39d353", cf_orange: "orange", cf_violet: "#9b59b6",
-  cf_red: "#e74c3c", cf_rainbow: "#ff69b4", cf_glitch: "#00ff00",
-};
-const COSMETIC_HAT = {
-  ph_wizard: "🧙", ph_crown: "👑", ph_detective: "🕵️",
-  ph_space: "👨‍🚀", ph_anon: "🎭",
-};
-const COSMETIC_ANIM = {
-  an_pulse:  "anim-pulse",
-  an_ghost:  "anim-ghost",
-  an_fire:   "anim-fire",
-  an_static: "anim-static",
-  an_matrix: "anim-matrix",
-};
-
-const cosmeticsCache = {}; // userId → { border, font, hat, anim } | null
-
-async function prefetchCosmetics(userIds) {
-  const uncached = [...new Set(userIds)].filter(id => id && !(id in cosmeticsCache));
-  if (!uncached.length) return;
-  const { data } = await supabase
-    .from("cosmetics_active")
-    .select("user_id, item_id, category")
-    .in("user_id", uncached);
-  // Mark all as fetched (even if empty)
-  uncached.forEach(id => { cosmeticsCache[id] = {}; });
-  (data || []).forEach(({ user_id, item_id, category }) => {
-    const c = cosmeticsCache[user_id];
-    if (category === "icon-border"   && COSMETIC_BORDER[item_id]) c.border = COSMETIC_BORDER[item_id];
-    if (category === "coloured-font" && COSMETIC_FONT[item_id])   c.font   = COSMETIC_FONT[item_id];
-    if (category === "profile-hat"   && COSMETIC_HAT[item_id])    c.hat    = COSMETIC_HAT[item_id];
-    if (category === "animated"      && COSMETIC_ANIM[item_id])   c.anim   = COSMETIC_ANIM[item_id];
-  });
-}
-
-function applyCosmetics(userId) {
-  const c = cosmeticsCache[userId];
-  if (!c) return;
-  document.querySelectorAll(`.msg-avatar[data-uid="${userId}"]`).forEach(av => {
-    if (c.border) { av.style.border = c.border.border; av.style.boxShadow = c.border.shadow; }
-    if (c.anim)   av.classList.add(c.anim);
-    // Hat
-    const wrap = av.parentElement;
-    if (c.hat && wrap && !wrap.querySelector(".msg-hat")) {
-      const hat = document.createElement("div");
-      hat.className = "msg-hat"; hat.textContent = c.hat;
-      wrap.appendChild(hat);
-    }
-  });
-  document.querySelectorAll(`.msg-author[data-uid="${userId}"]`).forEach(el => {
-    if (c.font) el.style.color = c.font;
-  });
-}
+function applyCosmetics(userId) { applyByUid(userId); }
 
 async function init() {
   if (!communityId) { window.location.href = "discover.html"; return; }

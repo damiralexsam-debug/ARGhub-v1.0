@@ -3,34 +3,10 @@
 // Injected by community.html
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-import { supabase, getUser, getCoins, setCoins, getActiveCosmetics } from "./supabase-auth.js";
+import { supabase, getUser, getCoins, setCoins } from "./supabase-auth.js";
+import { fetchOneUser, applyToCard, BANNER_MAP, BG_MAP, HAT_MAP } from "./cosmetics.js";
 
 const MODERATOR_EMAIL = "damiralexsam@gmail.com";
-
-const COSMETIC_VISUALS = {
-  ib_gold:    { border: "3px solid #ffcc00", shadow: "0 0 12px #ffcc0066" },
-  ib_violet:  { border: "3px solid #9b59b6", shadow: "0 0 12px #9b59b666" },
-  ib_red:     { border: "3px solid #e74c3c", shadow: "0 0 12px #e74c3c66" },
-  ib_rainbow: { border: "3px solid #ff69b4", shadow: "0 0 12px #ff69b466" },
-  ib_glitch:  { border: "3px solid #00ff00", shadow: "0 0 12px #00ff0066" },
-  cf_lime:    { color: "#39d353" },
-  cf_orange:  { color: "orange" },
-  cf_violet:  { color: "#9b59b6" },
-  cf_red:     { color: "#e74c3c" },
-  cf_rainbow: { color: "#ff69b4" },
-  cf_glitch:  { color: "#00ff00" },
-  bn_dark:    { bannerBg: "#050505" },
-  bn_cipher:  { bannerBg: "linear-gradient(135deg,#0a0a18,#050510)" },
-  bn_arg:     { bannerBg: "repeating-linear-gradient(0deg,#0a0a0a 0,#0a0a0a 2px,#111 2px,#111 4px)" },
-  bn_violet:  { bannerBg: "linear-gradient(135deg,#1a0030,#000)" },
-  bn_gold:    { bannerBg: "linear-gradient(135deg,#1a1000,#2a1800)" },
-  bg_stars:   { cardBg: "radial-gradient(ellipse at center,#0a0a1a 0%,#000 100%)" },
-  bg_matrix:  { cardBg: "#001100" },
-  bg_void:    { cardBg: "#000" },
-  bg_cipher:  { cardBg: "#080808" },
-  bg_glitch:  { cardBg: "linear-gradient(45deg,#0a000a,#000a0a)" },
-  bg_sunset:  { cardBg: "linear-gradient(135deg,#1a0030,#1a0800)" },
-};
 
 // ── INJECT CSS + HTML ──
 
@@ -177,8 +153,8 @@ function injectProfileView() {
       <button id="pvClose" onclick="closeProfileView()">✕</button>
       <div id="pvBanner"></div>
       <div class="pv-header-body">
-        <div class="pv-avatar-wrap">
-          <div class="pv-hat" id="pvHat"></div>
+        <div class="pv-avatar-wrap" style="position:relative;">
+          <div class="cosmetic-hat" id="pvHat"></div>
           <div class="pv-avatar" id="pvAvatar">?</div>
         </div>
         <div class="pv-info">
@@ -294,8 +270,8 @@ async function _pvLoad(userId, viewer) {
   if (!desc) document.getElementById("pvDescription").style.color = "#444";
 
   // Cosmetics
-  const cosmetics = await getActiveCosmetics(userId);
-  _pvApplyCosmetics(name, cosmetics);
+  await fetchOneUser(userId);
+  _pvApplyCosmetics(userId, name);
 
   // Stats (parallel)
   const [commRes, msgRes] = await Promise.all([
@@ -325,34 +301,15 @@ async function _pvLoad(userId, viewer) {
   }
 }
 
-function _pvApplyCosmetics(name, cosmetics) {
-  const catalogue = window.__shopCatalogue || [];
-  const vis = COSMETIC_VISUALS;
-  const activeMap = {};
-  cosmetics.forEach(c => { activeMap[c.category] = c.item_id; });
-
-  const bannerItem = activeMap["banner"];
-  const bgItem     = activeMap["background"];
-  const hatItem    = activeMap["profile-hat"];
-  const borderItem = activeMap["icon-border"];
-  const fontItem   = activeMap["coloured-font"];
-
-  const bannerBg    = bannerItem ? (vis[bannerItem]?.bannerBg || "#0a0a0a") : "#0a0a0a";
-  const cardBg      = bgItem     ? (vis[bgItem]?.cardBg      || "#111")     : "#111";
-  const hatEmoji    = hatItem    ? (catalogue.find(c => c.id === hatItem)?.emoji || "") : "";
-  const borderStyle = borderItem
-    ? `border:${vis[borderItem]?.border || "4px solid #333"};box-shadow:${vis[borderItem]?.shadow || "none"};`
-    : "border:4px solid transparent;";
-  const nameColor   = fontItem   ? (vis[fontItem]?.color || "white") : "white";
-  const initial     = (name || "?")[0].toUpperCase();
-
-  document.getElementById("pvBanner").style.background        = bannerBg;
-  document.getElementById("profileViewBox").style.background  = cardBg;
-  document.getElementById("pvHat").textContent                = hatEmoji;
+function _pvApplyCosmetics(userId, name) {
   const avatarEl = document.getElementById("pvAvatar");
-  avatarEl.textContent = initial;
-  avatarEl.setAttribute("style", borderStyle);
-  document.getElementById("pvName").style.color = nameColor;
+  if (avatarEl) avatarEl.textContent = (name || "?")[0].toUpperCase();
+  applyToCard(userId, {
+    bannerEl:    document.getElementById("pvBanner"),
+    containerEl: document.getElementById("profileViewBox"),
+    avatarEl,
+    nameEl:      document.getElementById("pvName"),
+  });
 }
 
 async function _pvLoadActivityGraph(userId) {

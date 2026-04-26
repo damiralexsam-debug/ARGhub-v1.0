@@ -1,4 +1,5 @@
 import { supabase, getUser, getCoins, setCoins } from "./supabase-auth.js";
+import { prefetchCosmetics, applyToName, applyHatToName } from "./cosmetics.js";
 
 let postedARGsCache = [];
 
@@ -76,7 +77,7 @@ window.openPostedDetail = async function(id) {
     ${imgEl}
     <div class="detail-body">
       <div class="detail-name">${arg.name}</div>
-      <div class="detail-author">by ${arg.author || "Unknown"}</div>
+      <div class="detail-author" id="detail-author-name" data-uid="${arg.user_id || ""}">by ${arg.author || "Unknown"}</div>
       <div class="detail-badges">
         <span class="arg-badge ${statusClass}">${arg.status}</span>
         <span class="arg-badge ${genreClass}">${arg.genre}</span>
@@ -90,6 +91,14 @@ window.openPostedDetail = async function(id) {
     </div>`;
 
   document.getElementById("detailOverlay").classList.add("open");
+
+  // Apply font cosmetic to author name
+  if (arg.user_id) {
+    prefetchCosmetics([arg.user_id]).then(() => {
+      const nameEl = document.getElementById("detail-author-name");
+      if (nameEl) { applyToName(arg.user_id, nameEl); applyHatToName(arg.user_id, nameEl); }
+    });
+  }
 };
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
