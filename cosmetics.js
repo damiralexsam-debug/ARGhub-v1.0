@@ -133,11 +133,16 @@ export const ANIM_MAP = {
   an_matrix: "c-anim-matrix",
 };
 export const BANNER_MAP = {
-  bn_dark:   "#050505",
-  bn_cipher: "linear-gradient(135deg,#0a0a18,#050510)",
-  bn_arg:    "repeating-linear-gradient(0deg,#0a0a0a 0,#0a0a0a 2px,#111 2px,#111 4px)",
-  bn_violet: "linear-gradient(135deg,#1a0030,#000)",
-  bn_gold:   "linear-gradient(135deg,#1a1000,#2a1800)",
+  bn_dark:     { bannerBg: "#050505" },
+  bn_cipher:   { bannerBg: "linear-gradient(135deg,#0a0a18,#050510)" },
+  bn_arg:      { bannerBg: "repeating-linear-gradient(0deg,#0a0a0a 0,#0a0a0a 2px,#111 2px,#111 4px)" },
+  bn_violet:   { bannerBg: "linear-gradient(135deg,#1a0030,#000)" },
+  bn_gold:     { bannerBg: "linear-gradient(135deg,#1a1000,#2a1800)" },
+  bn_mh:       { bannerClass: "c-bn-mh" },
+  bn_cassette: { bannerClass: "c-bn-cassette" },
+  bn_spiral:   { bannerClass: "c-bn-spiral" },
+  bn_aurora:   { bannerClass: "c-bn-aurora" },
+  bn_ocean:    { bannerClass: "c-bn-ocean" },
 };
 export const BG_MAP = {
   bg_stars:  { bgClass: "c-bg-stars" },
@@ -146,6 +151,19 @@ export const BG_MAP = {
   bg_cipher: { bgClass: "c-bg-cipher" },
   bg_glitch: { bgClass: "c-bg-glitch" },
   bg_sunset: { bgClass: "c-bg-sunset" },
+};
+
+// Animation declaration values — needed to combine border + skin animations into one property
+export const BORDER_ANIM = {
+  'c-brd-rainbow': 'c-rainbow-brd 3s linear infinite',
+  'c-brd-glitch':  'c-glitch-brd 0.4s steps(1) infinite',
+};
+export const SKIN_ANIM = {
+  'c-anim-pulse':  'c-pulse 2.6s ease-in-out infinite',
+  'c-anim-ghost':  'c-ghost 3.8s ease-in-out infinite',
+  'c-anim-static': 'c-static 0.95s steps(1) infinite',
+  'c-anim-fire':   'c-fire 1.3s ease-in-out infinite',
+  'c-anim-matrix': 'c-matrix 0.65s steps(1) infinite',
 };
 
 // ── Cache ──
@@ -166,9 +184,9 @@ export async function prefetchCosmetics(userIds) {
     if (!c) return;
     if (category === "icon-border"   && BORDER_MAP[item_id]) c.border = BORDER_MAP[item_id];
     if (category === "coloured-font" && FONT_MAP[item_id])   c.font   = FONT_MAP[item_id];
-    if (category === "profile-hat"   && HAT_MAP[item_id])    c.hat    = HAT_MAP[item_id];
+    if (category === "profile-hat"   && HAT_MAP[item_id])    { c.hat = HAT_MAP[item_id]; c._hatItemId = item_id; }
     if (category === "animated"      && ANIM_MAP[item_id])   c.anim   = ANIM_MAP[item_id];
-    if (category === "banner"        && BANNER_MAP[item_id]) c.banner = BANNER_MAP[item_id];
+    if (category === "banner"        && BANNER_MAP[item_id]) { c.bannerBg = BANNER_MAP[item_id].bannerBg || null; c.bannerClass = BANNER_MAP[item_id].bannerClass || null; }
     if (category === "background"    && BG_MAP[item_id])     c.bg     = BG_MAP[item_id];
   });
   // Normalise into flat fields for apply functions
@@ -199,6 +217,11 @@ export function applyToAvatar(userId, avatarEl) {
   if (!c || !avatarEl) return;
   if (c._borderClass) avatarEl.classList.add(c._borderClass);
   if (c.anim)         avatarEl.classList.add(c.anim);
+  // When both a border animation and a skin animation are active, two classes would
+  // each set `animation:` and the later one wins. Combine them into one declaration.
+  const ba = c._borderClass ? BORDER_ANIM[c._borderClass] : null;
+  const sa = c.anim          ? SKIN_ANIM[c.anim]           : null;
+  if (ba && sa) avatarEl.style.animation = `${ba}, ${sa}`;
   if (c.hat) {
     const wrap = avatarEl.parentElement;
     if (wrap) {
@@ -230,7 +253,10 @@ export function applyHatToName(userId, nameEl) {
 export function applyToCard(userId, { bannerEl, containerEl, avatarEl, nameEl } = {}) {
   const c = _cache[userId];
   if (!c) return;
-  if (bannerEl    && c.banner)    bannerEl.style.background    = c.banner;
+  if (bannerEl) {
+    if (c.bannerClass) bannerEl.classList.add(c.bannerClass);
+    else if (c.bannerBg) bannerEl.style.background = c.bannerBg;
+  }
   if (containerEl) {
     if (c._bgClass) containerEl.classList.add(c._bgClass);
     else if (c._cardBg) containerEl.style.background = c._cardBg;

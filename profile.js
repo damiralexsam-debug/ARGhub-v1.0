@@ -4,7 +4,7 @@
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 import { supabase, getUser, getCoins, setCoins } from "./supabase-auth.js";
-import { fetchOneUser, applyToCard, BANNER_MAP, BG_MAP, HAT_MAP } from "./cosmetics.js";
+import { fetchOneUser, applyToCard, getCached } from "./cosmetics.js";
 
 const MODERATOR_EMAIL = "damiralexsam@gmail.com";
 
@@ -151,10 +151,12 @@ function injectProfileView() {
   <div id="profileViewOverlay" onclick="_pvHandleOverlay(event)">
     <div id="profileViewBox">
       <button id="pvClose" onclick="closeProfileView()">✕</button>
-      <div id="pvBanner"></div>
+      <div style="position:relative;">
+        <div id="pvHatOverlay" class="pp-hat-overlay"></div>
+        <div id="pvBanner" style="border-radius:16px 16px 0 0;overflow:hidden;"></div>
+      </div>
       <div class="pv-header-body">
         <div class="pv-avatar-wrap" style="position:relative;">
-          <div class="cosmetic-hat" id="pvHat"></div>
           <div class="pv-avatar" id="pvAvatar">?</div>
         </div>
         <div class="pv-info">
@@ -302,8 +304,14 @@ async function _pvLoad(userId, viewer) {
   }
 }
 
-async function _pvApplyCosmetics(userId, name, avatarUrl) {
-  const avatarEl = document.getElementById("pvAvatar");
+function _pvApplyCosmetics(userId, name, avatarUrl) {
+  const avatarEl   = document.getElementById("pvAvatar");
+  const hatOvEl    = document.getElementById("pvHatOverlay");
+  const bannerEl   = document.getElementById("pvBanner");
+  const containerEl = document.getElementById("profileViewBox");
+  const nameEl     = document.getElementById("pvName");
+
+  // Avatar image or initial
   if (avatarEl) {
     if (avatarUrl) {
       avatarEl.innerHTML = `<img src="${avatarUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
@@ -312,16 +320,18 @@ async function _pvApplyCosmetics(userId, name, avatarUrl) {
       avatarEl.textContent = (name || "?")[0].toUpperCase();
     }
   }
-  applyToCard(userId, {
-    bannerEl:    document.getElementById("pvBanner"),
-    containerEl: document.getElementById("profileViewBox"),
-    avatarEl,
-    nameEl:      document.getElementById("pvName"),
-  });
-  // Hat overlay on card
-  const hatEl = document.getElementById("pvHat");
-  const { getCached } = await import("./cosmetics.js").catch(() => ({}));
-  // Hat is handled by applyToAvatar → cosmetic-hat inside pv-avatar-wrap ✓
+
+  // Apply cosmetics from cache
+  applyToCard(userId, { bannerEl, containerEl, avatarEl, nameEl });
+
+  // Hat overlay — CSS hat design using stored item ID
+  if (hatOvEl) {
+    const cached = getCached(userId);
+    const hatItem = cached?._hatItemId || null;
+    const HAT_CLASSES = { ph_wizard:"pho-wizard", ph_crown:"pho-crown", ph_detective:"pho-detective", ph_space:"pho-space", ph_anon:"pho-anon" };
+    hatOvEl.className = ["pp-hat-overlay", hatItem ? (HAT_CLASSES[hatItem] || "") : ""].filter(Boolean).join(" ");
+    hatOvEl.innerHTML = hatItem ? (window.buildHatHTML?.(hatItem) || "") : "";
+  }
 }
 
 async function _pvLoadActivityGraph(userId) {

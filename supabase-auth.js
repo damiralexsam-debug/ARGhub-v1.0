@@ -11,6 +11,19 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
 
 const MODERATOR_EMAIL = "damiralexsam@gmail.com";
 
+// Mirror of cosmetics.js — needed here to combine animations without a circular import
+const _BORDER_ANIM = {
+  'c-brd-rainbow': 'c-rainbow-brd 3s linear infinite',
+  'c-brd-glitch':  'c-glitch-brd 0.4s steps(1) infinite',
+};
+const _SKIN_ANIM = {
+  'c-anim-pulse':  'c-pulse 2.6s ease-in-out infinite',
+  'c-anim-ghost':  'c-ghost 3.8s ease-in-out infinite',
+  'c-anim-static': 'c-static 0.95s steps(1) infinite',
+  'c-anim-fire':   'c-fire 1.3s ease-in-out infinite',
+  'c-anim-matrix': 'c-matrix 0.65s steps(1) infinite',
+};
+
 const CAT_LABELS = {
   "icon-border":   "Icon Borders",
   "animated":      "Animated Skins",
@@ -42,12 +55,19 @@ const COSMETIC_VISUALS = {
   // Coloured font (animated — use CSS class)
   cf_rainbow:  { fontClass: "c-font-rainbow" },
   cf_glitch:   { fontClass: "c-font-glitch" },
-  // Banners
+  // Banners — static
   bn_dark:     { bannerBg: "#050505" },
   bn_cipher:   { bannerBg: "linear-gradient(135deg,#0a0a18,#050510)" },
   bn_arg:      { bannerBg: "repeating-linear-gradient(0deg,#0a0a0a 0,#0a0a0a 2px,#111 2px,#111 4px)" },
   bn_violet:   { bannerBg: "linear-gradient(135deg,#1a0030,#000)" },
   bn_gold:     { bannerBg: "linear-gradient(135deg,#1a1000,#2a1800)" },
+  // Banners — animated (ARG)
+  bn_mh:       { bannerClass: "c-bn-mh" },
+  bn_cassette: { bannerClass: "c-bn-cassette" },
+  bn_spiral:   { bannerClass: "c-bn-spiral" },
+  // Banners — animated (non-ARG)
+  bn_aurora:   { bannerClass: "c-bn-aurora" },
+  bn_ocean:    { bannerClass: "c-bn-ocean" },
   // Backgrounds — animated ones use bgClass, static use cardBg
   bg_stars:    { bgClass: "c-bg-stars" },
   bg_matrix:   { bgClass: "c-bg-matrix" },
@@ -507,23 +527,25 @@ function injectAuthModal() {
                   radial-gradient(ellipse at center,#0a0a1a 0%,#000 100%);
       animation: c-bg-stars-twinkle 3s ease-in-out infinite;
     }
-    /* Digital rain: vertical green streaks falling */
+    /* Digital rain: vertical green streaks — background-size matches keyframe so loop is invisible */
     @keyframes c-bg-matrix-fall { from{background-position:0 0} to{background-position:0 80px} }
     .c-bg-matrix {
       background-color: #001200;
       background-image:
         repeating-linear-gradient(180deg,transparent 0,transparent 70px,rgba(0,255,0,0.22) 70px,rgba(0,255,0,0.22) 72px,rgba(0,255,0,0.06) 72px,rgba(0,255,0,0.06) 80px),
-        repeating-linear-gradient(90deg, transparent 0,transparent 14px,rgba(0,255,0,0.07) 14px,rgba(0,255,0,0.07) 15px);
-      animation: c-bg-matrix-fall 1.2s linear infinite;
+        repeating-linear-gradient(90deg,transparent 0,transparent 14px,rgba(0,255,0,0.07) 14px,rgba(0,255,0,0.07) 15px);
+      background-size: 15px 80px;
+      animation: c-bg-matrix-fall 1.8s linear infinite;
     }
-    /* Cipher wall: scrolling horizontal cipher lines */
-    @keyframes c-bg-cipher-scroll { from{background-position:0 0} to{background-position:0 -60px} }
+    /* Cipher wall: scrolling cipher grid — explicit size matches scroll distance */
+    @keyframes c-bg-cipher-scroll { from{background-position:0 0} to{background-position:0 -15px} }
     .c-bg-cipher {
       background-color: #050508;
       background-image:
-        repeating-linear-gradient(180deg,rgba(150,120,255,0.08) 0,rgba(150,120,255,0.08) 1px,transparent 1px,transparent 15px),
-        repeating-linear-gradient(90deg,rgba(150,120,255,0.04) 0,rgba(150,120,255,0.04) 1px,transparent 1px,transparent 20px);
-      animation: c-bg-cipher-scroll 4s linear infinite;
+        repeating-linear-gradient(180deg,rgba(150,120,255,0.09) 0,rgba(150,120,255,0.09) 1px,transparent 1px,transparent 15px),
+        repeating-linear-gradient(90deg,rgba(150,120,255,0.05) 0,rgba(150,120,255,0.05) 1px,transparent 1px,transparent 20px);
+      background-size: 20px 15px;
+      animation: c-bg-cipher-scroll 3s linear infinite;
     }
     /* Glitch storm: hue/contrast shifts + positional glitch */
     @keyframes c-bg-glitch { 0%,100%{filter:none;background-position:0 0} 6%{filter:hue-rotate(90deg) brightness(1.4) contrast(1.8);background-position:3px 0} 7%{filter:none;background-position:0 0} 28%{filter:brightness(0.35) contrast(2.2);background-position:-3px 1px} 29%{filter:none;background-position:0 0} 52%{filter:invert(0.22) hue-rotate(200deg);background-position:2px -2px} 53%{filter:none;background-position:0 0} 76%{filter:saturate(0) brightness(1.6) contrast(3);background-position:-2px 3px} 77%{filter:none;background-position:0 0} }
@@ -534,13 +556,217 @@ function injectAuthModal() {
     /* Neon sunset: static gradient (beautiful on its own) */
     .c-bg-sunset { background: linear-gradient(160deg,#0d001a 0%,#1a0800 60%,#0a0003 100%); }
 
-    /* ── HAT OVERLAYS on profile cards ── */
-    .pp-hat-overlay { position:absolute; pointer-events:none; z-index:5; line-height:1; }
-    .pho-wizard     { font-size:56px; top:-10px; left:16px; transform:rotate(-14deg); filter:drop-shadow(0 4px 12px #3b1800cc); }
-    .pho-crown      { font-size:52px; top:-8px;  left:50%; transform:translateX(-50%); filter:drop-shadow(0 0 18px #ffcc00aa); }
-    .pho-detective  { font-size:50px; top:-6px;  right:14px; transform:rotate(9deg);  filter:drop-shadow(0 3px 10px #000000cc); }
-    .pho-space      { font-size:76px; top:50%;   left:50%; transform:translate(-50%,-50%); opacity:0.88; filter:drop-shadow(0 0 24px #00aaff55); }
-    .pho-anon       { font-size:118px; top:15%; left:-6%; transform:rotate(-7deg); opacity:0.84; filter:drop-shadow(0 0 28px rgba(255,255,255,0.18)); }
+    /* ── HAT OVERLAY CONTAINER ── */
+    .pp-hat-overlay { position:absolute; pointer-events:none; z-index:5; }
+
+    /* ── WIZARD HAT ── */
+    .hat-wizard { position:relative; width:80px; height:106px; }
+    .hat-w-cone {
+      position:absolute; bottom:20px; left:50%; transform:translateX(-50%);
+      width:0; height:0;
+      border-left:32px solid transparent; border-right:32px solid transparent;
+      border-bottom:86px solid #1e0754;
+      filter:drop-shadow(0 0 12px #7c3aed88);
+    }
+    .hat-w-shine {
+      position:absolute; bottom:38px; left:50%; transform:translateX(-50%) translateX(-6px);
+      width:6px; height:28px; border-radius:3px;
+      background:linear-gradient(180deg,rgba(167,139,250,0.4),transparent);
+    }
+    .hat-w-band {
+      position:absolute; bottom:20px; left:50%; transform:translateX(-50%);
+      width:63px; height:9px; background:#4c1d95; z-index:1;
+    }
+    .hat-w-brim {
+      position:absolute; bottom:0; left:50%; transform:translateX(-50%);
+      width:82px; height:20px; background:#1e0754;
+      border-radius:50%; border:1.5px solid #7c3aed;
+      box-shadow:0 0 16px #5b21b677;
+    }
+    .hat-w-star {
+      position:absolute; color:#fbbf24; line-height:1;
+      filter:drop-shadow(0 0 5px #fbbf24cc); z-index:2;
+    }
+
+    /* ── CROWN ── */
+    .hat-crown { position:relative; width:78px; height:62px; }
+    .hat-cr-top {
+      position:absolute; top:0; left:0; right:0;
+      display:flex; justify-content:space-around; align-items:flex-end; padding:0 2px;
+    }
+    .hat-cr-point {
+      width:0; height:0;
+      border-left:11px solid transparent; border-right:11px solid transparent;
+      border-bottom:30px solid #d97706;
+      filter:drop-shadow(0 0 6px #fbbf2477);
+    }
+    .hat-cr-point.tall { border-bottom-width:40px; border-left-width:13px; border-right-width:13px; }
+    .hat-cr-body {
+      position:absolute; bottom:0; left:0; right:0; height:28px;
+      background:linear-gradient(180deg,#d97706,#92400e);
+      border-top:2px solid #fbbf24; border-radius:2px 2px 6px 6px;
+      box-shadow:0 0 14px #92400e55;
+      display:flex; align-items:center; justify-content:space-evenly; padding:0 8px;
+    }
+    .hat-cr-gem {
+      width:10px; height:10px; border-radius:50%;
+      border:1.5px solid rgba(255,255,255,0.5);
+    }
+    .hat-cr-gem.r { background:#ef4444; box-shadow:0 0 8px #ef4444; }
+    .hat-cr-gem.b { background:#60a5fa; box-shadow:0 0 8px #60a5fa; }
+    .hat-cr-gem.g { background:#34d399; box-shadow:0 0 8px #34d399; }
+
+    /* ── FEDORA ── */
+    .hat-fedora { position:relative; width:90px; height:68px; }
+    .hat-fd-dome {
+      position:absolute; top:0; left:50%; transform:translateX(-50%);
+      width:54px; height:48px;
+      background:linear-gradient(170deg,#4b5563 0%,#1f2937 100%);
+      border-radius:50% 50% 20% 20% / 65% 65% 35% 35%;
+      border:1.5px solid #6b7280;
+      box-shadow:inset -8px -4px 16px rgba(0,0,0,0.5), 0 0 8px rgba(0,0,0,0.4);
+    }
+    .hat-fd-band {
+      position:absolute; top:36px; left:50%; transform:translateX(-50%);
+      width:54px; height:9px;
+      background:linear-gradient(90deg,#111827,#374151,#111827);
+      border-top:1px solid #4b5563; border-bottom:1px solid #4b5563;
+    }
+    .hat-fd-brim {
+      position:absolute; bottom:0; left:0; right:0; height:20px;
+      background:linear-gradient(180deg,#374151,#1f2937);
+      border-radius:40% 40% 48% 48% / 70% 70% 30% 30%;
+      border:1.5px solid #4b5563;
+      box-shadow:0 6px 14px rgba(0,0,0,0.6), inset 0 2px 4px rgba(255,255,255,0.05);
+    }
+
+    /* ── SPACE HELMET ── */
+    .hat-helmet { position:relative; width:82px; height:90px; }
+    .hat-hl-outer {
+      position:absolute; top:0; left:50%; transform:translateX(-50%);
+      width:76px; height:82px; border-radius:50%;
+      background:linear-gradient(145deg,#e2e8f0 0%,#94a3b8 35%,#475569 70%,#1e293b 100%);
+      border:2px solid #cbd5e1;
+      box-shadow:0 0 24px rgba(148,163,184,0.2), inset 0 4px 16px rgba(255,255,255,0.25), inset -8px -8px 24px rgba(0,0,0,0.4);
+    }
+    .hat-hl-visor {
+      position:absolute; top:19px; left:50%; transform:translateX(-50%);
+      width:52px; height:38px; border-radius:50%;
+      background:linear-gradient(155deg,#0f172a 0%,#1e3a5f 50%,#0a1628 100%);
+      border:2px solid #334155;
+      box-shadow:inset 0 0 24px rgba(56,189,248,0.12), 0 0 8px rgba(56,189,248,0.08);
+    }
+    .hat-hl-refl {
+      position:absolute; top:23px; left:50%; transform:translateX(-50%) translateX(-10px);
+      width:14px; height:10px; border-radius:50%;
+      background:rgba(255,255,255,0.22); transform:rotate(-20deg);
+    }
+    .hat-hl-ring {
+      position:absolute; bottom:2px; left:50%; transform:translateX(-50%);
+      width:72px; height:12px; border-radius:50%;
+      background:linear-gradient(90deg,#334155,#64748b,#334155);
+      border:1px solid #475569;
+    }
+
+    /* ── ANONYMOUS MASK ── */
+    .hat-mask { position:relative; width:86px; height:104px; }
+    .hat-mk-face {
+      position:absolute; top:0; left:50%; transform:translateX(-50%);
+      width:74px; height:96px;
+      border-radius:40% 40% 36% 36% / 44% 44% 56% 56%;
+      background:linear-gradient(175deg,#f8fafc 0%,#e2e8f0 60%,#cbd5e1 100%);
+      border:1.5px solid #94a3b8;
+      box-shadow:0 0 24px rgba(255,255,255,0.08), inset 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .hat-mk-eye {
+      position:absolute; top:28px; width:18px; height:22px;
+      background:#0a0a0a; border-radius:50% 50% 42% 42% / 58% 58% 42% 42%;
+    }
+    .hat-mk-eye.l { left:14px; }
+    .hat-mk-eye.r { right:14px; }
+    .hat-mk-brow {
+      position:absolute; top:22px; height:5px; border-radius:50%;
+      background:#0a0a0a;
+    }
+    .hat-mk-brow.l { left:12px; width:22px; transform:rotate(-8deg); }
+    .hat-mk-brow.r { right:12px; width:22px; transform:rotate(8deg); }
+    .hat-mk-cheek {
+      position:absolute; top:52px; width:16px; height:10px;
+      background:#f87171; border-radius:50%; opacity:0.5;
+    }
+    .hat-mk-cheek.l { left:10px; }
+    .hat-mk-cheek.r { right:10px; }
+    .hat-mk-nose {
+      position:absolute; top:50px; left:50%; transform:translateX(-50%);
+      width:8px; height:10px; border-radius:50%;
+      background:rgba(0,0,0,0.08);
+    }
+    .hat-mk-mst {
+      position:absolute; top:64px; left:50%; transform:translateX(-50%);
+      width:0;
+    }
+    .hat-mk-mst:before, .hat-mk-mst:after {
+      content:''; position:absolute; top:0;
+      width:20px; height:10px; border-radius:0 0 50% 50%;
+      background:#0a0a0a;
+    }
+    .hat-mk-mst:before { right:2px; transform:rotate(8deg); }
+    .hat-mk-mst:after  { left:2px;  transform:rotate(-8deg); }
+    .hat-mk-beard {
+      position:absolute; top:74px; left:50%; transform:translateX(-50%);
+      width:22px; height:20px; background:#0a0a0a;
+      clip-path:polygon(15% 0%,85% 0%,75% 100%,50% 78%,25% 100%);
+    }
+
+    /* ── POSITIONING OF HATS ON THE CARD ── */
+    .pho-wizard    { top:-18px; left:10px;  transform:rotate(-12deg); }
+    .pho-crown     { top:-12px; left:50%;   transform:translateX(-50%); }
+    .pho-detective { top:-12px; right:8px;  transform:rotate(9deg); }
+    .pho-space     { top:10px;  left:50%;   transform:translateX(-50%); }
+    .pho-anon      { top:8px;   left:-8px;  transform:rotate(-5deg); opacity:0.88; }
+
+    /* ── NEW ANIMATED BANNERS ── */
+    /* Marble Hornets: corrupted footage look */
+    @keyframes bn-mh { 0%,100%{background-position:0 0;filter:none} 7%{background-position:3px 0;filter:brightness(1.6) contrast(3) saturate(0)} 8%{background-position:0 0;filter:none} 35%{background-position:-2px 1px;filter:brightness(0.5)} 36%{background-position:0 0;filter:none} 71%{background-position:2px -1px;filter:contrast(2) saturate(0)} 72%{background-position:0 0;filter:none} }
+    .c-bn-mh {
+      background: repeating-linear-gradient(0deg,rgba(255,255,255,0.03) 0,rgba(255,255,255,0.03) 1px,transparent 1px,transparent 5px),
+                  linear-gradient(135deg,#050505 0%,#0d0d0d 100%);
+      animation: bn-mh 3s steps(1) infinite;
+    }
+    /* Cassette Tape: VHS scanlines with tracking jitter */
+    @keyframes bn-cassette { 0%{background-position:0 0} 100%{background-position:0 -32px} }
+    .c-bn-cassette {
+      background:
+        repeating-linear-gradient(0deg,rgba(255,255,255,0.04) 0,rgba(255,255,255,0.04) 1px,transparent 1px,transparent 3px),
+        repeating-linear-gradient(0deg,rgba(255,100,0,0.06) 0,rgba(255,100,0,0.06) 2px,transparent 2px,transparent 32px),
+        linear-gradient(90deg,#0a0005,#050005,#0a0005);
+      animation: bn-cassette 0.8s linear infinite;
+    }
+    /* Rabbit Hole: animated spiral illusion via rotating conic gradient */
+    @keyframes bn-spiral { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+    .c-bn-spiral {
+      overflow:hidden;
+      background:#000;
+    }
+    .c-bn-spiral::before {
+      content:''; position:absolute; inset:-200%;
+      background:conic-gradient(from 0deg,#000 0deg,#111 10deg,#000 20deg,#111 30deg,#000 40deg,#111 50deg,#000 60deg,#111 70deg,#000 80deg,#111 90deg,#000 100deg,#111 110deg,#000 120deg,#111 130deg,#000 140deg,#111 150deg,#000 160deg,#111 170deg,#000 180deg,#111 190deg,#000 200deg,#111 210deg,#000 220deg,#111 230deg,#000 240deg,#111 250deg,#000 260deg,#111 270deg,#000 280deg,#111 290deg,#000 300deg,#111 310deg,#000 320deg,#111 330deg,#000 340deg,#111 350deg,#000 360deg);
+      animation: bn-spiral 8s linear infinite;
+    }
+    /* Aurora Borealis: shifting green/teal/violet glow */
+    @keyframes bn-aurora { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+    .c-bn-aurora {
+      background:linear-gradient(270deg,#0d4a1f,#0a3d3d,#1a0a3d,#0d2a3a,#1a3d0d,#0a4a2a);
+      background-size:400% 400%;
+      animation:bn-aurora 6s ease infinite;
+    }
+    /* Deep Ocean: shifting dark blue waves */
+    @keyframes bn-ocean { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+    .c-bn-ocean {
+      background:linear-gradient(270deg,#020818,#051d3a,#073050,#042040,#020f28,#051830);
+      background-size:400% 400%;
+      animation:bn-ocean 8s ease infinite;
+    }
 
     /* ── PROFILE PICTURE ── */
     .pp-avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; display:block; }
@@ -752,6 +978,68 @@ function injectAuthModal() {
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// HAT BUILDER — returns CSS hat HTML for profile card overlays
+// Chat avatars still use small emoji (too small for full designs)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+window.buildHatHTML = function(hatId) {
+  switch (hatId) {
+    case 'ph_wizard': return `
+      <div class="hat-wizard">
+        <div class="hat-w-cone"></div>
+        <div class="hat-w-shine"></div>
+        <div class="hat-w-band"></div>
+        <div class="hat-w-brim"></div>
+        <div class="hat-w-star" style="top:22%;left:34%;font-size:13px;">★</div>
+        <div class="hat-w-star" style="top:48%;left:58%;font-size:8px;">✦</div>
+        <div class="hat-w-star" style="top:34%;left:55%;font-size:10px;">✦</div>
+      </div>`;
+    case 'ph_crown': return `
+      <div class="hat-crown">
+        <div class="hat-cr-top">
+          <div class="hat-cr-point"></div>
+          <div class="hat-cr-point tall"></div>
+          <div class="hat-cr-point"></div>
+          <div class="hat-cr-point tall"></div>
+          <div class="hat-cr-point"></div>
+        </div>
+        <div class="hat-cr-body">
+          <div class="hat-cr-gem r"></div>
+          <div class="hat-cr-gem b"></div>
+          <div class="hat-cr-gem g"></div>
+        </div>
+      </div>`;
+    case 'ph_detective': return `
+      <div class="hat-fedora">
+        <div class="hat-fd-dome"></div>
+        <div class="hat-fd-band"></div>
+        <div class="hat-fd-brim"></div>
+      </div>`;
+    case 'ph_space': return `
+      <div class="hat-helmet">
+        <div class="hat-hl-outer"></div>
+        <div class="hat-hl-visor"></div>
+        <div class="hat-hl-refl"></div>
+        <div class="hat-hl-ring"></div>
+      </div>`;
+    case 'ph_anon': return `
+      <div class="hat-mask">
+        <div class="hat-mk-face"></div>
+        <div class="hat-mk-brow l"></div>
+        <div class="hat-mk-brow r"></div>
+        <div class="hat-mk-eye l"></div>
+        <div class="hat-mk-eye r"></div>
+        <div class="hat-mk-nose"></div>
+        <div class="hat-mk-cheek l"></div>
+        <div class="hat-mk-cheek r"></div>
+        <div class="hat-mk-mst"></div>
+        <div class="hat-mk-beard"></div>
+      </div>`;
+    default: return '';
+  }
+};
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // CONTROLLER
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -894,12 +1182,12 @@ window.__authModal = {
     const fontItem   = activeMap["coloured-font"];
     const animItem   = activeMap["animated"];
 
-    const bannerBg  = bannerItem ? (vis[bannerItem]?.bannerBg || "#0a0a0a") : "#0a0a0a";
-    const bgClass   = bgItem     ? (vis[bgItem]?.bgClass   || "") : "";
-    const cardBg    = bgItem     ? (vis[bgItem]?.cardBg    || "") : "";
-    const animClass = animItem   ? (vis[animItem]?.animClass || "") : "";
-    const hatEmoji  = hatItem    ? (catalogue.find(c => c.id === hatItem)?.emoji || "") : "";
-    const hatOvClass = hatItem ? ({ ph_wizard:"pho-wizard", ph_crown:"pho-crown", ph_detective:"pho-detective", ph_space:"pho-space", ph_anon:"pho-anon" }[hatItem] || "") : "";
+    const bannerBg    = bannerItem ? (vis[bannerItem]?.bannerBg    || "#0a0a0a") : "#0a0a0a";
+    const bannerClass = bannerItem ? (vis[bannerItem]?.bannerClass || "") : "";
+    const bgClass     = bgItem     ? (vis[bgItem]?.bgClass   || "") : "";
+    const cardBg      = bgItem     ? (vis[bgItem]?.cardBg    || "") : "";
+    const animClass   = animItem   ? (vis[animItem]?.animClass || "") : "";
+    const hatOvClass  = hatItem ? ({ ph_wizard:"pho-wizard", ph_crown:"pho-crown", ph_detective:"pho-detective", ph_space:"pho-space", ph_anon:"pho-anon" }[hatItem] || "") : "";
     const borderClass = borderItem ? (vis[borderItem]?.borderClass || "") : "";
     const fv        = fontItem ? vis[fontItem] : null;
     const fontClass = fv?.fontClass || "";
@@ -913,21 +1201,27 @@ window.__authModal = {
     const ppCard    = document.getElementById("ppCard");
     const ppHatOvEl = document.getElementById("ppHatOverlay");
 
-    if (ppBanner) ppBanner.style.background = bannerBg;
+    if (ppBanner) {
+      ppBanner.className = ["pp-banner", bannerClass].filter(Boolean).join(" ");
+      ppBanner.style.cssText = "border-radius:12px 12px 0 0;overflow:hidden;" + (bannerClass ? "" : `background:${bannerBg};`);
+    }
     if (ppCard) {
       ppCard.className = ["pp-card", bgClass].filter(Boolean).join(" ");
       ppCard.style.background = cardBg;
     }
-    // Hat overlay on card
+    // Hat overlay on card — use CSS hat designs, not emoji
     if (ppHatOvEl) {
-      ppHatOvEl.textContent  = hatEmoji;
-      ppHatOvEl.className    = ["pp-hat-overlay", hatOvClass].filter(Boolean).join(" ");
+      ppHatOvEl.className = ["pp-hat-overlay", hatOvClass].filter(Boolean).join(" ");
+      ppHatOvEl.innerHTML  = hatItem ? (window.buildHatHTML?.(hatItem) || "") : "";
     }
     // Avatar
     if (ppAvatar) {
-      // Keep image if set, else show initial
       if (!ppAvatar.querySelector("img")) ppAvatar.textContent = initial;
       ppAvatar.className = ["pp-avatar", borderClass, animClass].filter(Boolean).join(" ");
+      // Combine animations so neither class's `animation:` declaration overwrites the other
+      const ba = borderClass ? _BORDER_ANIM[borderClass] : null;
+      const sa = animClass   ? _SKIN_ANIM[animClass]     : null;
+      ppAvatar.style.animation = (ba && sa) ? `${ba}, ${sa}` : "";
     }
     if (ppName) {
       ppName.textContent = name;
@@ -939,14 +1233,18 @@ window.__authModal = {
     const miniAvatarImg = ppAvatar?.querySelector("img")?.src
       ? `<img src="${ppAvatar.querySelector("img").src}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
       : initial;
+    const ba = borderClass ? _BORDER_ANIM[borderClass] : null;
+    const sa = animClass   ? _SKIN_ANIM[animClass]     : null;
+    const combinedAnim = (ba && sa) ? `${ba}, ${sa}` : (ba || sa || "");
+    const miniAnimStyle = combinedAnim ? `animation:${combinedAnim};` : "";
     return `
       <div class="${bgClass}" style="position:relative;${cardBg?`background:${cardBg};`:""}border-radius:10px;overflow:hidden;border:1px solid #1e1e1e;">
-        <div style="height:50px;background:${bannerBg};"></div>
-        ${hatOvClass ? `<div class="pp-hat-overlay ${hatOvClass}" style="font-size:${hatItem==="ph_anon"?"80px":hatItem==="ph_space"?"50px":"36px"};">${hatEmoji}</div>` : ""}
+        <div class="${bannerClass}" style="height:50px;${bannerClass?"":"background:"+bannerBg+";"}border-radius:10px 10px 0 0;overflow:hidden;"></div>
+        ${hatOvClass ? `<div class="pp-hat-overlay ${hatOvClass}" style="transform-origin:top left;">${window.buildHatHTML?.(hatItem)||""}</div>` : ""}
         <div style="padding:0 14px 12px;display:flex;align-items:flex-start;gap:12px;">
           <div style="position:relative;margin-top:-18px;flex-shrink:0;">
             <div class="${[borderClass, animClass].filter(Boolean).join(" ")}"
-                 style="width:38px;height:38px;border-radius:50%;background:#2a2a2a;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:white;overflow:hidden;">${miniAvatarImg}</div>
+                 style="width:38px;height:38px;border-radius:50%;background:#2a2a2a;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:white;overflow:hidden;${miniAnimStyle}">${miniAvatarImg}</div>
           </div>
           <div style="padding-top:8px;flex:1;min-width:0;">
             <div class="${fontClass}" style="font-size:14px;font-weight:700;color:${fontColor};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${name}</div>
