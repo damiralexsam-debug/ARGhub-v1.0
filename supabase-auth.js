@@ -22,11 +22,10 @@ const CAT_LABELS = {
 
 // Visual properties per cosmetic item for profile card preview
 const COSMETIC_VISUALS = {
-  // Icon borders (static)
-  ib_gold:     { border: "2px solid #ffcc00", shadow: "0 0 10px #ffcc0077" },
-  ib_violet:   { border: "2px solid #9b59b6", shadow: "0 0 10px #9b59b677" },
-  ib_red:      { border: "2px solid #e74c3c", shadow: "0 0 10px #e74c3c77" },
-  // Icon borders (animated — use CSS class, no inline border)
+  // Icon borders — all via outline class (never conflicts with animation box-shadows)
+  ib_gold:     { borderClass: "c-brd-gold" },
+  ib_violet:   { borderClass: "c-brd-violet" },
+  ib_red:      { borderClass: "c-brd-red" },
   ib_rainbow:  { borderClass: "c-brd-rainbow" },
   ib_glitch:   { borderClass: "c-brd-glitch" },
   // Animated skins
@@ -49,13 +48,13 @@ const COSMETIC_VISUALS = {
   bn_arg:      { bannerBg: "repeating-linear-gradient(0deg,#0a0a0a 0,#0a0a0a 2px,#111 2px,#111 4px)" },
   bn_violet:   { bannerBg: "linear-gradient(135deg,#1a0030,#000)" },
   bn_gold:     { bannerBg: "linear-gradient(135deg,#1a1000,#2a1800)" },
-  // Backgrounds
-  bg_stars:    { cardBg: "radial-gradient(ellipse at center,#0a0a1a 0%,#000 100%)" },
-  bg_matrix:   { cardBg: "#001100" },
+  // Backgrounds — animated ones use bgClass, static use cardBg
+  bg_stars:    { bgClass: "c-bg-stars" },
+  bg_matrix:   { bgClass: "c-bg-matrix" },
   bg_void:     { cardBg: "#000" },
-  bg_cipher:   { cardBg: "#080808" },
-  bg_glitch:   { cardBg: "linear-gradient(45deg,#0a000a,#000a0a)" },
-  bg_sunset:   { cardBg: "linear-gradient(135deg,#1a0030,#1a0800)" },
+  bg_cipher:   { bgClass: "c-bg-cipher" },
+  bg_glitch:   { bgClass: "c-bg-glitch" },
+  bg_sunset:   { bgClass: "c-bg-sunset" },
 };
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -484,12 +483,89 @@ function injectAuthModal() {
     .c-anim-static { animation:c-static 0.95s steps(1) infinite; }
     .c-anim-fire   { animation:c-fire   1.3s ease-in-out infinite; }
     .c-anim-matrix { animation:c-matrix 0.65s steps(1) infinite; }
-    /* Rainbow border */
-    @keyframes c-rainbow-brd { 0%{box-shadow:0 0 0 2px #ff0000,0 0 10px #ff000066} 17%{box-shadow:0 0 0 2px #ff8800,0 0 10px #ff880066} 33%{box-shadow:0 0 0 2px #ffff00,0 0 10px #ffff0066} 50%{box-shadow:0 0 0 2px #00ff00,0 0 10px #00ff0066} 67%{box-shadow:0 0 0 2px #0088ff,0 0 10px #0088ff66} 83%{box-shadow:0 0 0 2px #8800ff,0 0 10px #8800ff66} 100%{box-shadow:0 0 0 2px #ff0000,0 0 10px #ff000066} }
-    .c-brd-rainbow { border:none!important; animation:c-rainbow-brd 3s linear infinite; }
-    /* Glitch border */
-    @keyframes c-glitch-brd { 0%,100%{box-shadow:0 0 0 2px #00ff00,0 0 10px #00ff0066} 25%{box-shadow:2px 0 0 2px #ff0000,-2px 0 0 2px #00ff00,0 0 16px #ff000066} 50%{box-shadow:-2px 0 0 2px #0000ff,2px 0 0 2px #ff0000,0 0 12px #0000ff66} 75%{box-shadow:0 0 0 2px #ff00ff,0 0 8px #ff00ff66} }
-    .c-brd-glitch  { border:none!important; animation:c-glitch-brd 0.4s steps(1) infinite; }
+    /* ── BORDERS via outline (never conflicts with animation box-shadows) ── */
+    .c-brd-gold   { outline:2px solid #ffcc00; outline-offset:2px; box-shadow:0 0 12px #ffcc0066; }
+    .c-brd-violet { outline:2px solid #9b59b6; outline-offset:2px; box-shadow:0 0 12px #9b59b666; }
+    .c-brd-red    { outline:2px solid #e74c3c; outline-offset:2px; box-shadow:0 0 12px #e74c3c66; }
+    @keyframes c-rainbow-brd { 0%{outline-color:#ff0000;box-shadow:0 0 14px #ff000077} 17%{outline-color:#ff8800;box-shadow:0 0 14px #ff880077} 33%{outline-color:#ffff00;box-shadow:0 0 14px #ffff0077} 50%{outline-color:#00ff00;box-shadow:0 0 14px #00ff0077} 67%{outline-color:#0088ff;box-shadow:0 0 14px #0088ff77} 83%{outline-color:#8800ff;box-shadow:0 0 14px #8800ff77} 100%{outline-color:#ff0000;box-shadow:0 0 14px #ff000077} }
+    .c-brd-rainbow { outline:2px solid #ff0000; outline-offset:2px; animation:c-rainbow-brd 3s linear infinite; }
+    @keyframes c-glitch-brd { 0%,100%{outline-color:#00ff00;box-shadow:0 0 12px #00ff0066,2px 0 0 0 #ff000044} 25%{outline-color:#ff0000;box-shadow:-3px 0 0 0 #00ff00,3px 0 0 0 #ff0000,0 0 18px #ff000088} 50%{outline-color:#0000ff;box-shadow:3px 0 0 0 #ff0000,-3px 0 0 0 #0000ff,0 0 14px #0000ff88} 75%{outline-color:#ff00ff;box-shadow:0 0 10px #ff00ff88} }
+    .c-brd-glitch  { outline:2px solid #00ff00; outline-offset:2px; animation:c-glitch-brd 0.4s steps(1) infinite; }
+
+    /* ── ANIMATED BACKGROUNDS ── */
+    /* Starfield: twinkling dots */
+    @keyframes c-bg-stars-twinkle { 0%,100%{opacity:1} 50%{opacity:0.65} }
+    .c-bg-stars {
+      background: radial-gradient(ellipse at 12% 28%,rgba(255,255,255,0.18) 1px,transparent 2px),
+                  radial-gradient(ellipse at 68% 15%,rgba(255,255,255,0.14) 1px,transparent 2px),
+                  radial-gradient(ellipse at 38% 72%,rgba(255,255,255,0.20) 1px,transparent 2px),
+                  radial-gradient(ellipse at 82% 55%,rgba(255,255,255,0.12) 1px,transparent 2px),
+                  radial-gradient(ellipse at 5%  88%,rgba(255,255,255,0.16) 1px,transparent 2px),
+                  radial-gradient(ellipse at 91% 82%,rgba(255,255,255,0.10) 1px,transparent 2px),
+                  radial-gradient(ellipse at 55% 40%,rgba(255,255,255,0.08) 1px,transparent 2px),
+                  radial-gradient(ellipse at 30% 10%,rgba(255,255,255,0.14) 1px,transparent 2px),
+                  radial-gradient(ellipse at center,#0a0a1a 0%,#000 100%);
+      animation: c-bg-stars-twinkle 3s ease-in-out infinite;
+    }
+    /* Digital rain: vertical green streaks falling */
+    @keyframes c-bg-matrix-fall { from{background-position:0 0} to{background-position:0 80px} }
+    .c-bg-matrix {
+      background-color: #001200;
+      background-image:
+        repeating-linear-gradient(180deg,transparent 0,transparent 70px,rgba(0,255,0,0.22) 70px,rgba(0,255,0,0.22) 72px,rgba(0,255,0,0.06) 72px,rgba(0,255,0,0.06) 80px),
+        repeating-linear-gradient(90deg, transparent 0,transparent 14px,rgba(0,255,0,0.07) 14px,rgba(0,255,0,0.07) 15px);
+      animation: c-bg-matrix-fall 1.2s linear infinite;
+    }
+    /* Cipher wall: scrolling horizontal cipher lines */
+    @keyframes c-bg-cipher-scroll { from{background-position:0 0} to{background-position:0 -60px} }
+    .c-bg-cipher {
+      background-color: #050508;
+      background-image:
+        repeating-linear-gradient(180deg,rgba(150,120,255,0.08) 0,rgba(150,120,255,0.08) 1px,transparent 1px,transparent 15px),
+        repeating-linear-gradient(90deg,rgba(150,120,255,0.04) 0,rgba(150,120,255,0.04) 1px,transparent 1px,transparent 20px);
+      animation: c-bg-cipher-scroll 4s linear infinite;
+    }
+    /* Glitch storm: hue/contrast shifts + positional glitch */
+    @keyframes c-bg-glitch { 0%,100%{filter:none;background-position:0 0} 6%{filter:hue-rotate(90deg) brightness(1.4) contrast(1.8);background-position:3px 0} 7%{filter:none;background-position:0 0} 28%{filter:brightness(0.35) contrast(2.2);background-position:-3px 1px} 29%{filter:none;background-position:0 0} 52%{filter:invert(0.22) hue-rotate(200deg);background-position:2px -2px} 53%{filter:none;background-position:0 0} 76%{filter:saturate(0) brightness(1.6) contrast(3);background-position:-2px 3px} 77%{filter:none;background-position:0 0} }
+    .c-bg-glitch {
+      background: linear-gradient(135deg,#0d000d 0%,#00080a 50%,#080d00 100%);
+      animation: c-bg-glitch 1.8s steps(1) infinite;
+    }
+    /* Neon sunset: static gradient (beautiful on its own) */
+    .c-bg-sunset { background: linear-gradient(160deg,#0d001a 0%,#1a0800 60%,#0a0003 100%); }
+
+    /* ── HAT OVERLAYS on profile cards ── */
+    .pp-hat-overlay { position:absolute; pointer-events:none; z-index:5; line-height:1; }
+    .pho-wizard     { font-size:56px; top:-10px; left:16px; transform:rotate(-14deg); filter:drop-shadow(0 4px 12px #3b1800cc); }
+    .pho-crown      { font-size:52px; top:-8px;  left:50%; transform:translateX(-50%); filter:drop-shadow(0 0 18px #ffcc00aa); }
+    .pho-detective  { font-size:50px; top:-6px;  right:14px; transform:rotate(9deg);  filter:drop-shadow(0 3px 10px #000000cc); }
+    .pho-space      { font-size:76px; top:50%;   left:50%; transform:translate(-50%,-50%); opacity:0.88; filter:drop-shadow(0 0 24px #00aaff55); }
+    .pho-anon       { font-size:118px; top:15%; left:-6%; transform:rotate(-7deg); opacity:0.84; filter:drop-shadow(0 0 28px rgba(255,255,255,0.18)); }
+
+    /* ── PROFILE PICTURE ── */
+    .pp-avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; display:block; }
+    .pic-upload-area {
+      display:flex; align-items:center; gap:10px;
+      padding:10px 14px; background:#0d0d0d; border:1px solid #1e1e1e;
+      border-radius:8px; margin-bottom:12px; cursor:pointer; transition:0.2s;
+    }
+    .pic-upload-area:hover { border-color:#333; }
+    .pic-upload-thumb {
+      width:38px; height:38px; border-radius:50%; background:#1a1a1a;
+      border:1px solid #2a2a2a; overflow:hidden; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+      font-size:16px; color:#555;
+    }
+    .pic-upload-thumb img { width:100%; height:100%; object-fit:cover; }
+    .pic-upload-label { flex:1; font-size:12px; color:#777; }
+    .pic-upload-btn {
+      padding:5px 12px; border-radius:6px; border:1px solid #333;
+      background:transparent; color:#aaa; font-family:'Roboto Slab',serif;
+      font-size:11px; cursor:pointer; transition:0.2s; white-space:nowrap;
+    }
+    .pic-upload-btn:hover { border-color:white; color:white; box-shadow:none!important; }
+    .pic-remove-btn { color:#e74c3c; border-color:#4a1a1a; }
+    .pic-remove-btn:hover { background:#e74c3c; color:white; }
     /* Rainbow text */
     @keyframes c-rainbow-txt { 0%{color:#ff0000} 17%{color:#ff8800} 33%{color:#ffff00} 50%{color:#00ff00} 67%{color:#0088ff} 83%{color:#8800ff} 100%{color:#ff0000} }
     .c-font-rainbow { animation:c-rainbow-txt 4s linear infinite; }
@@ -540,16 +616,18 @@ function injectAuthModal() {
       <div id="authLoggedIn">
 
         <!-- Profile Preview Card -->
-        <div class="pp-card" id="ppCard">
-          <div class="pp-banner" id="ppBanner"></div>
-          <div class="pp-body">
-            <div class="pp-avatar-wrap">
-              <div class="pp-hat" id="ppHat"></div>
-              <div class="pp-avatar" id="ppAvatar">?</div>
-            </div>
-            <div class="pp-info">
-              <div class="pp-name" id="ppName"></div>
-              <div class="pp-meta" id="ppMeta"></div>
+        <div style="position:relative;margin-bottom:20px;">
+          <div class="pp-hat-overlay" id="ppHatOverlay"></div>
+          <div class="pp-card" id="ppCard" style="overflow:visible;margin-bottom:0;">
+            <div class="pp-banner" id="ppBanner" style="border-radius:12px 12px 0 0;overflow:hidden;"></div>
+            <div class="pp-body">
+              <div class="pp-avatar-wrap" style="position:relative;">
+                <div class="pp-avatar" id="ppAvatar">?</div>
+              </div>
+              <div class="pp-info">
+                <div class="pp-name" id="ppName"></div>
+                <div class="pp-meta" id="ppMeta"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -572,6 +650,15 @@ function injectAuthModal() {
 
         <!-- PROFILE TAB -->
         <div class="profile-tab-pane active" id="ptProfile">
+          <div class="profile-section-label">Profile Picture</div>
+          <div class="pic-upload-area" onclick="document.getElementById('picFileInput').click()">
+            <div class="pic-upload-thumb" id="picThumb">?</div>
+            <div class="pic-upload-label" id="picUploadLabel">Click to upload a profile picture</div>
+            <button class="pic-upload-btn" type="button">Upload</button>
+          </div>
+          <input type="file" id="picFileInput" accept="image/*" style="display:none" onchange="window.__authModal._handlePicUpload(this)">
+          <div class="profile-msg" id="picUploadMsg"></div>
+
           <div class="profile-section-label">About</div>
           <textarea class="profile-desc-input" id="profileDesc" placeholder="Tell the community who you are..."></textarea>
           <div class="profile-actions">
@@ -731,10 +818,11 @@ window.__authModal = {
       const name  = await getDisplayName();
       const coins = await getCoins(user.id);
       this._renderCoins(coins);
-      // Populate profile tab description
-      const { data: prof } = await supabase.from("profiles").select("description").eq("id", user.id).maybeSingle();
+      // Populate profile tab description + avatar
+      const { data: prof } = await supabase.from("profiles").select("description, avatar_url").eq("id", user.id).maybeSingle();
       const descEl = document.getElementById("profileDesc");
       if (descEl) descEl.value = prof?.description || "";
+      this._setAvatarDisplay(prof?.avatar_url || null, name);
       // Render profile preview card
       const cosmetics = await getActiveCosmetics(user.id);
       this._renderProfileCard(name, user.email, coins, cosmetics);
@@ -754,6 +842,43 @@ window.__authModal = {
     if (meta) meta.textContent = `✦ ${coins} tickets`;
   },
 
+  _setAvatarDisplay(avatarUrl, name) {
+    const ppAvatar = document.getElementById("ppAvatar");
+    const thumb    = document.getElementById("picThumb");
+    const label    = document.getElementById("picUploadLabel");
+    const initial  = (name || "?")[0].toUpperCase();
+    if (avatarUrl) {
+      if (ppAvatar) ppAvatar.innerHTML = `<img src="${avatarUrl}" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+      if (thumb)    thumb.innerHTML    = `<img src="${avatarUrl}" alt="">`;
+      if (label)    label.textContent  = "Profile picture set — click to change";
+    } else {
+      if (ppAvatar) { ppAvatar.innerHTML = ""; ppAvatar.textContent = initial; }
+      if (thumb)    { thumb.innerHTML = ""; thumb.textContent = initial; }
+      if (label)    label.textContent = "Click to upload a profile picture";
+    }
+  },
+
+  async _handlePicUpload(input) {
+    if (!_currentUser || !input.files[0]) return;
+    const file    = input.files[0];
+    const msgEl   = document.getElementById("picUploadMsg");
+    const ext     = file.name.split(".").pop();
+    const path    = `${_currentUser.id}/avatar.${ext}`;
+    msgEl.textContent = "Uploading..."; msgEl.className = "profile-msg ok"; msgEl.style.display = "block";
+    const { error: upErr } = await supabase.storage.from("profile-pictures").upload(path, file, { upsert: true });
+    if (upErr) { msgEl.textContent = `❌ ${upErr.message}`; msgEl.className = "profile-msg err"; return; }
+    const { data: urlData } = supabase.storage.from("profile-pictures").getPublicUrl(path);
+    const avatarUrl = urlData.publicUrl;
+    await supabase.from("profiles").upsert({ id: _currentUser.id, avatar_url: avatarUrl }, { onConflict: "id" });
+    this._setAvatarDisplay(avatarUrl, await getDisplayName());
+    const cosmetics = await getActiveCosmetics(_currentUser.id);
+    this._renderProfileCard(await getDisplayName(), _currentUser.email, await getCoins(_currentUser.id), cosmetics);
+    msgEl.textContent = "✓ Profile picture updated!";
+    clearTimeout(this._picMsgTimer);
+    this._picMsgTimer = setTimeout(() => { msgEl.style.display = "none"; }, 3000);
+    input.value = "";
+  },
+
   _renderProfileCard(name, email, coins, cosmetics, pendingAdd = null, pendingRemove = null) {
     const catalogue = window.__shopCatalogue || [];
     const activeMap = {};
@@ -769,56 +894,59 @@ window.__authModal = {
     const fontItem   = activeMap["coloured-font"];
     const animItem   = activeMap["animated"];
 
-    const bannerBg   = bannerItem ? (vis[bannerItem]?.bannerBg || "#0a0a0a") : "#0a0a0a";
-    const cardBg     = bgItem     ? (vis[bgItem]?.cardBg      || "#111")     : "#111";
-    const hatEmoji   = hatItem    ? (catalogue.find(c => c.id === hatItem)?.emoji || "") : "";
-    const animClass  = animItem   ? (vis[animItem]?.animClass  || "") : "";
-
-    // Border: static items use inline style, animated items use CSS class only
-    const bv           = borderItem ? vis[borderItem] : null;
-    const borderClass  = bv?.borderClass || "";
-    const borderInline = (!borderClass && bv) ? `border:${bv.border};box-shadow:${bv.shadow};` : "border:2px solid transparent;";
-
-    // Font: static items use inline color, animated items use CSS class
+    const bannerBg  = bannerItem ? (vis[bannerItem]?.bannerBg || "#0a0a0a") : "#0a0a0a";
+    const bgClass   = bgItem     ? (vis[bgItem]?.bgClass   || "") : "";
+    const cardBg    = bgItem     ? (vis[bgItem]?.cardBg    || "") : "";
+    const animClass = animItem   ? (vis[animItem]?.animClass || "") : "";
+    const hatEmoji  = hatItem    ? (catalogue.find(c => c.id === hatItem)?.emoji || "") : "";
+    const hatOvClass = hatItem ? ({ ph_wizard:"pho-wizard", ph_crown:"pho-crown", ph_detective:"pho-detective", ph_space:"pho-space", ph_anon:"pho-anon" }[hatItem] || "") : "";
+    const borderClass = borderItem ? (vis[borderItem]?.borderClass || "") : "";
     const fv        = fontItem ? vis[fontItem] : null;
     const fontClass = fv?.fontClass || "";
     const fontColor = (!fontClass && fv) ? fv.color : "white";
-
-    const initial = (name || "?")[0].toUpperCase();
+    const initial   = (name || "?")[0].toUpperCase();
 
     // ── Update the persistent top profile card ──
-    const ppBanner = document.getElementById("ppBanner");
-    const ppAvatar = document.getElementById("ppAvatar");
-    const ppHat    = document.getElementById("ppHat");
-    const ppName   = document.getElementById("ppName");
-    const ppCard   = document.getElementById("ppCard");
+    const ppBanner  = document.getElementById("ppBanner");
+    const ppAvatar  = document.getElementById("ppAvatar");
+    const ppName    = document.getElementById("ppName");
+    const ppCard    = document.getElementById("ppCard");
+    const ppHatOvEl = document.getElementById("ppHatOverlay");
+
     if (ppBanner) ppBanner.style.background = bannerBg;
-    if (ppCard)   ppCard.style.background   = cardBg;
-    if (ppHat)    ppHat.textContent         = hatEmoji;
+    if (ppCard) {
+      ppCard.className = ["pp-card", bgClass].filter(Boolean).join(" ");
+      ppCard.style.background = cardBg;
+    }
+    // Hat overlay on card
+    if (ppHatOvEl) {
+      ppHatOvEl.textContent  = hatEmoji;
+      ppHatOvEl.className    = ["pp-hat-overlay", hatOvClass].filter(Boolean).join(" ");
+    }
+    // Avatar
     if (ppAvatar) {
-      ppAvatar.textContent = initial;
-      ppAvatar.style.cssText = borderInline;
-      // Reset classes then apply cosmetic classes
-      ppAvatar.className = "pp-avatar";
-      if (borderClass) ppAvatar.classList.add(borderClass);
-      if (animClass)   ppAvatar.classList.add(animClass);
+      // Keep image if set, else show initial
+      if (!ppAvatar.querySelector("img")) ppAvatar.textContent = initial;
+      ppAvatar.className = ["pp-avatar", borderClass, animClass].filter(Boolean).join(" ");
     }
     if (ppName) {
       ppName.textContent = name;
       ppName.style.color = fontColor;
-      ppName.className   = "pp-name";
-      if (fontClass) ppName.classList.add(fontClass);
+      ppName.className   = ["pp-name", fontClass].filter(Boolean).join(" ");
     }
 
-    // ── Return mini card HTML for the wardrobe preview panel ──
+    // ── Mini card HTML for wardrobe preview panel ──
+    const miniAvatarImg = ppAvatar?.querySelector("img")?.src
+      ? `<img src="${ppAvatar.querySelector("img").src}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+      : initial;
     return `
-      <div style="background:${cardBg};border-radius:10px;overflow:hidden;border:1px solid #1e1e1e;">
+      <div class="${bgClass}" style="position:relative;${cardBg?`background:${cardBg};`:""}border-radius:10px;overflow:hidden;border:1px solid #1e1e1e;">
         <div style="height:50px;background:${bannerBg};"></div>
+        ${hatOvClass ? `<div class="pp-hat-overlay ${hatOvClass}" style="font-size:${hatItem==="ph_anon"?"80px":hatItem==="ph_space"?"50px":"36px"};">${hatEmoji}</div>` : ""}
         <div style="padding:0 14px 12px;display:flex;align-items:flex-start;gap:12px;">
           <div style="position:relative;margin-top:-18px;flex-shrink:0;">
-            ${hatEmoji ? `<div class="cosmetic-hat" style="font-size:16px;">${hatEmoji}</div>` : ""}
-            <div class="${[animClass, borderClass].filter(Boolean).join(" ")}"
-                 style="width:38px;height:38px;border-radius:50%;background:#2a2a2a;${borderInline}display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:white;">${initial}</div>
+            <div class="${[borderClass, animClass].filter(Boolean).join(" ")}"
+                 style="width:38px;height:38px;border-radius:50%;background:#2a2a2a;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:white;overflow:hidden;">${miniAvatarImg}</div>
           </div>
           <div style="padding-top:8px;flex:1;min-width:0;">
             <div class="${fontClass}" style="font-size:14px;font-weight:700;color:${fontColor};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${name}</div>

@@ -307,7 +307,7 @@
 
 <script type="module">
 import { supabase, getUser, getDisplayName, requireAuth } from "./supabase-auth.js";
-import { prefetchCosmetics, applyToAvatar, applyToName, applyByUid } from "./cosmetics.js";
+import { prefetchCosmetics, applyToAvatar, applyToName, applyByUid, prefetchAvatars, getAvatarUrl } from "./cosmetics.js";
 
 const params      = new URLSearchParams(window.location.search);
 const communityId = params.get("id");
@@ -322,6 +322,16 @@ let allMembers      = [];
 let userRolesMap    = {}; // user_id → [{ name, color }, ...]
 
 function applyCosmetics(userId) { applyByUid(userId); }
+function _applyAvatarPic(userId) {
+  const url = getAvatarUrl(userId);
+  if (!url) return;
+  document.querySelectorAll(`.msg-avatar[data-uid="${userId}"]`).forEach(av => {
+    av.style.backgroundImage = `url(${url})`;
+    av.style.backgroundSize  = "cover";
+    av.style.backgroundPosition = "center";
+    av.textContent = "";
+  });
+}
 
 async function init() {
   if (!communityId) { window.location.href = "discover.html"; return; }
@@ -647,7 +657,7 @@ async function loadMessages(channelId) {
   scrollToBottom();
   // Prefetch + apply cosmetics for all users in this batch
   const uids = [...new Set(messages.map(m => m.user_id).filter(Boolean))];
-  prefetchCosmetics(uids).then(() => uids.forEach(applyCosmetics));
+  Promise.all([prefetchCosmetics(uids), prefetchAvatars(uids)]).then(() => uids.forEach(uid => { applyCosmetics(uid); _applyAvatarPic(uid); }));
 }
 
 function buildMessageEl(msg) {
@@ -691,7 +701,8 @@ function subscribeRealtime() {
       const el = buildMessageEl(payload.new);
       wrap.appendChild(el); scrollToBottom();
       if (payload.new.user_id) {
-        prefetchCosmetics([payload.new.user_id]).then(() => applyCosmetics(payload.new.user_id));
+        const uid = payload.new.user_id;
+        Promise.all([prefetchCosmetics([uid]), prefetchAvatars([uid])]).then(() => { applyCosmetics(uid); _applyAvatarPic(uid); });
       }
     }).subscribe();
 }

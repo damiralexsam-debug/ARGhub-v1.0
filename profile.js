@@ -255,13 +255,14 @@ async function _pvLoad(userId, viewer) {
   // Fetch profile
   const { data: prof } = await supabase
     .from("profiles")
-    .select("display_name, description, created_at")
+    .select("display_name, description, created_at, avatar_url")
     .eq("id", userId)
     .maybeSingle();
 
-  const name   = prof?.display_name || "Unknown User";
-  const desc   = prof?.description  || "";
-  const joined = prof?.created_at
+  const name      = prof?.display_name || "Unknown User";
+  const desc      = prof?.description  || "";
+  const avatarUrl = prof?.avatar_url   || null;
+  const joined    = prof?.created_at
     ? new Date(prof.created_at).toLocaleDateString("en-US", { month: "short", year: "numeric" })
     : "—";
 
@@ -269,9 +270,9 @@ async function _pvLoad(userId, viewer) {
   document.getElementById("pvDescription").textContent = desc || "No description set.";
   if (!desc) document.getElementById("pvDescription").style.color = "#444";
 
-  // Cosmetics
+  // Cosmetics + avatar
   await fetchOneUser(userId);
-  _pvApplyCosmetics(userId, name);
+  _pvApplyCosmetics(userId, name, avatarUrl);
 
   // Stats (parallel)
   const [commRes, msgRes] = await Promise.all([
@@ -301,15 +302,26 @@ async function _pvLoad(userId, viewer) {
   }
 }
 
-function _pvApplyCosmetics(userId, name) {
+async function _pvApplyCosmetics(userId, name, avatarUrl) {
   const avatarEl = document.getElementById("pvAvatar");
-  if (avatarEl) avatarEl.textContent = (name || "?")[0].toUpperCase();
+  if (avatarEl) {
+    if (avatarUrl) {
+      avatarEl.innerHTML = `<img src="${avatarUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    } else {
+      avatarEl.innerHTML = "";
+      avatarEl.textContent = (name || "?")[0].toUpperCase();
+    }
+  }
   applyToCard(userId, {
     bannerEl:    document.getElementById("pvBanner"),
     containerEl: document.getElementById("profileViewBox"),
     avatarEl,
     nameEl:      document.getElementById("pvName"),
   });
+  // Hat overlay on card
+  const hatEl = document.getElementById("pvHat");
+  const { getCached } = await import("./cosmetics.js").catch(() => ({}));
+  // Hat is handled by applyToAvatar → cosmetic-hat inside pv-avatar-wrap ✓
 }
 
 async function _pvLoadActivityGraph(userId) {

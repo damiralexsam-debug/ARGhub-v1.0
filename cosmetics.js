@@ -104,9 +104,9 @@ import { supabase } from "./supabase-auth.js";
 // ── Visual lookup tables ──
 
 export const BORDER_MAP = {
-  ib_gold:    { border: "2px solid #ffcc00", shadow: "0 0 10px #ffcc0077" },
-  ib_violet:  { border: "2px solid #9b59b6", shadow: "0 0 10px #9b59b677" },
-  ib_red:     { border: "2px solid #e74c3c", shadow: "0 0 10px #e74c3c77" },
+  ib_gold:    { borderClass: "c-brd-gold" },
+  ib_violet:  { borderClass: "c-brd-violet" },
+  ib_red:     { borderClass: "c-brd-red" },
   ib_rainbow: { borderClass: "c-brd-rainbow" },
   ib_glitch:  { borderClass: "c-brd-glitch" },
 };
@@ -140,12 +140,12 @@ export const BANNER_MAP = {
   bn_gold:   "linear-gradient(135deg,#1a1000,#2a1800)",
 };
 export const BG_MAP = {
-  bg_stars:  "radial-gradient(ellipse at center,#0a0a1a 0%,#000 100%)",
-  bg_matrix: "#001100",
-  bg_void:   "#000",
-  bg_cipher: "#080808",
-  bg_glitch: "linear-gradient(45deg,#0a000a,#000a0a)",
-  bg_sunset: "linear-gradient(135deg,#1a0030,#1a0800)",
+  bg_stars:  { bgClass: "c-bg-stars" },
+  bg_matrix: { bgClass: "c-bg-matrix" },
+  bg_void:   { cardBg: "#000" },
+  bg_cipher: { bgClass: "c-bg-cipher" },
+  bg_glitch: { bgClass: "c-bg-glitch" },
+  bg_sunset: { bgClass: "c-bg-sunset" },
 };
 
 // ── Cache ──
@@ -171,12 +171,13 @@ export async function prefetchCosmetics(userIds) {
     if (category === "banner"        && BANNER_MAP[item_id]) c.banner = BANNER_MAP[item_id];
     if (category === "background"    && BG_MAP[item_id])     c.bg     = BG_MAP[item_id];
   });
-  // Normalise border + font into flat fields for apply functions
+  // Normalise into flat fields for apply functions
   Object.values(_cache).forEach(c => {
-    if (c.border?.borderClass) { c._borderClass = c.border.borderClass; c._borderInline = null; }
-    else if (c.border)         { c._borderClass = null; c._borderInline = c.border; }
-    if (c.font?.fontClass)     { c._fontClass = c.font.fontClass; c._fontColor = null; }
-    else if (c.font)           { c._fontClass = null; c._fontColor = c.font.color; }
+    c._borderClass = c.border?.borderClass || null;
+    c._bgClass     = c.bg?.bgClass        || null;
+    c._cardBg      = c.bg?.cardBg         || null;
+    c._fontClass   = c.font?.fontClass    || null;
+    c._fontColor   = c.font?.color        || null;
   });
 }
 
@@ -196,13 +197,8 @@ export function getCached(userId) {
 export function applyToAvatar(userId, avatarEl) {
   const c = _cache[userId];
   if (!c || !avatarEl) return;
-  if (c._borderClass) {
-    avatarEl.classList.add(c._borderClass);
-  } else if (c._borderInline) {
-    avatarEl.style.border    = c._borderInline.border;
-    avatarEl.style.boxShadow = c._borderInline.shadow;
-  }
-  if (c.anim) avatarEl.classList.add(c.anim);
+  if (c._borderClass) avatarEl.classList.add(c._borderClass);
+  if (c.anim)         avatarEl.classList.add(c.anim);
   if (c.hat) {
     const wrap = avatarEl.parentElement;
     if (wrap) {
@@ -231,15 +227,30 @@ export function applyHatToName(userId, nameEl) {
 }
 
 // Apply everything to a full profile card.
-// Pass elements as an object — any can be null/undefined and will be skipped.
 export function applyToCard(userId, { bannerEl, containerEl, avatarEl, nameEl } = {}) {
   const c = _cache[userId];
   if (!c) return;
-  if (bannerEl    && c.banner) bannerEl.style.background    = c.banner;
-  if (containerEl && c.bg)     containerEl.style.background = c.bg;
+  if (bannerEl    && c.banner)    bannerEl.style.background    = c.banner;
+  if (containerEl) {
+    if (c._bgClass) containerEl.classList.add(c._bgClass);
+    else if (c._cardBg) containerEl.style.background = c._cardBg;
+  }
   if (avatarEl)  applyToAvatar(userId, avatarEl);
   if (nameEl)    applyToName(userId, nameEl);
 }
+
+// ── Avatar URL cache (profile pictures) ──
+const _avatarCache = {};
+
+export async function prefetchAvatars(userIds) {
+  const uncached = [...new Set(userIds)].filter(id => id && !(id in _avatarCache));
+  if (!uncached.length) return;
+  uncached.forEach(id => { _avatarCache[id] = null; });
+  const { data } = await supabase.from("profiles").select("id, avatar_url").in("id", uncached);
+  (data || []).forEach(r => { _avatarCache[r.id] = r.avatar_url || null; });
+}
+
+export function getAvatarUrl(userId) { return _avatarCache[userId] || null; }
 
 // Convenience: fetch then apply to avatar + name elements tagged with data-uid.
 export async function applyByUid(userId) {
