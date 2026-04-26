@@ -7,7 +7,8 @@ import { supabase } from "./supabase-auth.js";
 
 // ── Inject animation CSS once per page ──
 (function injectCSS() {
-  if (document.getElementById("cosmetics-global-css")) return;
+  // supabase-auth.js already injects this CSS on every page — skip if present
+  if (document.getElementById("cosmetics-global-css") || document.getElementById("authModal")) return;
   const s = document.createElement("style");
   s.id = "cosmetics-global-css";
   s.textContent = `
@@ -106,16 +107,16 @@ export const BORDER_MAP = {
   ib_gold:    { border: "2px solid #ffcc00", shadow: "0 0 10px #ffcc0077" },
   ib_violet:  { border: "2px solid #9b59b6", shadow: "0 0 10px #9b59b677" },
   ib_red:     { border: "2px solid #e74c3c", shadow: "0 0 10px #e74c3c77" },
-  ib_rainbow: { border: "2px solid #ff69b4", shadow: "0 0 10px #ff69b477" },
-  ib_glitch:  { border: "2px solid #00ff00", shadow: "0 0 10px #00ff0077" },
+  ib_rainbow: { borderClass: "c-brd-rainbow" },
+  ib_glitch:  { borderClass: "c-brd-glitch" },
 };
 export const FONT_MAP = {
-  cf_lime:    "#39d353",
-  cf_orange:  "orange",
-  cf_violet:  "#9b59b6",
-  cf_red:     "#e74c3c",
-  cf_rainbow: "#ff69b4",
-  cf_glitch:  "#00ff00",
+  cf_lime:    { color: "#39d353" },
+  cf_orange:  { color: "orange" },
+  cf_violet:  { color: "#9b59b6" },
+  cf_red:     { color: "#e74c3c" },
+  cf_rainbow: { fontClass: "c-font-rainbow" },
+  cf_glitch:  { fontClass: "c-font-glitch" },
 };
 export const HAT_MAP = {
   ph_wizard:    "🧙",
@@ -170,6 +171,13 @@ export async function prefetchCosmetics(userIds) {
     if (category === "banner"        && BANNER_MAP[item_id]) c.banner = BANNER_MAP[item_id];
     if (category === "background"    && BG_MAP[item_id])     c.bg     = BG_MAP[item_id];
   });
+  // Normalise border + font into flat fields for apply functions
+  Object.values(_cache).forEach(c => {
+    if (c.border?.borderClass) { c._borderClass = c.border.borderClass; c._borderInline = null; }
+    else if (c.border)         { c._borderClass = null; c._borderInline = c.border; }
+    if (c.font?.fontClass)     { c._fontClass = c.font.fontClass; c._fontColor = null; }
+    else if (c.font)           { c._fontClass = null; c._fontColor = c.font.color; }
+  });
 }
 
 export async function fetchOneUser(userId) {
@@ -188,9 +196,11 @@ export function getCached(userId) {
 export function applyToAvatar(userId, avatarEl) {
   const c = _cache[userId];
   if (!c || !avatarEl) return;
-  if (c.border) {
-    avatarEl.style.border    = c.border.border;
-    avatarEl.style.boxShadow = c.border.shadow;
+  if (c._borderClass) {
+    avatarEl.classList.add(c._borderClass);
+  } else if (c._borderInline) {
+    avatarEl.style.border    = c._borderInline.border;
+    avatarEl.style.boxShadow = c._borderInline.shadow;
   }
   if (c.anim) avatarEl.classList.add(c.anim);
   if (c.hat) {
@@ -208,7 +218,8 @@ export function applyToAvatar(userId, avatarEl) {
 export function applyToName(userId, nameEl) {
   const c = _cache[userId];
   if (!c || !nameEl) return;
-  if (c.font) nameEl.style.color = c.font;
+  if (c._fontClass)  nameEl.classList.add(c._fontClass);
+  else if (c._fontColor) nameEl.style.color = c._fontColor;
 }
 
 // For name-only contexts (no avatar): prepend hat emoji to the text node.

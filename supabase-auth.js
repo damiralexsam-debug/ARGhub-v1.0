@@ -22,22 +22,34 @@ const CAT_LABELS = {
 
 // Visual properties per cosmetic item for profile card preview
 const COSMETIC_VISUALS = {
-  ib_gold:     { border: "3px solid #ffcc00", shadow: "0 0 12px #ffcc0066" },
-  ib_violet:   { border: "3px solid #9b59b6", shadow: "0 0 12px #9b59b666" },
-  ib_red:      { border: "3px solid #e74c3c", shadow: "0 0 12px #e74c3c66" },
-  ib_rainbow:  { border: "3px solid #ff69b4", shadow: "0 0 12px #ff69b466" },
-  ib_glitch:   { border: "3px solid #00ff00", shadow: "0 0 12px #00ff0066" },
+  // Icon borders (static)
+  ib_gold:     { border: "2px solid #ffcc00", shadow: "0 0 10px #ffcc0077" },
+  ib_violet:   { border: "2px solid #9b59b6", shadow: "0 0 10px #9b59b677" },
+  ib_red:      { border: "2px solid #e74c3c", shadow: "0 0 10px #e74c3c77" },
+  // Icon borders (animated — use CSS class, no inline border)
+  ib_rainbow:  { borderClass: "c-brd-rainbow" },
+  ib_glitch:   { borderClass: "c-brd-glitch" },
+  // Animated skins
+  an_pulse:    { animClass: "c-anim-pulse" },
+  an_ghost:    { animClass: "c-anim-ghost" },
+  an_static:   { animClass: "c-anim-static" },
+  an_fire:     { animClass: "c-anim-fire" },
+  an_matrix:   { animClass: "c-anim-matrix" },
+  // Coloured font (static)
   cf_lime:     { color: "#39d353" },
   cf_orange:   { color: "orange" },
   cf_violet:   { color: "#9b59b6" },
   cf_red:      { color: "#e74c3c" },
-  cf_rainbow:  { color: "#ff69b4" },
-  cf_glitch:   { color: "#00ff00" },
+  // Coloured font (animated — use CSS class)
+  cf_rainbow:  { fontClass: "c-font-rainbow" },
+  cf_glitch:   { fontClass: "c-font-glitch" },
+  // Banners
   bn_dark:     { bannerBg: "#050505" },
   bn_cipher:   { bannerBg: "linear-gradient(135deg,#0a0a18,#050510)" },
   bn_arg:      { bannerBg: "repeating-linear-gradient(0deg,#0a0a0a 0,#0a0a0a 2px,#111 2px,#111 4px)" },
   bn_violet:   { bannerBg: "linear-gradient(135deg,#1a0030,#000)" },
   bn_gold:     { bannerBg: "linear-gradient(135deg,#1a1000,#2a1800)" },
+  // Backgrounds
   bg_stars:    { cardBg: "radial-gradient(ellipse at center,#0a0a1a 0%,#000 100%)" },
   bg_matrix:   { cardBg: "#001100" },
   bg_void:     { cardBg: "#000" },
@@ -453,6 +465,37 @@ function injectAuthModal() {
       color:#aaa; font-size:12px; text-decoration:none; transition:0.2s;
     }
     .ap-link:hover { border-color:#555; color:white; }
+
+    /* ━━ COSMETIC ANIMATIONS (injected on every page) ━━ */
+    .cosmetic-hat {
+      position:absolute; top:-16px; left:50%;
+      transform:translateX(-50%);
+      font-size:15px; line-height:1;
+      pointer-events:none; z-index:2;
+    }
+    /* Animated skins */
+    @keyframes c-pulse  { 0%,100%{box-shadow:0 0 4px 1px rgba(255,255,255,0.12),0 0 0 0 rgba(255,255,255,0.06)} 50%{box-shadow:0 0 18px 7px rgba(255,255,255,0.32),0 0 32px 14px rgba(255,255,255,0)} }
+    @keyframes c-ghost  { 0%,100%{opacity:1;filter:none} 35%,65%{opacity:0.04;filter:blur(1.5px) brightness(0.2)} }
+    @keyframes c-static { 0%,100%{filter:none;transform:none} 7%{filter:brightness(2.8) saturate(0) contrast(5);transform:translate(1px,0) scaleX(1.04)} 8%{filter:none;transform:none} 22%{filter:brightness(0.3) contrast(2.5)} 23%{filter:none} 48%{filter:saturate(0) brightness(2) contrast(4);transform:translate(-1px,1px) scaleY(0.96)} 49%{filter:none;transform:none} 78%{filter:brightness(2.2) contrast(5) saturate(0);transform:scaleY(1.04) scaleX(0.98)} 79%{filter:none;transform:none} }
+    @keyframes c-fire   { 0%,100%{box-shadow:0 0 8px 3px #ff3300cc,0 4px 20px 6px #ff550066,0 -3px 10px 2px #ff880022;filter:brightness(1)} 25%{box-shadow:0 0 14px 5px #ff6600dd,0 4px 28px 8px #ff770077,0 -4px 14px 4px #ffaa0033;filter:brightness(1.15)} 50%{box-shadow:0 0 6px 2px #ff2200bb,0 4px 16px 4px #ff440055,0 -2px 8px 2px #ff660011;filter:brightness(0.95)} 75%{box-shadow:0 0 12px 4px #ff5500cc,0 4px 24px 7px #ff660066,0 -4px 12px 3px #ff990022;filter:brightness(1.1)} }
+    @keyframes c-matrix { 0%,100%{filter:hue-rotate(95deg) saturate(7) brightness(0.5) contrast(2.5)} 20%{filter:hue-rotate(95deg) saturate(12) brightness(1.1) contrast(4)} 40%{filter:hue-rotate(95deg) saturate(5) brightness(0.3) contrast(2)} 60%{filter:hue-rotate(95deg) saturate(10) brightness(0.9) contrast(3.5)} 80%{filter:hue-rotate(95deg) saturate(6) brightness(0.4) contrast(2.2)} }
+    .c-anim-pulse  { animation:c-pulse  2.6s ease-in-out infinite; }
+    .c-anim-ghost  { animation:c-ghost  3.8s ease-in-out infinite; }
+    .c-anim-static { animation:c-static 0.95s steps(1) infinite; }
+    .c-anim-fire   { animation:c-fire   1.3s ease-in-out infinite; }
+    .c-anim-matrix { animation:c-matrix 0.65s steps(1) infinite; }
+    /* Rainbow border */
+    @keyframes c-rainbow-brd { 0%{box-shadow:0 0 0 2px #ff0000,0 0 10px #ff000066} 17%{box-shadow:0 0 0 2px #ff8800,0 0 10px #ff880066} 33%{box-shadow:0 0 0 2px #ffff00,0 0 10px #ffff0066} 50%{box-shadow:0 0 0 2px #00ff00,0 0 10px #00ff0066} 67%{box-shadow:0 0 0 2px #0088ff,0 0 10px #0088ff66} 83%{box-shadow:0 0 0 2px #8800ff,0 0 10px #8800ff66} 100%{box-shadow:0 0 0 2px #ff0000,0 0 10px #ff000066} }
+    .c-brd-rainbow { border:none!important; animation:c-rainbow-brd 3s linear infinite; }
+    /* Glitch border */
+    @keyframes c-glitch-brd { 0%,100%{box-shadow:0 0 0 2px #00ff00,0 0 10px #00ff0066} 25%{box-shadow:2px 0 0 2px #ff0000,-2px 0 0 2px #00ff00,0 0 16px #ff000066} 50%{box-shadow:-2px 0 0 2px #0000ff,2px 0 0 2px #ff0000,0 0 12px #0000ff66} 75%{box-shadow:0 0 0 2px #ff00ff,0 0 8px #ff00ff66} }
+    .c-brd-glitch  { border:none!important; animation:c-glitch-brd 0.4s steps(1) infinite; }
+    /* Rainbow text */
+    @keyframes c-rainbow-txt { 0%{color:#ff0000} 17%{color:#ff8800} 33%{color:#ffff00} 50%{color:#00ff00} 67%{color:#0088ff} 83%{color:#8800ff} 100%{color:#ff0000} }
+    .c-font-rainbow { animation:c-rainbow-txt 4s linear infinite; }
+    /* Glitch text */
+    @keyframes c-glitch-txt { 0%,88%,100%{color:#00ff00;transform:none;text-shadow:none} 90%{color:#ff0000;transform:translateX(-2px) skewX(6deg);text-shadow:2px 0 #0000ff} 93%{color:#0000ff;transform:translateX(2px) skewX(-6deg);text-shadow:-2px 0 #ff0000} 96%{color:#00ff00;transform:none;text-shadow:none} }
+    .c-font-glitch { color:#00ff00; animation:c-glitch-txt 2.5s steps(1) infinite; }
   </style>
 
   <button id="navUserBtn" onclick="window.__authModal.open()">Sign In</button>
@@ -713,29 +756,37 @@ window.__authModal = {
 
   _renderProfileCard(name, email, coins, cosmetics, pendingAdd = null, pendingRemove = null) {
     const catalogue = window.__shopCatalogue || [];
-    // Build active cosmetics map, applying pending changes
     const activeMap = {};
     cosmetics.forEach(c => { activeMap[c.category] = c.item_id; });
     if (pendingAdd)    activeMap[pendingAdd.category]    = pendingAdd.itemId;
     if (pendingRemove) delete activeMap[pendingRemove.category];
 
-    const bannerItem  = activeMap["banner"];
-    const bgItem      = activeMap["background"];
-    const hatItem     = activeMap["profile-hat"];
-    const borderItem  = activeMap["icon-border"];
-    const fontItem    = activeMap["coloured-font"];
+    const vis        = COSMETIC_VISUALS;
+    const bannerItem = activeMap["banner"];
+    const bgItem     = activeMap["background"];
+    const hatItem    = activeMap["profile-hat"];
+    const borderItem = activeMap["icon-border"];
+    const fontItem   = activeMap["coloured-font"];
+    const animItem   = activeMap["animated"];
 
-    const vis = COSMETIC_VISUALS;
-    const bannerBg  = bannerItem ? (vis[bannerItem]?.bannerBg || "#0a0a0a") : "#0a0a0a";
-    const cardBg    = bgItem     ? (vis[bgItem]?.cardBg      || "#111")     : "#111";
-    const hatEmoji  = hatItem    ? (catalogue.find(c => c.id === hatItem)?.emoji || "") : "";
-    const borderStyle = borderItem
-      ? `border:${vis[borderItem]?.border || "3px solid #333"};box-shadow:${vis[borderItem]?.shadow || "none"};`
-      : "border:3px solid transparent;";
-    const nameColor = fontItem ? (vis[fontItem]?.color || "white") : "white";
-    const initial   = (name || "?")[0].toUpperCase();
+    const bannerBg   = bannerItem ? (vis[bannerItem]?.bannerBg || "#0a0a0a") : "#0a0a0a";
+    const cardBg     = bgItem     ? (vis[bgItem]?.cardBg      || "#111")     : "#111";
+    const hatEmoji   = hatItem    ? (catalogue.find(c => c.id === hatItem)?.emoji || "") : "";
+    const animClass  = animItem   ? (vis[animItem]?.animClass  || "") : "";
 
-    // Update main profile preview card
+    // Border: static items use inline style, animated items use CSS class only
+    const bv           = borderItem ? vis[borderItem] : null;
+    const borderClass  = bv?.borderClass || "";
+    const borderInline = (!borderClass && bv) ? `border:${bv.border};box-shadow:${bv.shadow};` : "border:2px solid transparent;";
+
+    // Font: static items use inline color, animated items use CSS class
+    const fv        = fontItem ? vis[fontItem] : null;
+    const fontClass = fv?.fontClass || "";
+    const fontColor = (!fontClass && fv) ? fv.color : "white";
+
+    const initial = (name || "?")[0].toUpperCase();
+
+    // ── Update the persistent top profile card ──
     const ppBanner = document.getElementById("ppBanner");
     const ppAvatar = document.getElementById("ppAvatar");
     const ppHat    = document.getElementById("ppHat");
@@ -743,21 +794,34 @@ window.__authModal = {
     const ppCard   = document.getElementById("ppCard");
     if (ppBanner) ppBanner.style.background = bannerBg;
     if (ppCard)   ppCard.style.background   = cardBg;
-    if (ppAvatar) { ppAvatar.textContent = initial; ppAvatar.setAttribute("style", borderStyle); }
-    if (ppHat)    ppHat.textContent = hatEmoji;
-    if (ppName)   { ppName.textContent = name; ppName.style.color = nameColor; }
+    if (ppHat)    ppHat.textContent         = hatEmoji;
+    if (ppAvatar) {
+      ppAvatar.textContent = initial;
+      ppAvatar.style.cssText = borderInline;
+      // Reset classes then apply cosmetic classes
+      ppAvatar.className = "pp-avatar";
+      if (borderClass) ppAvatar.classList.add(borderClass);
+      if (animClass)   ppAvatar.classList.add(animClass);
+    }
+    if (ppName) {
+      ppName.textContent = name;
+      ppName.style.color = fontColor;
+      ppName.className   = "pp-name";
+      if (fontClass) ppName.classList.add(fontClass);
+    }
 
-    // Return mini card HTML for preview panel
+    // ── Return mini card HTML for the wardrobe preview panel ──
     return `
       <div style="background:${cardBg};border-radius:10px;overflow:hidden;border:1px solid #1e1e1e;">
         <div style="height:50px;background:${bannerBg};"></div>
         <div style="padding:0 14px 12px;display:flex;align-items:flex-start;gap:12px;">
           <div style="position:relative;margin-top:-18px;flex-shrink:0;">
-            ${hatEmoji ? `<div style="position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:16px;">${hatEmoji}</div>` : ""}
-            <div style="width:38px;height:38px;border-radius:50%;background:#2a2a2a;${borderStyle}display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:white;">${initial}</div>
+            ${hatEmoji ? `<div class="cosmetic-hat" style="font-size:16px;">${hatEmoji}</div>` : ""}
+            <div class="${[animClass, borderClass].filter(Boolean).join(" ")}"
+                 style="width:38px;height:38px;border-radius:50%;background:#2a2a2a;${borderInline}display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:white;">${initial}</div>
           </div>
           <div style="padding-top:8px;flex:1;min-width:0;">
-            <div style="font-size:14px;font-weight:700;color:${nameColor};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${name}</div>
+            <div class="${fontClass}" style="font-size:14px;font-weight:700;color:${fontColor};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${name}</div>
             <div style="font-size:10px;color:#555;margin-top:2px;">preview</div>
           </div>
         </div>
