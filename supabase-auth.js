@@ -619,7 +619,7 @@ function injectAuthModal() {
     .hat-mk-mst:before { right:1px; transform:rotate(6deg); }
     .hat-mk-mst:after  { left:1px;  transform:rotate(-6deg); }
     .hat-mk-beard { position:absolute; top:42px; left:50%; transform:translateX(-50%); width:13px; height:10px; background:#0a0a0a; clip-path:polygon(15% 0%,85% 0%,75% 100%,50% 80%,25% 100%); }
-    .pho-anon { top:-8px; left:-2px; transform:rotate(-3deg); opacity:0.92; }
+    .pho-anon { top:-50px; left:50%; transform:translateX(-50%) rotate(-5deg); opacity:0.92; }
 
     /* ── NEW ANIMATED BANNERS ── */
     /* Marble Hornets: corrupted footage look */
