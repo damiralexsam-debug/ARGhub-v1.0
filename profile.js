@@ -151,12 +151,10 @@ function injectProfileView() {
   <div id="profileViewOverlay" onclick="_pvHandleOverlay(event)">
     <div id="profileViewBox">
       <button id="pvClose" onclick="closeProfileView()">✕</button>
-      <div style="position:relative;">
-        <div id="pvHatOverlay" class="pp-hat-overlay"></div>
-        <div id="pvBanner" style="border-radius:16px 16px 0 0;overflow:hidden;"></div>
-      </div>
+      <div id="pvBanner" style="border-radius:16px 16px 0 0;overflow:hidden;"></div>
       <div class="pv-header-body">
-        <div class="pv-avatar-wrap" style="position:relative;">
+        <div class="pv-avatar-wrap" style="position:relative;flex-shrink:0;">
+          <div id="pvHatOverlay" class="pp-hat-overlay"></div>
           <div class="pv-avatar" id="pvAvatar">?</div>
         </div>
         <div class="pv-info">

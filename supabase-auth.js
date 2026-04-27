@@ -274,14 +274,20 @@ function injectAuthModal() {
     .profile-stat span { color:white; font-weight:700; }
 
     /* ── ACTIVITY GRAPH ── */
-    .activity-graph-wrap { margin-bottom:20px; overflow-x:auto; padding-bottom:4px; }
-    .activity-graph { display:flex; gap:2px; width:max-content; }
+    .activity-graph-wrap { margin-bottom:20px; overflow-x:auto; }
+    .ag-outer { display:flex; gap:6px; width:max-content; align-items:flex-start; }
+    .ag-day-labels { display:flex; flex-direction:column; gap:2px; margin-top:18px; }
+    .ag-day-label { font-size:9px; color:#444; height:9px; line-height:9px; white-space:nowrap; }
+    .ag-grid-col { display:flex; flex-direction:column; gap:2px; }
+    .ag-month-labels { display:flex; gap:2px; margin-left:0; margin-bottom:3px; }
+    .ag-month-label { font-size:9px; color:#555; }
+    .ag-grid { display:flex; gap:2px; }
     .ag-week { display:flex; flex-direction:column; gap:2px; }
-    .ag-cell {
-      width:9px; height:9px; border-radius:2px; cursor:default;
-      transition:0.1s;
-    }
-    .ag-cell:hover { opacity:0.8; }
+    .ag-cell { width:9px; height:9px; border-radius:2px; cursor:default; }
+    .ag-cell:hover { outline:1px solid #555; }
+    .ag-legend { display:flex; align-items:center; gap:5px; margin-top:6px; justify-content:flex-end; }
+    .ag-legend-label { font-size:10px; color:#444; }
+    .ag-legend-cell { width:9px; height:9px; border-radius:2px; }
     .ag-loading { font-size:11px; color:#444; letter-spacing:1px; padding:8px 0; }
 
     /* ── SIGN OUT ── */
@@ -556,174 +562,74 @@ function injectAuthModal() {
     /* Neon sunset: static gradient (beautiful on its own) */
     .c-bg-sunset { background: linear-gradient(160deg,#0d001a 0%,#1a0800 60%,#0a0003 100%); }
 
-    /* ── HAT OVERLAY CONTAINER ── */
-    .pp-hat-overlay { position:absolute; pointer-events:none; z-index:5; }
+    /* ── HAT OVERLAY — positioned inside pp-avatar-wrap (relative to the 44px circle) ── */
+    .pp-hat-overlay { position:absolute; pointer-events:none; z-index:10; }
 
-    /* ── WIZARD HAT ── */
-    .hat-wizard { position:relative; width:80px; height:106px; }
+    /* ── WIZARD HAT ── (sits tilted above-left of avatar) */
+    .hat-wizard { position:relative; width:46px; height:60px; }
     .hat-w-cone {
-      position:absolute; bottom:20px; left:50%; transform:translateX(-50%);
+      position:absolute; bottom:11px; left:50%; transform:translateX(-50%);
       width:0; height:0;
-      border-left:32px solid transparent; border-right:32px solid transparent;
-      border-bottom:86px solid #1e0754;
-      filter:drop-shadow(0 0 12px #7c3aed88);
+      border-left:18px solid transparent; border-right:18px solid transparent;
+      border-bottom:48px solid #1e0754;
+      filter:drop-shadow(0 0 8px #7c3aed88);
     }
     .hat-w-shine {
-      position:absolute; bottom:38px; left:50%; transform:translateX(-50%) translateX(-6px);
-      width:6px; height:28px; border-radius:3px;
+      position:absolute; bottom:22px; left:50%; transform:translateX(-50%) translateX(-3px);
+      width:3px; height:16px; border-radius:2px;
       background:linear-gradient(180deg,rgba(167,139,250,0.4),transparent);
     }
-    .hat-w-band {
-      position:absolute; bottom:20px; left:50%; transform:translateX(-50%);
-      width:63px; height:9px; background:#4c1d95; z-index:1;
-    }
-    .hat-w-brim {
-      position:absolute; bottom:0; left:50%; transform:translateX(-50%);
-      width:82px; height:20px; background:#1e0754;
-      border-radius:50%; border:1.5px solid #7c3aed;
-      box-shadow:0 0 16px #5b21b677;
-    }
-    .hat-w-star {
-      position:absolute; color:#fbbf24; line-height:1;
-      filter:drop-shadow(0 0 5px #fbbf24cc); z-index:2;
-    }
+    .hat-w-band { position:absolute; bottom:11px; left:50%; transform:translateX(-50%); width:36px; height:5px; background:#4c1d95; z-index:1; }
+    .hat-w-brim { position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:48px; height:11px; background:#1e0754; border-radius:50%; border:1px solid #7c3aed; box-shadow:0 0 10px #5b21b677; }
+    .hat-w-star { position:absolute; color:#fbbf24; line-height:1; filter:drop-shadow(0 0 3px #fbbf24cc); z-index:2; }
+    .pho-wizard { top:-50px; left:-4px; transform:rotate(-12deg); }
 
-    /* ── CROWN ── */
-    .hat-crown { position:relative; width:78px; height:62px; }
-    .hat-cr-top {
-      position:absolute; top:0; left:0; right:0;
-      display:flex; justify-content:space-around; align-items:flex-end; padding:0 2px;
-    }
-    .hat-cr-point {
-      width:0; height:0;
-      border-left:11px solid transparent; border-right:11px solid transparent;
-      border-bottom:30px solid #d97706;
-      filter:drop-shadow(0 0 6px #fbbf2477);
-    }
-    .hat-cr-point.tall { border-bottom-width:40px; border-left-width:13px; border-right-width:13px; }
-    .hat-cr-body {
-      position:absolute; bottom:0; left:0; right:0; height:28px;
-      background:linear-gradient(180deg,#d97706,#92400e);
-      border-top:2px solid #fbbf24; border-radius:2px 2px 6px 6px;
-      box-shadow:0 0 14px #92400e55;
-      display:flex; align-items:center; justify-content:space-evenly; padding:0 8px;
-    }
-    .hat-cr-gem {
-      width:10px; height:10px; border-radius:50%;
-      border:1.5px solid rgba(255,255,255,0.5);
-    }
-    .hat-cr-gem.r { background:#ef4444; box-shadow:0 0 8px #ef4444; }
-    .hat-cr-gem.b { background:#60a5fa; box-shadow:0 0 8px #60a5fa; }
-    .hat-cr-gem.g { background:#34d399; box-shadow:0 0 8px #34d399; }
+    /* ── CROWN ── (floats centered above avatar, lower edge touches top of circle) */
+    .hat-crown { position:relative; width:54px; height:40px; }
+    .hat-cr-top { position:absolute; top:0; left:0; right:0; display:flex; justify-content:space-around; align-items:flex-end; padding:0 1px; }
+    .hat-cr-point { width:0; height:0; border-left:8px solid transparent; border-right:8px solid transparent; border-bottom:22px solid #d97706; filter:drop-shadow(0 0 4px #fbbf2477); }
+    .hat-cr-point.tall { border-bottom-width:30px; border-left-width:9px; border-right-width:9px; }
+    .hat-cr-body { position:absolute; bottom:0; left:0; right:0; height:18px; background:linear-gradient(180deg,#d97706,#92400e); border-top:1.5px solid #fbbf24; border-radius:2px 2px 4px 4px; box-shadow:0 0 10px #92400e55; display:flex; align-items:center; justify-content:space-evenly; padding:0 5px; }
+    .hat-cr-gem { width:7px; height:7px; border-radius:50%; border:1px solid rgba(255,255,255,0.5); }
+    .hat-cr-gem.r { background:#ef4444; box-shadow:0 0 5px #ef4444; }
+    .hat-cr-gem.b { background:#60a5fa; box-shadow:0 0 5px #60a5fa; }
+    .hat-cr-gem.g { background:#34d399; box-shadow:0 0 5px #34d399; }
+    .pho-crown { top:-38px; left:50%; transform:translateX(-50%); }
 
-    /* ── FEDORA ── */
-    .hat-fedora { position:relative; width:90px; height:68px; }
-    .hat-fd-dome {
-      position:absolute; top:0; left:50%; transform:translateX(-50%);
-      width:54px; height:48px;
-      background:linear-gradient(170deg,#4b5563 0%,#1f2937 100%);
-      border-radius:50% 50% 20% 20% / 65% 65% 35% 35%;
-      border:1.5px solid #6b7280;
-      box-shadow:inset -8px -4px 16px rgba(0,0,0,0.5), 0 0 8px rgba(0,0,0,0.4);
-    }
-    .hat-fd-band {
-      position:absolute; top:36px; left:50%; transform:translateX(-50%);
-      width:54px; height:9px;
-      background:linear-gradient(90deg,#111827,#374151,#111827);
-      border-top:1px solid #4b5563; border-bottom:1px solid #4b5563;
-    }
-    .hat-fd-brim {
-      position:absolute; bottom:0; left:0; right:0; height:20px;
-      background:linear-gradient(180deg,#374151,#1f2937);
-      border-radius:40% 40% 48% 48% / 70% 70% 30% 30%;
-      border:1.5px solid #4b5563;
-      box-shadow:0 6px 14px rgba(0,0,0,0.6), inset 0 2px 4px rgba(255,255,255,0.05);
-    }
+    /* ── FEDORA ── (tilted, brim overlaps top-right of avatar) */
+    .hat-fedora { position:relative; width:62px; height:44px; }
+    .hat-fd-dome { position:absolute; top:0; left:50%; transform:translateX(-50%); width:36px; height:30px; background:linear-gradient(170deg,#4b5563,#1f2937); border-radius:50% 50% 20% 20%/65% 65% 35% 35%; border:1px solid #6b7280; box-shadow:inset -4px -3px 10px rgba(0,0,0,0.5); }
+    .hat-fd-band { position:absolute; top:22px; left:50%; transform:translateX(-50%); width:36px; height:6px; background:linear-gradient(90deg,#111827,#374151,#111827); border-top:1px solid #4b5563; border-bottom:1px solid #4b5563; }
+    .hat-fd-brim { position:absolute; bottom:0; left:0; right:0; height:14px; background:linear-gradient(180deg,#374151,#1f2937); border-radius:40% 40% 48% 48%/70% 70% 30% 30%; border:1px solid #4b5563; box-shadow:0 4px 8px rgba(0,0,0,0.6); }
+    .pho-detective { top:-36px; right:-10px; transform:rotate(10deg); }
 
-    /* ── SPACE HELMET ── */
-    .hat-helmet { position:relative; width:82px; height:90px; }
-    .hat-hl-outer {
-      position:absolute; top:0; left:50%; transform:translateX(-50%);
-      width:76px; height:82px; border-radius:50%;
-      background:linear-gradient(145deg,#e2e8f0 0%,#94a3b8 35%,#475569 70%,#1e293b 100%);
-      border:2px solid #cbd5e1;
-      box-shadow:0 0 24px rgba(148,163,184,0.2), inset 0 4px 16px rgba(255,255,255,0.25), inset -8px -8px 24px rgba(0,0,0,0.4);
-    }
-    .hat-hl-visor {
-      position:absolute; top:19px; left:50%; transform:translateX(-50%);
-      width:52px; height:38px; border-radius:50%;
-      background:linear-gradient(155deg,#0f172a 0%,#1e3a5f 50%,#0a1628 100%);
-      border:2px solid #334155;
-      box-shadow:inset 0 0 24px rgba(56,189,248,0.12), 0 0 8px rgba(56,189,248,0.08);
-    }
-    .hat-hl-refl {
-      position:absolute; top:23px; left:50%; transform:translateX(-50%) translateX(-10px);
-      width:14px; height:10px; border-radius:50%;
-      background:rgba(255,255,255,0.22); transform:rotate(-20deg);
-    }
-    .hat-hl-ring {
-      position:absolute; bottom:2px; left:50%; transform:translateX(-50%);
-      width:72px; height:12px; border-radius:50%;
-      background:linear-gradient(90deg,#334155,#64748b,#334155);
-      border:1px solid #475569;
-    }
+    /* ── SPACE HELMET ── (wraps the avatar, slightly larger than the circle) */
+    .hat-helmet { position:relative; width:58px; height:62px; }
+    .hat-hl-outer { position:absolute; top:0; left:50%; transform:translateX(-50%); width:54px; height:54px; border-radius:50%; background:linear-gradient(145deg,#e2e8f0,#94a3b8 35%,#475569 70%,#1e293b); border:1.5px solid #cbd5e1; box-shadow:0 0 16px rgba(148,163,184,0.15),inset 0 3px 10px rgba(255,255,255,0.2),inset -5px -5px 16px rgba(0,0,0,0.4); }
+    .hat-hl-visor { position:absolute; top:12px; left:50%; transform:translateX(-50%); width:36px; height:26px; border-radius:50%; background:linear-gradient(155deg,#0f172a,#1e3a5f 50%,#0a1628); border:1.5px solid #334155; box-shadow:inset 0 0 14px rgba(56,189,248,0.1); }
+    .hat-hl-refl { position:absolute; top:14px; left:50%; margin-left:-10px; width:8px; height:6px; border-radius:50%; background:rgba(255,255,255,0.2); transform:rotate(-20deg); }
+    .hat-hl-ring { position:absolute; bottom:2px; left:50%; transform:translateX(-50%); width:50px; height:8px; border-radius:50%; background:linear-gradient(90deg,#334155,#64748b,#334155); border:1px solid #475569; }
+    .pho-space { top:-7px; left:-7px; }
 
-    /* ── ANONYMOUS MASK ── */
-    .hat-mask { position:relative; width:86px; height:104px; }
-    .hat-mk-face {
-      position:absolute; top:0; left:50%; transform:translateX(-50%);
-      width:74px; height:96px;
-      border-radius:40% 40% 36% 36% / 44% 44% 56% 56%;
-      background:linear-gradient(175deg,#f8fafc 0%,#e2e8f0 60%,#cbd5e1 100%);
-      border:1.5px solid #94a3b8;
-      box-shadow:0 0 24px rgba(255,255,255,0.08), inset 0 2px 12px rgba(0,0,0,0.06);
-    }
-    .hat-mk-eye {
-      position:absolute; top:28px; width:18px; height:22px;
-      background:#0a0a0a; border-radius:50% 50% 42% 42% / 58% 58% 42% 42%;
-    }
-    .hat-mk-eye.l { left:14px; }
-    .hat-mk-eye.r { right:14px; }
-    .hat-mk-brow {
-      position:absolute; top:22px; height:5px; border-radius:50%;
-      background:#0a0a0a;
-    }
-    .hat-mk-brow.l { left:12px; width:22px; transform:rotate(-8deg); }
-    .hat-mk-brow.r { right:12px; width:22px; transform:rotate(8deg); }
-    .hat-mk-cheek {
-      position:absolute; top:52px; width:16px; height:10px;
-      background:#f87171; border-radius:50%; opacity:0.5;
-    }
-    .hat-mk-cheek.l { left:10px; }
-    .hat-mk-cheek.r { right:10px; }
-    .hat-mk-nose {
-      position:absolute; top:50px; left:50%; transform:translateX(-50%);
-      width:8px; height:10px; border-radius:50%;
-      background:rgba(0,0,0,0.08);
-    }
-    .hat-mk-mst {
-      position:absolute; top:64px; left:50%; transform:translateX(-50%);
-      width:0;
-    }
-    .hat-mk-mst:before, .hat-mk-mst:after {
-      content:''; position:absolute; top:0;
-      width:20px; height:10px; border-radius:0 0 50% 50%;
-      background:#0a0a0a;
-    }
-    .hat-mk-mst:before { right:2px; transform:rotate(8deg); }
-    .hat-mk-mst:after  { left:2px;  transform:rotate(-8deg); }
-    .hat-mk-beard {
-      position:absolute; top:74px; left:50%; transform:translateX(-50%);
-      width:22px; height:20px; background:#0a0a0a;
-      clip-path:polygon(15% 0%,85% 0%,75% 100%,50% 78%,25% 100%);
-    }
-
-    /* ── POSITIONING OF HATS ON THE CARD ── */
-    .pho-wizard    { top:-18px; left:10px;  transform:rotate(-12deg); }
-    .pho-crown     { top:-12px; left:50%;   transform:translateX(-50%); }
-    .pho-detective { top:-12px; right:8px;  transform:rotate(9deg); }
-    .pho-space     { top:10px;  left:50%;   transform:translateX(-50%); }
-    .pho-anon      { top:8px;   left:-8px;  transform:rotate(-5deg); opacity:0.88; }
+    /* ── ANONYMOUS MASK ── (large, covers most of avatar from slight angle) */
+    .hat-mask { position:relative; width:52px; height:64px; }
+    .hat-mk-face { position:absolute; top:0; left:50%; transform:translateX(-50%); width:44px; height:58px; border-radius:40% 40% 36% 36%/44% 44% 56% 56%; background:linear-gradient(175deg,#f8fafc,#e2e8f0 60%,#cbd5e1); border:1px solid #94a3b8; box-shadow:0 0 16px rgba(255,255,255,0.06),inset 0 2px 8px rgba(0,0,0,0.05); }
+    .hat-mk-eye { position:absolute; top:18px; width:11px; height:13px; background:#0a0a0a; border-radius:50% 50% 42% 42%/58% 58% 42% 42%; }
+    .hat-mk-eye.l { left:8px; }
+    .hat-mk-eye.r { right:8px; }
+    .hat-mk-brow { position:absolute; top:13px; height:3px; border-radius:50%; background:#0a0a0a; }
+    .hat-mk-brow.l { left:7px; width:14px; transform:rotate(-6deg); }
+    .hat-mk-brow.r { right:7px; width:14px; transform:rotate(6deg); }
+    .hat-mk-cheek { position:absolute; top:32px; width:10px; height:6px; background:#f87171; border-radius:50%; opacity:0.5; }
+    .hat-mk-cheek.l { left:5px; }
+    .hat-mk-cheek.r { right:5px; }
+    .hat-mk-nose { position:absolute; top:30px; left:50%; transform:translateX(-50%); width:5px; height:6px; border-radius:50%; background:rgba(0,0,0,0.07); }
+    .hat-mk-mst { position:absolute; top:40px; left:50%; transform:translateX(-50%); width:0; }
+    .hat-mk-mst:before,.hat-mk-mst:after { content:''; position:absolute; top:0; width:12px; height:6px; border-radius:0 0 50% 50%; background:#0a0a0a; }
+    .hat-mk-mst:before { right:1px; transform:rotate(6deg); }
+    .hat-mk-mst:after  { left:1px;  transform:rotate(-6deg); }
+    .hat-mk-beard { position:absolute; top:46px; left:50%; transform:translateX(-50%); width:14px; height:12px; background:#0a0a0a; clip-path:polygon(15% 0%,85% 0%,75% 100%,50% 80%,25% 100%); }
+    .pho-anon { top:-10px; left:-8px; transform:rotate(-4deg); opacity:0.9; }
 
     /* ── NEW ANIMATED BANNERS ── */
     /* Marble Hornets: corrupted footage look */
@@ -843,11 +749,11 @@ function injectAuthModal() {
 
         <!-- Profile Preview Card -->
         <div style="position:relative;margin-bottom:20px;">
-          <div class="pp-hat-overlay" id="ppHatOverlay"></div>
           <div class="pp-card" id="ppCard" style="overflow:visible;margin-bottom:0;">
             <div class="pp-banner" id="ppBanner" style="border-radius:12px 12px 0 0;overflow:hidden;"></div>
             <div class="pp-body">
-              <div class="pp-avatar-wrap" style="position:relative;">
+              <div class="pp-avatar-wrap" style="position:relative;flex-shrink:0;">
+                <div class="pp-hat-overlay" id="ppHatOverlay"></div>
                 <div class="pp-avatar" id="ppAvatar">?</div>
               </div>
               <div class="pp-info">
@@ -990,9 +896,9 @@ window.buildHatHTML = function(hatId) {
         <div class="hat-w-shine"></div>
         <div class="hat-w-band"></div>
         <div class="hat-w-brim"></div>
-        <div class="hat-w-star" style="top:22%;left:34%;font-size:13px;">★</div>
-        <div class="hat-w-star" style="top:48%;left:58%;font-size:8px;">✦</div>
-        <div class="hat-w-star" style="top:34%;left:55%;font-size:10px;">✦</div>
+        <div class="hat-w-star" style="top:20%;left:32%;font-size:8px;">★</div>
+        <div class="hat-w-star" style="top:45%;left:56%;font-size:5px;">✦</div>
+        <div class="hat-w-star" style="top:34%;left:52%;font-size:6px;">✦</div>
       </div>`;
     case 'ph_crown': return `
       <div class="hat-crown">
@@ -1151,11 +1057,11 @@ window.__authModal = {
     const file    = input.files[0];
     const msgEl   = document.getElementById("picUploadMsg");
     const ext     = file.name.split(".").pop();
-    const path    = `${_currentUser.id}/avatar.${ext}`;
+    const path    = `profiles/${_currentUser.id}/avatar.${ext}`;
     msgEl.textContent = "Uploading..."; msgEl.className = "profile-msg ok"; msgEl.style.display = "block";
-    const { error: upErr } = await supabase.storage.from("profile-pictures").upload(path, file, { upsert: true });
+    const { error: upErr } = await supabase.storage.from("community-files").upload(path, file, { upsert: true });
     if (upErr) { msgEl.textContent = `❌ ${upErr.message}`; msgEl.className = "profile-msg err"; return; }
-    const { data: urlData } = supabase.storage.from("profile-pictures").getPublicUrl(path);
+    const { data: urlData } = supabase.storage.from("community-files").getPublicUrl(path);
     const avatarUrl = urlData.publicUrl;
     await supabase.from("profiles").upsert({ id: _currentUser.id, avatar_url: avatarUrl }, { onConflict: "id" });
     this._setAvatarDisplay(avatarUrl, await getDisplayName());
@@ -1199,7 +1105,7 @@ window.__authModal = {
     const ppAvatar  = document.getElementById("ppAvatar");
     const ppName    = document.getElementById("ppName");
     const ppCard    = document.getElementById("ppCard");
-    const ppHatOvEl = document.getElementById("ppHatOverlay");
+    const ppHatOvEl = document.getElementById("ppHatOverlay"); // now inside pp-avatar-wrap
 
     if (ppBanner) {
       ppBanner.className = ["pp-banner", bannerClass].filter(Boolean).join(" ");
@@ -1240,9 +1146,9 @@ window.__authModal = {
     return `
       <div class="${bgClass}" style="position:relative;${cardBg?`background:${cardBg};`:""}border-radius:10px;overflow:hidden;border:1px solid #1e1e1e;">
         <div class="${bannerClass}" style="height:50px;${bannerClass?"":"background:"+bannerBg+";"}border-radius:10px 10px 0 0;overflow:hidden;"></div>
-        ${hatOvClass ? `<div class="pp-hat-overlay ${hatOvClass}" style="transform-origin:top left;">${window.buildHatHTML?.(hatItem)||""}</div>` : ""}
         <div style="padding:0 14px 12px;display:flex;align-items:flex-start;gap:12px;">
           <div style="position:relative;margin-top:-18px;flex-shrink:0;">
+            ${hatOvClass ? `<div class="pp-hat-overlay ${hatOvClass}">${window.buildHatHTML?.(hatItem)||""}</div>` : ""}
             <div class="${[borderClass, animClass].filter(Boolean).join(" ")}"
                  style="width:38px;height:38px;border-radius:50%;background:#2a2a2a;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:white;overflow:hidden;${miniAnimStyle}">${miniAvatarImg}</div>
           </div>
@@ -1281,48 +1187,64 @@ window.__authModal = {
 
     const oneYearAgo = new Date();
     oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-
     const { data: msgs } = await supabase
-      .from("messages")
-      .select("created_at")
-      .eq("user_id", userId)
+      .from("messages").select("created_at").eq("user_id", userId)
       .gte("created_at", oneYearAgo.toISOString());
 
-    // Group by day
     const byDay = {};
-    (msgs || []).forEach(m => {
-      const key = m.created_at.slice(0, 10);
-      byDay[key] = (byDay[key] || 0) + 1;
-    });
+    (msgs || []).forEach(m => { const k = m.created_at.slice(0,10); byDay[k] = (byDay[k]||0)+1; });
 
-    // Build 52-week grid ending today
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    // Align to Sunday
-    const endSunday = new Date(today);
-    endSunday.setDate(today.getDate() + (6 - today.getDay()));
-    const startSunday = new Date(endSunday);
-    startSunday.setDate(endSunday.getDate() - 51 * 7);
+    // Build 52-week grid, starting on the Sunday 51 weeks ago
+    const today = new Date(); today.setHours(0,0,0,0);
+    const startDay = new Date(today);
+    startDay.setDate(today.getDate() - today.getDay() - 51*7); // start of week, 52 weeks ago
 
-    const weeks = [];
+    const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const DAYS   = ["","Mon","","Wed","","Fri",""];
+
+    // Build cells grid
+    const weekCols = [];
+    let monthLabels = [];
+    let lastMonth = -1;
+
     for (let w = 0; w < 52; w++) {
       let cells = "";
+      const weekStart = new Date(startDay); weekStart.setDate(startDay.getDate() + w*7);
+      const m = weekStart.getMonth();
+      monthLabels.push(m !== lastMonth ? `<span class="ag-month-label" style="width:${9+2}px">${MONTHS[m]}</span>` : `<span class="ag-month-label" style="width:${9+2}px"></span>`);
+      lastMonth = m;
+
       for (let d = 0; d < 7; d++) {
-        const dt = new Date(startSunday);
-        dt.setDate(startSunday.getDate() + w * 7 + d);
-        const key   = dt.toISOString().slice(0, 10);
+        const dt = new Date(startDay); dt.setDate(startDay.getDate() + w*7 + d);
+        const key   = dt.toISOString().slice(0,10);
         const count = byDay[key] || 0;
-        const col   = count === 0 ? "#1a1a1a"
-          : count <= 2 ? "#1a3a1a"
-          : count <= 5 ? "#2d6a2d"
-          : "#39d353";
-        cells += `<div class="ag-cell" style="background:${col}" title="${key}: ${count} messages"></div>`;
+        const col   = count===0 ? "#1c1c1c" : count<=2 ? "#1a3a1a" : count<=5 ? "#2d6a2d" : "#39d353";
+        const dayName = dt.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+        cells += `<div class="ag-cell" style="background:${col}" title="${dayName}: ${count} message${count!==1?"s":""}"></div>`;
       }
-      weeks.push(`<div class="ag-week">${cells}</div>`);
+      weekCols.push(`<div class="ag-week">${cells}</div>`);
     }
 
-    el.className = "activity-graph";
-    el.innerHTML = weeks.join("");
+    // Day labels (left side)
+    const dayLabelHTML = DAYS.map(d => `<div class="ag-day-label">${d}</div>`).join("");
+
+    el.className = "";
+    el.innerHTML = `
+      <div class="ag-outer">
+        <div class="ag-day-labels">${dayLabelHTML}</div>
+        <div class="ag-grid-col">
+          <div class="ag-month-labels">${monthLabels.join("")}</div>
+          <div class="ag-grid">${weekCols.join("")}</div>
+        </div>
+      </div>
+      <div class="ag-legend">
+        <span class="ag-legend-label">Less</span>
+        <div class="ag-legend-cell" style="background:#1c1c1c"></div>
+        <div class="ag-legend-cell" style="background:#1a3a1a"></div>
+        <div class="ag-legend-cell" style="background:#2d6a2d"></div>
+        <div class="ag-legend-cell" style="background:#39d353"></div>
+        <span class="ag-legend-label">More</span>
+      </div>`;
   },
 
   async _saveDescription() {

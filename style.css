@@ -59,8 +59,14 @@ body {
 ===================== */
 .site-logo {
   display: block;
-  margin: auto;
-  padding-top: 20px;
+  margin: 0;
+  padding-top: 0;
+}
+/* Shrink the <a> to exactly the image size so only clicking the logo navigates home */
+a:has(> .site-logo) {
+  display: block;
+  width: fit-content;
+  margin: 20px auto 0;
 }
 
 .tagline {
