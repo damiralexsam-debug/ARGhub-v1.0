@@ -562,74 +562,64 @@ function injectAuthModal() {
     /* Neon sunset: static gradient (beautiful on its own) */
     .c-bg-sunset { background: linear-gradient(160deg,#0d001a 0%,#1a0800 60%,#0a0003 100%); }
 
-    /* ── HAT OVERLAY — positioned inside pp-avatar-wrap (relative to the 44px circle) ── */
+    /* ── HAT OVERLAY — inside pp-avatar-wrap (44px circle), hats sit ON TOP of the head ── */
     .pp-hat-overlay { position:absolute; pointer-events:none; z-index:10; }
 
-    /* ── WIZARD HAT ── (sits tilted above-left of avatar) */
-    .hat-wizard { position:relative; width:46px; height:60px; }
-    .hat-w-cone {
-      position:absolute; bottom:11px; left:50%; transform:translateX(-50%);
-      width:0; height:0;
-      border-left:18px solid transparent; border-right:18px solid transparent;
-      border-bottom:48px solid #1e0754;
-      filter:drop-shadow(0 0 8px #7c3aed88);
-    }
-    .hat-w-shine {
-      position:absolute; bottom:22px; left:50%; transform:translateX(-50%) translateX(-3px);
-      width:3px; height:16px; border-radius:2px;
-      background:linear-gradient(180deg,rgba(167,139,250,0.4),transparent);
-    }
-    .hat-w-band { position:absolute; bottom:11px; left:50%; transform:translateX(-50%); width:36px; height:5px; background:#4c1d95; z-index:1; }
-    .hat-w-brim { position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:48px; height:11px; background:#1e0754; border-radius:50%; border:1px solid #7c3aed; box-shadow:0 0 10px #5b21b677; }
-    .hat-w-star { position:absolute; color:#fbbf24; line-height:1; filter:drop-shadow(0 0 3px #fbbf24cc); z-index:2; }
-    .pho-wizard { top:-50px; left:-4px; transform:rotate(-12deg); }
+    /* ── WIZARD HAT ~28px wide cone, sits centered on top ── */
+    .hat-wizard { position:relative; width:28px; height:36px; }
+    .hat-w-cone { position:absolute; bottom:8px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:11px solid transparent; border-right:11px solid transparent; border-bottom:28px solid #1e0754; filter:drop-shadow(0 0 6px #7c3aed88); }
+    .hat-w-shine { position:absolute; bottom:16px; left:50%; transform:translateX(-50%) translateX(-2px); width:2px; height:10px; border-radius:1px; background:linear-gradient(180deg,rgba(167,139,250,0.5),transparent); }
+    .hat-w-band { position:absolute; bottom:8px; left:50%; transform:translateX(-50%); width:22px; height:4px; background:#4c1d95; z-index:1; }
+    .hat-w-brim { position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:30px; height:8px; background:#1e0754; border-radius:50%; border:1px solid #7c3aed; box-shadow:0 0 8px #5b21b677; }
+    .hat-w-star { position:absolute; color:#fbbf24; line-height:1; filter:drop-shadow(0 0 2px #fbbf24cc); z-index:2; }
+    .pho-wizard { top:-30px; left:50%; transform:translateX(-50%) rotate(-8deg); }
 
-    /* ── CROWN ── (floats centered above avatar, lower edge touches top of circle) */
-    .hat-crown { position:relative; width:54px; height:40px; }
+    /* ── CROWN ~40px wide, centered, sits on top of head ── */
+    .hat-crown { position:relative; width:40px; height:26px; }
     .hat-cr-top { position:absolute; top:0; left:0; right:0; display:flex; justify-content:space-around; align-items:flex-end; padding:0 1px; }
-    .hat-cr-point { width:0; height:0; border-left:8px solid transparent; border-right:8px solid transparent; border-bottom:22px solid #d97706; filter:drop-shadow(0 0 4px #fbbf2477); }
-    .hat-cr-point.tall { border-bottom-width:30px; border-left-width:9px; border-right-width:9px; }
-    .hat-cr-body { position:absolute; bottom:0; left:0; right:0; height:18px; background:linear-gradient(180deg,#d97706,#92400e); border-top:1.5px solid #fbbf24; border-radius:2px 2px 4px 4px; box-shadow:0 0 10px #92400e55; display:flex; align-items:center; justify-content:space-evenly; padding:0 5px; }
-    .hat-cr-gem { width:7px; height:7px; border-radius:50%; border:1px solid rgba(255,255,255,0.5); }
-    .hat-cr-gem.r { background:#ef4444; box-shadow:0 0 5px #ef4444; }
-    .hat-cr-gem.b { background:#60a5fa; box-shadow:0 0 5px #60a5fa; }
-    .hat-cr-gem.g { background:#34d399; box-shadow:0 0 5px #34d399; }
-    .pho-crown { top:-38px; left:50%; transform:translateX(-50%); }
+    .hat-cr-point { width:0; height:0; border-left:6px solid transparent; border-right:6px solid transparent; border-bottom:16px solid #d97706; filter:drop-shadow(0 0 3px #fbbf2477); }
+    .hat-cr-point.tall { border-bottom-width:22px; border-left-width:7px; border-right-width:7px; }
+    .hat-cr-body { position:absolute; bottom:0; left:0; right:0; height:12px; background:linear-gradient(180deg,#d97706,#92400e); border-top:1.5px solid #fbbf24; border-radius:1px 1px 3px 3px; box-shadow:0 0 8px #92400e55; display:flex; align-items:center; justify-content:space-evenly; padding:0 4px; }
+    .hat-cr-gem { width:5px; height:5px; border-radius:50%; border:1px solid rgba(255,255,255,0.5); }
+    .hat-cr-gem.r { background:#ef4444; box-shadow:0 0 4px #ef4444; }
+    .hat-cr-gem.b { background:#60a5fa; box-shadow:0 0 4px #60a5fa; }
+    .hat-cr-gem.g { background:#34d399; box-shadow:0 0 4px #34d399; }
+    .pho-crown { top:-24px; left:50%; transform:translateX(-50%); }
 
-    /* ── FEDORA ── (tilted, brim overlaps top-right of avatar) */
-    .hat-fedora { position:relative; width:62px; height:44px; }
-    .hat-fd-dome { position:absolute; top:0; left:50%; transform:translateX(-50%); width:36px; height:30px; background:linear-gradient(170deg,#4b5563,#1f2937); border-radius:50% 50% 20% 20%/65% 65% 35% 35%; border:1px solid #6b7280; box-shadow:inset -4px -3px 10px rgba(0,0,0,0.5); }
-    .hat-fd-band { position:absolute; top:22px; left:50%; transform:translateX(-50%); width:36px; height:6px; background:linear-gradient(90deg,#111827,#374151,#111827); border-top:1px solid #4b5563; border-bottom:1px solid #4b5563; }
-    .hat-fd-brim { position:absolute; bottom:0; left:0; right:0; height:14px; background:linear-gradient(180deg,#374151,#1f2937); border-radius:40% 40% 48% 48%/70% 70% 30% 30%; border:1px solid #4b5563; box-shadow:0 4px 8px rgba(0,0,0,0.6); }
-    .pho-detective { top:-36px; right:-10px; transform:rotate(10deg); }
+    /* ── FEDORA ~46px wide, slight tilt, brim rests on top of head ── */
+    .hat-fedora { position:relative; width:46px; height:28px; }
+    .hat-fd-dome { position:absolute; top:0; left:50%; transform:translateX(-50%); width:26px; height:20px; background:linear-gradient(170deg,#4b5563,#1f2937); border-radius:50% 50% 20% 20%/65% 65% 35% 35%; border:1px solid #6b7280; box-shadow:inset -3px -2px 8px rgba(0,0,0,0.5); }
+    .hat-fd-band { position:absolute; top:14px; left:50%; transform:translateX(-50%); width:26px; height:5px; background:linear-gradient(90deg,#111827,#374151,#111827); border-top:1px solid #4b5563; border-bottom:1px solid #4b5563; }
+    .hat-fd-brim { position:absolute; bottom:0; left:0; right:0; height:10px; background:linear-gradient(180deg,#374151,#1f2937); border-radius:40% 40% 48% 48%/70% 70% 30% 30%; border:1px solid #4b5563; box-shadow:0 3px 6px rgba(0,0,0,0.6); }
+    .pho-detective { top:-24px; left:50%; transform:translateX(-50%) rotate(5deg); }
 
-    /* ── SPACE HELMET ── (wraps the avatar, slightly larger than the circle) */
-    .hat-helmet { position:relative; width:58px; height:62px; }
-    .hat-hl-outer { position:absolute; top:0; left:50%; transform:translateX(-50%); width:54px; height:54px; border-radius:50%; background:linear-gradient(145deg,#e2e8f0,#94a3b8 35%,#475569 70%,#1e293b); border:1.5px solid #cbd5e1; box-shadow:0 0 16px rgba(148,163,184,0.15),inset 0 3px 10px rgba(255,255,255,0.2),inset -5px -5px 16px rgba(0,0,0,0.4); }
-    .hat-hl-visor { position:absolute; top:12px; left:50%; transform:translateX(-50%); width:36px; height:26px; border-radius:50%; background:linear-gradient(155deg,#0f172a,#1e3a5f 50%,#0a1628); border:1.5px solid #334155; box-shadow:inset 0 0 14px rgba(56,189,248,0.1); }
-    .hat-hl-refl { position:absolute; top:14px; left:50%; margin-left:-10px; width:8px; height:6px; border-radius:50%; background:rgba(255,255,255,0.2); transform:rotate(-20deg); }
-    .hat-hl-ring { position:absolute; bottom:2px; left:50%; transform:translateX(-50%); width:50px; height:8px; border-radius:50%; background:linear-gradient(90deg,#334155,#64748b,#334155); border:1px solid #475569; }
-    .pho-space { top:-7px; left:-7px; }
+    /* ── SPACE HELMET — wraps entire 44px avatar, 6px bigger each side ── */
+    .hat-helmet { position:relative; width:56px; height:56px; }
+    .hat-hl-outer { position:absolute; inset:0; border-radius:50%; background:linear-gradient(145deg,#e2e8f0,#94a3b8 35%,#475569 70%,#1e293b); border:1.5px solid #cbd5e1; box-shadow:0 0 14px rgba(148,163,184,0.15),inset 0 3px 8px rgba(255,255,255,0.2),inset -4px -4px 12px rgba(0,0,0,0.4); }
+    .hat-hl-visor { position:absolute; top:11px; left:50%; transform:translateX(-50%); width:34px; height:24px; border-radius:50%; background:linear-gradient(155deg,#0f172a,#1e3a5f 50%,#0a1628); border:1.5px solid #334155; box-shadow:inset 0 0 12px rgba(56,189,248,0.1); }
+    .hat-hl-refl { position:absolute; top:14px; left:50%; margin-left:-8px; width:7px; height:5px; border-radius:50%; background:rgba(255,255,255,0.22); transform:rotate(-20deg); }
+    .hat-hl-ring { position:absolute; bottom:2px; left:50%; transform:translateX(-50%); width:46px; height:6px; border-radius:50%; background:linear-gradient(90deg,#334155,#64748b,#334155); border:1px solid #475569; }
+    .pho-space { top:-6px; left:-6px; }
 
-    /* ── ANONYMOUS MASK ── (large, covers most of avatar from slight angle) */
-    .hat-mask { position:relative; width:52px; height:64px; }
-    .hat-mk-face { position:absolute; top:0; left:50%; transform:translateX(-50%); width:44px; height:58px; border-radius:40% 40% 36% 36%/44% 44% 56% 56%; background:linear-gradient(175deg,#f8fafc,#e2e8f0 60%,#cbd5e1); border:1px solid #94a3b8; box-shadow:0 0 16px rgba(255,255,255,0.06),inset 0 2px 8px rgba(0,0,0,0.05); }
-    .hat-mk-eye { position:absolute; top:18px; width:11px; height:13px; background:#0a0a0a; border-radius:50% 50% 42% 42%/58% 58% 42% 42%; }
-    .hat-mk-eye.l { left:8px; }
-    .hat-mk-eye.r { right:8px; }
-    .hat-mk-brow { position:absolute; top:13px; height:3px; border-radius:50%; background:#0a0a0a; }
-    .hat-mk-brow.l { left:7px; width:14px; transform:rotate(-6deg); }
-    .hat-mk-brow.r { right:7px; width:14px; transform:rotate(6deg); }
-    .hat-mk-cheek { position:absolute; top:32px; width:10px; height:6px; background:#f87171; border-radius:50%; opacity:0.5; }
-    .hat-mk-cheek.l { left:5px; }
-    .hat-mk-cheek.r { right:5px; }
-    .hat-mk-nose { position:absolute; top:30px; left:50%; transform:translateX(-50%); width:5px; height:6px; border-radius:50%; background:rgba(0,0,0,0.07); }
-    .hat-mk-mst { position:absolute; top:40px; left:50%; transform:translateX(-50%); width:0; }
-    .hat-mk-mst:before,.hat-mk-mst:after { content:''; position:absolute; top:0; width:12px; height:6px; border-radius:0 0 50% 50%; background:#0a0a0a; }
+    /* ── ANONYMOUS MASK — covers face, correct for a face-covering mask ── */
+    .hat-mask { position:relative; width:44px; height:54px; }
+    .hat-mk-face { position:absolute; top:0; left:50%; transform:translateX(-50%); width:38px; height:50px; border-radius:40% 40% 36% 36%/44% 44% 56% 56%; background:linear-gradient(175deg,#f8fafc,#e2e8f0 60%,#cbd5e1); border:1px solid #94a3b8; box-shadow:0 0 12px rgba(255,255,255,0.05),inset 0 2px 6px rgba(0,0,0,0.05); }
+    .hat-mk-eye { position:absolute; top:16px; width:10px; height:12px; background:#0a0a0a; border-radius:50% 50% 42% 42%/58% 58% 42% 42%; }
+    .hat-mk-eye.l { left:6px; }
+    .hat-mk-eye.r { right:6px; }
+    .hat-mk-brow { position:absolute; top:11px; height:3px; border-radius:50%; background:#0a0a0a; }
+    .hat-mk-brow.l { left:5px; width:13px; transform:rotate(-6deg); }
+    .hat-mk-brow.r { right:5px; width:13px; transform:rotate(6deg); }
+    .hat-mk-cheek { position:absolute; top:28px; width:9px; height:6px; background:#f87171; border-radius:50%; opacity:0.5; }
+    .hat-mk-cheek.l { left:3px; }
+    .hat-mk-cheek.r { right:3px; }
+    .hat-mk-nose { position:absolute; top:26px; left:50%; transform:translateX(-50%); width:4px; height:5px; border-radius:50%; background:rgba(0,0,0,0.07); }
+    .hat-mk-mst { position:absolute; top:36px; left:50%; transform:translateX(-50%); width:0; }
+    .hat-mk-mst:before,.hat-mk-mst:after { content:''; position:absolute; top:0; width:11px; height:6px; border-radius:0 0 50% 50%; background:#0a0a0a; }
     .hat-mk-mst:before { right:1px; transform:rotate(6deg); }
     .hat-mk-mst:after  { left:1px;  transform:rotate(-6deg); }
-    .hat-mk-beard { position:absolute; top:46px; left:50%; transform:translateX(-50%); width:14px; height:12px; background:#0a0a0a; clip-path:polygon(15% 0%,85% 0%,75% 100%,50% 80%,25% 100%); }
-    .pho-anon { top:-10px; left:-8px; transform:rotate(-4deg); opacity:0.9; }
+    .hat-mk-beard { position:absolute; top:42px; left:50%; transform:translateX(-50%); width:13px; height:10px; background:#0a0a0a; clip-path:polygon(15% 0%,85% 0%,75% 100%,50% 80%,25% 100%); }
+    .pho-anon { top:-8px; left:-2px; transform:rotate(-3deg); opacity:0.92; }
 
     /* ── NEW ANIMATED BANNERS ── */
     /* Marble Hornets: corrupted footage look */
@@ -896,9 +886,9 @@ window.buildHatHTML = function(hatId) {
         <div class="hat-w-shine"></div>
         <div class="hat-w-band"></div>
         <div class="hat-w-brim"></div>
-        <div class="hat-w-star" style="top:20%;left:32%;font-size:8px;">★</div>
-        <div class="hat-w-star" style="top:45%;left:56%;font-size:5px;">✦</div>
-        <div class="hat-w-star" style="top:34%;left:52%;font-size:6px;">✦</div>
+        <div class="hat-w-star" style="top:18%;left:30%;font-size:6px;">★</div>
+        <div class="hat-w-star" style="top:44%;left:58%;font-size:4px;">✦</div>
+        <div class="hat-w-star" style="top:32%;left:54%;font-size:4px;">✦</div>
       </div>`;
     case 'ph_crown': return `
       <div class="hat-crown">
